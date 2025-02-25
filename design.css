@@ -71,22 +71,25 @@ header h1 {
     display: flex;
     align-items: center;
     gap: 15px;
-    transition: transform 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .member-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
 .mc-head {
     width: 64px;
     height: 64px;
     border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .member-info h3 {
     color: #4CAF50;
     margin-bottom: 5px;
+    font-size: 1.2em;
 }
 
 .points {
@@ -104,15 +107,17 @@ label {
     display: block;
     margin-bottom: 8px;
     color: #fff;
+    font-weight: bold;
 }
 
 input, select, textarea {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     border: 1px solid #444;
     border-radius: 5px;
     background: #333;
     color: #fff;
+    font-size: 16px;
 }
 
 input[type="number"] {
@@ -120,21 +125,34 @@ input[type="number"] {
     color: #fff;
 }
 
+select option:disabled {
+    color: #666;
+}
+
 button {
     background: #4CAF50;
     color: white;
-    padding: 12px 20px;
+    padding: 14px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     width: 100%;
     font-size: 16px;
+    font-weight: bold;
     margin-bottom: 10px;
-    transition: background-color 0.3s;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 button:hover {
     background: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+button:active {
+    transform: translateY(0);
 }
 
 /* Logout Button */
@@ -160,6 +178,54 @@ button:hover {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
+/* Keine Benutzer Nachricht */
+.no-users {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    padding: 20px;
+}
+
+/* Vorschläge Bereich */
+.suggestions-container {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.suggestion-item {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 5px;
+}
+
+.suggestion-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.suggestion-actions button {
+    flex: 1;
+}
+
+.suggestion-actions button.reject {
+    background: #f44336;
+}
+
+.suggestion-actions button.reject:hover {
+    background: #da190b;
+}
+
+/* Section Überschriften */
+h2, h3 {
+    margin-bottom: 20px;
+    color: #fff;
+    text-align: center;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {
@@ -180,4 +246,120 @@ button:hover {
     .team-list {
         grid-template-columns: 1fr;
     }
+
+    .member-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .member-info {
+        text-align: center;
+    }
+}
+
+/* Animationen */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.member-card {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Rang-spezifische Farben */
+.rank-owner { color: #ff5555; }
+.rank-coowner { color: #ff7f50; }
+.rank-admin { color: #ff0000; }
+.rank-jradmin { color: #ff4500; }
+.rank-moderator { color: #00ff00; }
+.rank-jrmoderator { color: #32cd32; }
+.rank-supporter { color: #4169e1; }
+.rank-jrsupporter { color: #6495ed; }
+.rank-builder { color: #daa520; }
+
+/* Status-Anzeigen */
+.status-active {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.status-inactive {
+    color: #f44336;
+    font-weight: bold;
+}
+
+/* Tooltips */
+[data-tooltip] {
+    position: relative;
+    cursor: help;
+}
+
+[data-tooltip]:before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 5px 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 4px;
+    font-size: 14px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s;
+}
+
+[data-tooltip]:hover:before {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Form Validation Styles */
+input:invalid,
+select:invalid {
+    border-color: #f44336;
+}
+
+.error-message {
+    color: #f44336;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* Success Messages */
+.success-message {
+    background: rgba(76, 175, 80, 0.1);
+    color: #4CAF50;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+    position: relative;
+}
+
+.loading:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #fff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
