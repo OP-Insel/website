@@ -44,6 +44,35 @@
 
         <div id="adminArea" class="admin-container" style="display: none;">
             <h2>Admin Bereich</h2>
+            <!-- Benutzer hinzufügen (nur für Owner) -->
+            <div id="addUserArea" style="display: none;" class="add-user-section">
+                <h3>Neuen Benutzer hinzufügen</h3>
+                <form id="addUserForm" onsubmit="return handleAddUser(event)">
+                    <div class="form-group">
+                        <label for="newUsername">Minecraft Username:</label>
+                        <input type="text" id="newUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newRank">Rang:</label>
+                        <select id="newRank" required>
+                            <option value="coowner">Co-Owner</option>
+                            <option value="admin">Admin</option>
+                            <option value="jradmin">Jr. Admin</option>
+                            <option value="moderator">Moderator</option>
+                            <option value="jrmoderator">Jr. Moderator</option>
+                            <option value="supporter">Supporter</option>
+                            <option value="jrsupporter">Jr. Supporter</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">Passwort:</label>
+                        <input type="password" id="newPassword" required>
+                    </div>
+                    <button type="submit">Benutzer hinzufügen</button>
+                </form>
+            </div>
+
+            <!-- Punkteabzug -->
             <form id="pointsForm" onsubmit="return handlePoints(event)">
                 <div class="form-group">
                     <label for="member">Teammitglied:</label>
@@ -96,6 +125,14 @@
                 <button type="submit">Vorschlag einreichen</button>
             </form>
             <button onclick="handleLogout()" class="logout-button">Ausloggen</button>
+        </div>
+
+        <!-- Team Übersicht -->
+        <div class="team-overview">
+            <h2>Team Übersicht</h2>
+            <div id="teamList" class="team-list">
+                <!-- Wird durch JavaScript gefüllt -->
+            </div>
         </div>
 
         <div class="hierarchy-container">
