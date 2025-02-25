@@ -39,6 +39,11 @@ const RANK_DATA = {
         password: "JrSupporterSecure123!",
         isAdmin: false,
         canAddOwner: false
+    },
+    builder: {
+        password: "SuperBuilderSecure123!",
+        isAdmin: false,
+        canAddOwner: false
     }
 };
 
@@ -51,7 +56,8 @@ const DEFAULT_POINTS = {
     moderator: 300,
     jrmoderator: 250,
     supporter: 200,
-    jrsupporter: 150
+    jrsupporter: 150,
+    builder: 200
 };
 
 // Benutzer-Daten aus localStorage laden oder initialisieren
