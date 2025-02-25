@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Minecraft Team Management</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body onload="initializeAdminPanel()">
+    <div class="container">
+        <header>
+            <h1>Admin Panel</h1>
+            <p id="adminWelcome">Owner/Co-Owner Bereich</p>
+        </header>
+
+        <div class="dashboard-container">
+            <div class="points-management">
+                <h2>Punkteabzug durchführen</h2>
+                <form id="deductPointsForm" onsubmit="return handlePointDeduction(event)">
+                    <div class="form-group">
+                        <label for="memberSelect">Teammitglied:</label>
+                        <select id="memberSelect" required>
+                            <!-- Wird durch JavaScript gefüllt -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="violationType">Regelverstoß:</label>
+                        <select id="violationType" required onchange="updateDeductionPreview()">
+                            <option value="">Wähle einen Grund</option>
+                            <option value="ban">Ban ohne Begründung (-5 Punkte)</option>
+                            <option value="unfair">Unfaire Strafe (-10 Punkte)</option>
+                            <option value="abuse">Missbrauch der Admin-Rechte (-20 Punkte)</option>
+                            <option value="insult">Beleidigung (-15 Punkte)</option>
+                            <option value="inactive">Inaktiv ohne Abmeldung (-10 Punkte)</option>
+                            <option value="repeat">Wiederholtes Fehlverhalten (-30 Punkte)</option>
+                            <option value="spam">Spamming (-5 Punkte)</option>
+                            <option value="severe">Schwere Regelverstöße (-20 Punkte)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">Anmerkungen:</label>
+                        <textarea id="notes" required></textarea>
+                    </div>
+                    <p id="deductionPreview" class="points-preview">Punkteabzug: 0</p>
+                    <button type="submit">Punkte abziehen</button>
+                </form>
+            </div>
+
+            <div class="suggestions-panel">
+                <h2>Eingereichte Vorschläge</h2>
+                <div id="suggestionsList"></div>
+            </div>
+
+            <div class="team-stats">
+                <h2>Team Statistiken</h2>
+                <div id="adminTeamStats"></div>
+            </div>
+        </div>
+
+        <button onclick="handleLogout()" class="logout-button">Ausloggen</button>
+    </div>
+    <script src="management-system.js"></script>
+</body>
+</html>
