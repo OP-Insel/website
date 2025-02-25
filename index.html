@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Team Management</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Minecraft Team Management</h1>
+            <p>Punktesystem und Teamverwaltung</p>
+        </header>
+
+        <div class="login-container">
+            <h2>Team Login</h2>
+            <form id="loginForm" onsubmit="return handleLogin(event)">
+                <div class="form-group">
+                    <label for="rank">Rang:</label>
+                    <select id="rank" required>
+                        <option value="">Wähle deinen Rang</option>
+                        <option value="owner">Owner</option>
+                        <option value="coowner">Co-Owner</option>
+                        <option value="developer">Developer</option>
+                        <option value="admin">Admin</option>
+                        <option value="jradmin">Jr. Admin</option>
+                        <option value="moderator">Moderator</option>
+                        <option value="jrmoderator">Jr. Moderator</option>
+                        <option value="srbuilder">Sr. Builder</option>
+                        <option value="builder">Builder</option>
+                        <option value="supporter">Supporter</option>
+                        <option value="jrsupporter">Jr. Supporter</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="username">Benutzername:</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Passwort:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit">Anmelden</button>
+            </form>
+        </div>
+
+        <div class="hierarchy-container">
+            <h2>Team Hierarchie</h2>
+            <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-5ITqJSBI1JcsL9HuyVnmNpMk498cRQ.png" alt="Team Hierarchie" class="hierarchy-image">
+        </div>
+
+        <div class="rules-container">
+            <h2>Wichtige Regeln</h2>
+            <ul>
+                <li>Punkte werden am 1. jedes Monats zurückgesetzt</li>
+                <li>Bei 0 Punkten wird ein Teammitglied entfernt</li>
+                <li>Nur Owner & Co-Owner können Punkte abziehen</li>
+                <li>Regelverstöße müssen im Discord protokolliert werden</li>
+            </ul>
+        </div>
+    </div>
+    <script src="management-system.js"></script>
+</body>
+</html>
