@@ -34,8 +34,8 @@ header h1 {
 /* Container Stile */
 .login-container,
 .admin-container,
-.team-container,
-.add-user-section {
+.add-user-section,
+.points-section {
     background: rgba(255, 255, 255, 0.1);
     padding: 30px;
     border-radius: 10px;
@@ -49,7 +49,7 @@ header h1 {
     background: rgba(255, 255, 255, 0.1);
     padding: 30px;
     border-radius: 10px;
-    margin-bottom: 30px;
+    margin: 30px auto;
 }
 
 .team-overview h2 {
@@ -71,6 +71,11 @@ header h1 {
     display: flex;
     align-items: center;
     gap: 15px;
+    transition: transform 0.2s;
+}
+
+.member-card:hover {
+    transform: translateY(-5px);
 }
 
 .mc-head {
@@ -110,9 +115,9 @@ input, select, textarea {
     color: #fff;
 }
 
-textarea {
-    height: 100px;
-    resize: vertical;
+input[type="number"] {
+    background: #333;
+    color: #fff;
 }
 
 button {
@@ -125,6 +130,7 @@ button {
     width: 100%;
     font-size: 16px;
     margin-bottom: 10px;
+    transition: background-color 0.3s;
 }
 
 button:hover {
@@ -166,8 +172,8 @@ button:hover {
 
     .login-container,
     .admin-container,
-    .team-container,
-    .add-user-section {
+    .add-user-section,
+    .points-section {
         padding: 20px;
     }
 
