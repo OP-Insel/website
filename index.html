@@ -1,395 +1,126 @@
-/* Minecraft-inspirierte Farbpalette */
-:root {
-    --mc-dirt: #8B5A2B;
-    --mc-grass: #5D8731;
-    --mc-stone: #7F7F7F;
-    --mc-wood: #9C6E3B;
-    --mc-leaves: #3A5F0B;
-    --mc-water: #3D6AFF;
-    --mc-lava: #E25822;
-    --mc-gold: #FFCC00;
-    --mc-diamond: #4AEDD9;
-    --mc-redstone: #FF0000;
-    --mc-obsidian: #150E1F;
-    --mc-netherrack: #723333;
-    --mc-text: #EEEEEE;
-    --mc-shadow: rgba(0, 0, 0, 0.5);
-}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Team Management</title>
+    <link rel="stylesheet" href="design.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Minecraft Team Management</h1>
+            <p>Punktesystem und Teamverwaltung</p>
+        </header>
 
-/* Minecraft-Schriftart */
-@font-face {
-    font-family: 'Minecraft';
-    src: url('https://fonts.cdnfonts.com/css/minecraft-4') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-}
+        <!-- Login-Bereich (wird zuerst angezeigt) -->
+        <div id="loginArea" class="login-container">
+            <h2>Team Login</h2>
+            <form id="loginForm" onsubmit="return handleLogin(event)">
+                <div class="form-group">
+                    <label for="rank">Rang:</label>
+                    <select id="rank" required>
+                        <option value="">Wähle deinen Rang</option>
+                        <option value="owner">Owner</option>
+                        <option value="coowner">Co-Owner</option>
+                        <option value="admin">Admin</option>
+                        <option value="jradmin">Jr. Admin</option>
+                        <option value="moderator">Moderator</option>
+                        <option value="jrmoderator">Jr. Moderator</option>
+                        <option value="supporter">Supporter</option>
+                        <option value="jrsupporter">Jr. Supporter</option>
+                        <option value="builder">Builder</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="password">Rang-Passwort:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit">Anmelden</button>
+            </form>
+        </div>
 
-/* Grundlegende Stile */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+        <!-- Admin-Bereich (wird erst nach Login angezeigt) -->
+        <div id="adminArea" class="admin-container" style="display: none;">
+            <h2>Admin Bereich</h2>
+            
+            <!-- Benutzer hinzufügen (nur für Owner/Co-Owner) -->
+            <div id="addUserArea" class="add-user-section" style="display: none;">
+                <h3>Neuen Benutzer hinzufügen</h3>
+                <form id="addUserForm" onsubmit="return handleAddUser(event)">
+                    <div class="form-group">
+                        <label for="mcname">Minecraft Username:</label>
+                        <input type="text" id="mcname" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userRank">Rang zuweisen:</label>
+                        <select id="userRank" required>
+                            <option value="owner">Owner</option>
+                            <option value="coowner">Co-Owner</option>
+                            <option value="admin">Admin</option>
+                            <option value="jradmin">Jr. Admin</option>
+                            <option value="moderator">Moderator</option>
+                            <option value="jrmoderator">Jr. Moderator</option>
+                            <option value="supporter">Supporter</option>
+                            <option value="jrsupporter">Jr. Supporter</option>
+                            <option value="builder">Builder</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="points">Startpunkte:</label>
+                        <input type="number" id="points" required min="0" value="500">
+                    </div>
+                    <button type="submit">Benutzer hinzufügen</button>
+                </form>
+            </div>
 
-body {
-    font-family: 'Minecraft', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6;
-    background-image: url('https://i.imgur.com/SBCkKE1.png');
-    background-repeat: repeat;
-    color: var(--mc-text);
-    min-height: 100vh;
-    position: relative;
-}
+            <!-- Punkteabzug (für alle Ränge) -->
+            <div class="points-section">
+                <h3>Punkteabzug</h3>
+                <form id="pointsForm" onsubmit="return handlePoints(event)">
+                    <div class="form-group">
+                        <label for="member">Teammitglied:</label>
+                        <select id="member" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="reason">Grund:</label>
+                        <select id="reason" required>
+                            <option value="">Wähle einen Grund</option>
+                            <option value="5">Ban ohne Begründung (-5 Punkte)</option>
+                            <option value="10">Unfaire Strafe (-10 Punkte)</option>
+                            <option value="20">Missbrauch der Admin-Rechte (-20 Punkte)</option>
+                            <option value="15">Beleidigung (-15 Punkte)</option>
+                            <option value="10">Inaktiv ohne Abmeldung (-10 Punkte)</option>
+                            <option value="30">Wiederholtes Fehlverhalten (-30 Punkte)</option>
+                            <option value="5">Spamming (-5 Punkte)</option>
+                            <option value="20">Schwere Regelverstöße (-20 Punkte)</option>
+                        </select>
+                    </div>
+                    <button type="submit">Punkte abziehen</button>
+                </form>
+            </div>
 
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: -1;
-}
+            <!-- Vorschläge (nur für Owner/Co-Owner) -->
+            <div id="suggestionsContainer" class="suggestions-container" style="display: none;">
+                <!-- Wird durch JavaScript gefüllt -->
+            </div>
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
+            <button onclick="handleLogout()" class="logout-button">Ausloggen</button>
+        </div>
 
-/* Minecraft-Stil Buttons */
-button {
-    background-image: url('https://i.imgur.com/Jx3kEZr.png');
-    background-repeat: repeat;
-    border: 2px solid #000;
-    color: white;
-    padding: 14px 20px;
-    cursor: pointer;
-    width: 100%;
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-family: 'Minecraft', sans-serif;
-    text-shadow: 2px 2px 0 #000;
-    position: relative;
-    transition: all 0.1s;
-}
+        <!-- Team Übersicht (immer sichtbar) -->
+        <div class="team-overview">
+            <h2>Team Übersicht</h2>
+            <div id="teamList" class="team-list">
+                <!-- Wird durch JavaScript gefüllt -->
+            </div>
+        </div>
 
-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 2px 8px var(--mc-shadow);
-}
-
-button:active {
-    transform: translateY(0);
-    background-image: url('https://i.imgur.com/qRUPUOl.png');
-}
-
-/* Logout Button */
-.logout-button {
-    background-image: url('https://i.imgur.com/qRUPUOl.png');
-    margin-top: 20px;
-}
-
-.logout-button:hover {
-    background-image: url('https://i.imgur.com/Jx3kEZr.png');
-}
-
-/* Header */
-header {
-    text-align: center;
-    margin-bottom: 40px;
-    padding: 20px;
-    background-image: url('https://i.imgur.com/Jx3kEZr.png');
-    background-repeat: repeat;
-    border: 4px solid #000;
-    box-shadow: 0 0 20px var(--mc-shadow);
-}
-
-header h1 {
-    font-size: 2.5em;
-    margin-bottom: 10px;
-    text-shadow: 2px 2px 0 #000;
-    color: var(--mc-gold);
-}
-
-header p {
-    color: var(--mc-text);
-    text-shadow: 1px 1px 0 #000;
-}
-
-/* Container Stile */
-.login-container,
-.admin-container,
-.add-user-section,
-.points-section,
-.team-overview,
-.suggestions-container {
-    background-image: url('https://i.imgur.com/qRUPUOl.png');
-    background-repeat: repeat;
-    padding: 30px;
-    border: 4px solid #000;
-    margin-bottom: 30px;
-    max-width: 600px;
-    margin: 0 auto 30px;
-    box-shadow: 0 0 20px var(--mc-shadow);
-}
-
-/* Team Übersicht */
-.team-overview {
-    max-width: 1000px;
-}
-
-.team-overview h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: var(--mc-gold);
-    text-shadow: 2px 2px 0 #000;
-}
-
-.team-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    padding: 20px;
-}
-
-.member-card {
-    background-image: url('https://i.imgur.com/Jx3kEZr.png');
-    background-repeat: repeat;
-    border: 2px solid #000;
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.member-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px var(--mc-shadow);
-}
-
-.mc-head {
-    width: 64px;
-    height: 64px;
-    border: 2px solid #000;
-    box-shadow: 0 2px 5px var(--mc-shadow);
-}
-
-.member-info h3 {
-    margin-bottom: 5px;
-    font-size: 1.2em;
-    text-shadow: 1px 1px 0 #000;
-}
-
-.points {
-    color: var(--mc-gold);
-    font-weight: bold;
-    margin-top: 5px;
-    text-shadow: 1px 1px 0 #000;
-}
-
-/* Formular Stile */
-.form-group {
-    margin-bottom: 20px;
-}
-
-label {
-    display: block;
-    margin-bottom: 8px;
-    color: var(--mc-text);
-    font-weight: bold;
-    text-shadow: 1px 1px 0 #000;
-}
-
-input, select, textarea {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #000;
-    background-color: rgba(0, 0, 0, 0.7);
-    color: var(--mc-text);
-    font-size: 16px;
-    font-family: 'Minecraft', sans-serif;
-}
-
-input[type="number"] {
-    background-color: rgba(0, 0, 0, 0.7);
-    color: var(--mc-text);
-}
-
-select option {
-    background-color: #333;
-    color: var(--mc-text);
-}
-
-select option:disabled {
-    color: #666;
-}
-
-/* Hierarchie Bereich */
-.hierarchy-container {
-    text-align: center;
-    margin: 40px 0;
-}
-
-.hierarchy-container h2 {
-    color: var(--mc-gold);
-    text-shadow: 2px 2px 0 #000;
-    margin-bottom: 20px;
-}
-
-.hierarchy-image {
-    max-width: 100%;
-    height: auto;
-    border: 4px solid #000;
-    box-shadow: 0 0 20px var(--mc-shadow);
-}
-
-/* Keine Benutzer Nachricht */
-.no-users {
-    text-align: center;
-    color: #AAA;
-    font-style: italic;
-    padding: 20px;
-    text-shadow: 1px 1px 0 #000;
-}
-
-/* Vorschläge Bereich */
-.suggestion-item {
-    background-image: url('https://i.imgur.com/Jx3kEZr.png');
-    background-repeat: repeat;
-    border: 2px solid #000;
-    padding: 1rem;
-    margin-bottom: 1rem;
-}
-
-.suggestion-actions {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.suggestion-actions button {
-    flex: 1;
-}
-
-.suggestion-actions button.reject {
-    background-image: url('https://i.imgur.com/qRUPUOl.png');
-}
-
-.suggestion-actions button.reject:hover {
-    background-image: url('https://i.imgur.com/Jx3kEZr.png');
-}
-
-/* Section Überschriften */
-h2, h3 {
-    margin-bottom: 20px;
-    color: var(--mc-gold);
-    text-align: center;
-    text-shadow: 2px 2px 0 #000;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .container {
-        padding: 10px;
-    }
-
-    header h1 {
-        font-size: 2em;
-    }
-
-    .login-container,
-    .admin-container,
-    .add-user-section,
-    .points-section {
-        padding: 20px;
-    }
-
-    .team-list {
-        grid-template-columns: 1fr;
-    }
-
-    .member-card {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .member-info {
-        text-align: center;
-    }
-}
-
-/* Animationen */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.member-card {
-    animation: fadeIn 0.3s ease-out;
-}
-
-/* Rang-spezifische Farben */
-.rank-owner { color: var(--mc-diamond); }
-.rank-coowner { color: var(--mc-gold); }
-.rank-admin { color: var(--mc-redstone); }
-.rank-jradmin { color: #FF6347; }
-.rank-moderator { color: var(--mc-grass); }
-.rank-jrmoderator { color: #8FBC8F; }
-.rank-supporter { color: var(--mc-water); }
-.rank-jrsupporter { color: #87CEEB; }
-.rank-builder { color: var(--mc-wood); }
-
-/* Minecraft-Stil Tooltips */
-[data-tooltip] {
-    position: relative;
-    cursor: help;
-}
-
-[data-tooltip]:before {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 5px 10px;
-    background-color: #000;
-    color: white;
-    border: 2px solid #555;
-    font-size: 14px;
-    white-space: nowrap;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.2s;
-    font-family: 'Minecraft', sans-serif;
-}
-
-[data-tooltip]:hover:before {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Minecraft-Stil Scrollbar */
-::-webkit-scrollbar {
-    width: 12px;
-}
-
-::-webkit-scrollbar-track {
-    background-image: url('https://i.imgur.com/qRUPUOl.png');
-    background-repeat: repeat;
-}
-
-::-webkit-scrollbar-thumb {
-    background-image: url('https://i.imgur.com/Jx3kEZr.png');
-    background-repeat: repeat;
-    border: 2px solid #000;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background-image: url('https://i.imgur.com/Jx3kEZr.png');
-}
+        <div class="hierarchy-container">
+            <h2>Team Hierarchie</h2>
+            <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-5ITqJSBI1JcsL9HuyVnmNpMk498cRQ.png" alt="Team Hierarchie" class="hierarchy-image">
+        </div>
+    </div>
+    <script src="team-system.js"></script>
+</body>
+</html>
