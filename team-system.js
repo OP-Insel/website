@@ -153,6 +153,115 @@ function handleSuggestion(index, accept) {
     updateTeamList();
 }
 
+// Login Handler
+function handleLogin(event) {
+    event.preventDefault();
+    
+    const rank = document.getElementById('rank').value;
+    const password = document.getElementById('password').value;
+
+    if (RANK_DATA[rank] && RANK_DATA[rank].password === password) {
+        document.getElementById('loginArea').style.display = 'none';
+        
+        // Alle Benutzer können den Admin-Bereich sehen, aber mit unterschiedlichen Berechtigungen
+        document.getElementById('adminArea').style.display = 'block';
+        setupAdminArea(rank);
+        
+        localStorage.setItem('currentRank', rank);
+        updateTeamList();
+        
+        // Ändere den Button-Text basierend auf den Berechtigungen
+        const pointsButton = document.querySelector('#pointsForm button[type="submit"]');
+        if (pointsButton) {
+            if (RANK_DATA[rank].canDeductPoints) {
+                pointsButton.textContent = "Punkte abziehen";
+            } else {
+                pointsButton.textContent = "Punkteabzug vorschlagen";
+            }
+        }
+    } else {
+        alert('Falsches Passwort!');
+    }
+    
+    return false;
+}
+
+// Benutzer hinzufügen Handler
+function handleAddUser(event) {
+    event.preventDefault();
+    
+    const mcname = document.getElementById('mcname').value;
+    const rank = document.getElementById('userRank').value;
+    const points = parseInt(document.getElementById('points').value);
+    const currentRank = localStorage.getItem('currentRank');
+
+    // Prüfen ob der aktuelle Benutzer Owner ist, wenn ein Owner/Co-Owner hinzugefügt werden soll
+    if ((rank === 'owner' || rank === 'coowner') && !RANK_DATA[currentRank].canAddOwner) {
+        alert('Nur der Owner kann weitere Owner oder Co-Owner hinzufügen!');
+        return false;
+    }
+
+    // Prüfen ob Benutzer bereits existiert
+    if (USERS.some(user => user.mcname.toLowerCase() === mcname.toLowerCase())) {
+        alert('Dieser Minecraft Username existiert bereits!');
+        return false;
+    }
+
+    // Neuen Benutzer hinzufügen
+    USERS.push({
+        mcname: mcname,
+        rank: rank,
+        points: rank === 'owner' ? Infinity : points
+    });
+
+    // Speichern und aktualisieren
+    localStorage.setItem('users', JSON.stringify(USERS));
+    updateTeamList();
+    setupAdminArea(currentRank);
+    
+    document.getElementById('addUserForm').reset();
+    alert('Benutzer erfolgreich hinzugefügt!');
+    return false;
+}
+
+// Admin Bereich einrichten
+function setupAdminArea(currentRank) {
+    const memberSelect = document.getElementById('member');
+    memberSelect.innerHTML = '<option value="">Wähle ein Teammitglied</option>';
+    
+    USERS.forEach(user => {
+        // Owner können nicht von Punkten abgezogen werden
+        if (user.rank !== 'owner') {
+            const option = document.createElement('option');
+            option.value = user.mcname;
+            option.textContent = `${user.mcname} (${user.rank}) - ${user.points} Punkte`;
+            memberSelect.appendChild(option);
+        }
+    });
+
+    // Rang-Auswahl anpassen basierend auf Berechtigungen
+    const userRankSelect = document.getElementById('userRank');
+    if (userRankSelect) {
+        const options = userRankSelect.options;
+        for (let i = 0; i < options.length; i++) {
+            if ((options[i].value === 'owner' || options[i].value === 'coowner') && 
+                !RANK_DATA[currentRank].canAddOwner) {
+                options[i].disabled = true;
+            }
+        }
+    }
+    
+    // Benutzerhinzufügen-Bereich nur für Owner und Co-Owner anzeigen
+    const addUserArea = document.getElementById('addUserArea');
+    if (addUserArea) {
+        if (RANK_DATA[currentRank].isAdmin) {
+            addUserArea.style.display = 'block';
+        } else {
+            addUserArea.style.display = 'none';
+        }
+    }
+}
+
 // Punkteabzug Handler
 function handlePoints(event) {
     event.preventDefault();
@@ -178,6 +287,7 @@ function handlePoints(event) {
 
             localStorage.setItem('users', JSON.stringify(USERS));
             updateTeamList();
+            setupAdminArea(currentRank);
             alert(`${points} Punkte von ${mcname} abgezogen! Neue Punktzahl: ${USERS[userIndex]?.points || 0}`);
         }
     } else {
@@ -196,5 +306,30 @@ function handlePoints(event) {
     return false;
 }
 
-// Rest des Codes bleibt gleich...
-// (handleLogin, handleAddUser, setupAdminArea, handleLogout, window.onload)
+// Logout Handler
+function handleLogout() {
+    localStorage.removeItem('currentRank');
+    document.getElementById('adminArea').style.display = 'none';
+    document.getElementById('loginArea').style.display = 'block';
+}
+
+// Beim Laden der Seite
+window.onload = function() {
+    updateTeamList();
+    const currentRank = localStorage.getItem('currentRank');
+    if (currentRank) {
+        document.getElementById('loginArea').style.display = 'none';
+        document.getElementById('adminArea').style.display = 'block';
+        setupAdminArea(currentRank);
+        
+        // Ändere den Button-Text basierend auf den Berechtigungen
+        const pointsButton = document.querySelector('#pointsForm button[type="submit"]');
+        if (pointsButton) {
+            if (RANK_DATA[currentRank].canDeductPoints) {
+                pointsButton.textContent = "Punkte abziehen";
+            } else {
+                pointsButton.textContent = "Punkteabzug vorschlagen";
+            }
+        }
+    }
+};
