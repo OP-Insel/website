@@ -403,3 +403,32 @@ select:invalid {
     text-align: center;
     border: 1px solid var(--mc-grass);
 }
+
+/* Benachrichtigungen */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: var(--mc-container);
+    color: var(--mc-text);
+    border: 2px solid #000;
+    padding: 15px;
+    max-width: 300px;
+    z-index: 1000;
+    box-shadow: 0 0 10px var(--mc-shadow);
+    animation: slideIn 0.3s ease-out;
+}
+
+.notification.fade-out {
+    animation: fadeOut 0.5s ease-out forwards;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
