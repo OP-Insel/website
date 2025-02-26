@@ -13,6 +13,7 @@
             <p>Punktesystem und Teamverwaltung</p>
         </header>
 
+        <!-- Login-Bereich (wird zuerst angezeigt) -->
         <div id="loginArea" class="login-container">
             <h2>Team Login</h2>
             <form id="loginForm" onsubmit="return handleLogin(event)">
@@ -28,6 +29,7 @@
                         <option value="jrmoderator">Jr. Moderator</option>
                         <option value="supporter">Supporter</option>
                         <option value="jrsupporter">Jr. Supporter</option>
+                        <option value="builder">Builder</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -38,10 +40,12 @@
             </form>
         </div>
 
+        <!-- Admin-Bereich (wird erst nach Login angezeigt) -->
         <div id="adminArea" class="admin-container" style="display: none;">
             <h2>Admin Bereich</h2>
+            
             <!-- Benutzer hinzufügen (nur für Owner/Co-Owner) -->
-            <div id="addUserArea" class="add-user-section">
+            <div id="addUserArea" class="add-user-section" style="display: none;">
                 <h3>Neuen Benutzer hinzufügen</h3>
                 <form id="addUserForm" onsubmit="return handleAddUser(event)">
                     <div class="form-group">
@@ -59,6 +63,7 @@
                             <option value="jrmoderator">Jr. Moderator</option>
                             <option value="supporter">Supporter</option>
                             <option value="jrsupporter">Jr. Supporter</option>
+                            <option value="builder">Builder</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -69,7 +74,7 @@
                 </form>
             </div>
 
-            <!-- Punkteabzug -->
+            <!-- Punkteabzug (für alle Ränge) -->
             <div class="points-section">
                 <h3>Punkteabzug</h3>
                 <form id="pointsForm" onsubmit="return handlePoints(event)">
@@ -94,10 +99,16 @@
                     <button type="submit">Punkte abziehen</button>
                 </form>
             </div>
+
+            <!-- Vorschläge (nur für Owner/Co-Owner) -->
+            <div id="suggestionsContainer" class="suggestions-container" style="display: none;">
+                <!-- Wird durch JavaScript gefüllt -->
+            </div>
+
             <button onclick="handleLogout()" class="logout-button">Ausloggen</button>
         </div>
 
-        <!-- Team Übersicht -->
+        <!-- Team Übersicht (immer sichtbar) -->
         <div class="team-overview">
             <h2>Team Übersicht</h2>
             <div id="teamList" class="team-list">
