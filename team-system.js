@@ -14,43 +14,43 @@ const RANK_DATA = {
     },
     admin: {
         password: "AdminSecure123!",
-        isAdmin: false,
+        isAdmin: true,
         canAddOwner: false,
         canDeductPoints: false
     },
     jradmin: {
         password: "JrAdminSecure123!",
-        isAdmin: false,
+        isAdmin: true,
         canAddOwner: false,
         canDeductPoints: false
     },
     moderator: {
         password: "ModSecure123!",
-        isAdmin: false,
+        isAdmin: true,
         canAddOwner: false,
         canDeductPoints: false
     },
     jrmoderator: {
         password: "JrModSecure123!",
-        isAdmin: false,
+        isAdmin: true,
         canAddOwner: false,
         canDeductPoints: false
     },
     supporter: {
         password: "SupporterSecure123!",
-        isAdmin: false,
+        isAdmin: true,
         canAddOwner: false,
         canDeductPoints: false
     },
     jrsupporter: {
         password: "JrSupporterSecure123!",
-        isAdmin: false,
+        isAdmin: true,
         canAddOwner: false,
         canDeductPoints: false
     },
     builder: {
         password: "BuilderSecure123!",
-        isAdmin: false,
+        isAdmin: true,
         canAddOwner: false,
         canDeductPoints: false
     }
@@ -73,6 +73,35 @@ const DEFAULT_POINTS = {
 let USERS = JSON.parse(localStorage.getItem('users')) || [];
 let SUGGESTIONS = JSON.parse(localStorage.getItem('suggestions')) || [];
 
+// Letztes Zurücksetzen der Punkte prüfen
+let lastReset = localStorage.getItem('lastReset') ? new Date(localStorage.getItem('lastReset')) : null;
+
+// Prüfen, ob ein monatliches Zurücksetzen der Punkte erforderlich ist
+function checkMonthlyReset() {
+    const now = new Date();
+    
+    // Wenn noch kein Reset stattgefunden hat oder der letzte Reset mehr als einen Monat her ist
+    if (!lastReset || (now.getMonth() !== lastReset.getMonth() || now.getFullYear() !== lastReset.getFullYear())) {
+        resetPoints();
+        lastReset = now;
+        localStorage.setItem('lastReset', now.toISOString());
+    }
+}
+
+// Punkte zurücksetzen
+function resetPoints() {
+    USERS.forEach(user => {
+        // Owner behalten ihre unendlichen Punkte
+        if (user.rank !== 'owner') {
+            // Setze Punkte auf den Standardwert für den Rang zurück
+            user.points = DEFAULT_POINTS[user.rank];
+        }
+    });
+    
+    localStorage.setItem('users', JSON.stringify(USERS));
+    console.log('Punkte wurden monatlich zurückgesetzt');
+}
+
 // Team Übersicht aktualisieren
 function updateTeamList() {
     const teamList = document.getElementById('teamList');
@@ -85,7 +114,7 @@ function updateTeamList() {
         memberCard.innerHTML = `
             <img src="https://mc-heads.net/avatar/${user.mcname}" alt="${user.mcname}" class="mc-head">
             <div class="member-info">
-                <h3>${user.rank}</h3>
+                <h3 class="rank-${user.rank}">${user.rank}</h3>
                 <p>${user.mcname}</p>
                 <p class="points">Punkte: ${user.points === Infinity ? '∞' : user.points}</p>
             </div>
@@ -140,10 +169,24 @@ function handleSuggestion(index, accept) {
         const userIndex = USERS.findIndex(user => user.mcname === suggestion.mcname);
         if (userIndex !== -1) {
             USERS[userIndex].points -= suggestion.points;
+            
+            // Prüfen, ob Benutzer unter 0 Punkte fällt
             if (USERS[userIndex].points <= 0) {
-                alert(`${USERS[userIndex].mcname} wurde aus dem Team entfernt (0 oder weniger Punkte)!`);
-                USERS.splice(userIndex, 1);
+                // Statt Entfernung, Herabstufung auf den nächstniedrigeren Rang
+                const currentRank = USERS[userIndex].rank;
+                const newRank = getNextLowerRank(currentRank);
+                
+                if (newRank) {
+                    USERS[userIndex].rank = newRank;
+                    USERS[userIndex].points = DEFAULT_POINTS[newRank];
+                    alert(`${USERS[userIndex].mcname} wurde auf den Rang ${newRank} herabgestuft!`);
+                } else {
+                    // Wenn kein niedrigerer Rang verfügbar ist, entferne den Benutzer
+                    alert(`${USERS[userIndex].mcname} wurde aus dem Team entfernt (0 oder weniger Punkte und niedrigster Rang)!`);
+                    USERS.splice(userIndex, 1);
+                }
             }
+            
             localStorage.setItem('users', JSON.stringify(USERS));
         }
     }
@@ -153,6 +196,20 @@ function handleSuggestion(index, accept) {
     updateTeamList();
 }
 
+// Nächstniedrigeren Rang ermitteln
+function getNextLowerRank(currentRank) {
+    const ranks = ['owner', 'coowner', 'admin', 'jradmin', 'moderator', 'jrmoderator', 'supporter', 'jrsupporter', 'builder'];
+    const currentIndex = ranks.indexOf(currentRank);
+    
+    // Wenn es einen niedrigeren Rang gibt, gib diesen zurück
+    if (currentIndex < ranks.length - 1) {
+        return ranks[currentIndex + 1];
+    }
+    
+    // Wenn es keinen niedrigeren Rang gibt (bereits auf dem niedrigsten Rang)
+    return null;
+}
+
 // Login Handler
 function handleLogin(event) {
     event.preventDefault();
@@ -160,14 +217,17 @@ function handleLogin(event) {
     const rank = document.getElementById('rank').value;
     const password = document.getElementById('password').value;
 
+    console.log("Login versucht mit:", rank, password);
+    console.log("Verfügbare Ränge:", Object.keys(RANK_DATA));
+    console.log("Passwort für Rang:", RANK_DATA[rank]?.password);
+
     if (RANK_DATA[rank] && RANK_DATA[rank].password === password) {
+        console.log("Login erfolgreich!");
         document.getElementById('loginArea').style.display = 'none';
-        
-        // Alle Benutzer können den Admin-Bereich sehen, aber mit unterschiedlichen Berechtigungen
         document.getElementById('adminArea').style.display = 'block';
-        setupAdminArea(rank);
         
         localStorage.setItem('currentRank', rank);
+        setupAdminArea(rank);
         updateTeamList();
         
         // Ändere den Button-Text basierend auf den Berechtigungen
@@ -180,7 +240,8 @@ function handleLogin(event) {
             }
         }
     } else {
-        alert('Falsches Passwort!');
+        console.log("Login fehlgeschlagen!");
+        alert('Falsches Passwort oder ungültiger Rang!');
     }
     
     return false;
@@ -211,7 +272,8 @@ function handleAddUser(event) {
     USERS.push({
         mcname: mcname,
         rank: rank,
-        points: rank === 'owner' ? Infinity : points
+        points: rank === 'owner' ? Infinity : points,
+        joinDate: new Date().toISOString() // Beitrittsdatum für zukünftige Funktionen
     });
 
     // Speichern und aktualisieren
@@ -254,10 +316,21 @@ function setupAdminArea(currentRank) {
     // Benutzerhinzufügen-Bereich nur für Owner und Co-Owner anzeigen
     const addUserArea = document.getElementById('addUserArea');
     if (addUserArea) {
-        if (RANK_DATA[currentRank].isAdmin) {
+        if (RANK_DATA[currentRank].isAdmin && (currentRank === 'owner' || currentRank === 'coowner')) {
             addUserArea.style.display = 'block';
         } else {
             addUserArea.style.display = 'none';
+        }
+    }
+    
+    // Vorschlagsbereich nur für Owner und Co-Owner anzeigen
+    const suggestionsContainer = document.getElementById('suggestionsContainer');
+    if (suggestionsContainer) {
+        if (RANK_DATA[currentRank].canDeductPoints) {
+            suggestionsContainer.style.display = 'block';
+            updateSuggestionsList();
+        } else {
+            suggestionsContainer.style.display = 'none';
         }
     }
 }
@@ -270,6 +343,11 @@ function handlePoints(event) {
     const points = parseInt(document.getElementById('reason').value);
     const reasonText = document.getElementById('reason').options[document.getElementById('reason').selectedIndex].text;
 
+    if (!mcname) {
+        alert('Bitte wähle ein Teammitglied aus!');
+        return false;
+    }
+
     if (RANK_DATA[currentRank].canDeductPoints) {
         // Direkter Punkteabzug für Owner und Co-Owner
         const userIndex = USERS.findIndex(user => user.mcname === mcname);
@@ -280,9 +358,22 @@ function handlePoints(event) {
             }
 
             USERS[userIndex].points -= points;
+            
+            // Prüfen, ob Benutzer unter 0 Punkte fällt
             if (USERS[userIndex].points <= 0) {
-                alert(`${USERS[userIndex].mcname} wurde aus dem Team entfernt (0 oder weniger Punkte)!`);
-                USERS.splice(userIndex, 1);
+                // Statt Entfernung, Herabstufung auf den nächstniedrigeren Rang
+                const currentUserRank = USERS[userIndex].rank;
+                const newRank = getNextLowerRank(currentUserRank);
+                
+                if (newRank) {
+                    USERS[userIndex].rank = newRank;
+                    USERS[userIndex].points = DEFAULT_POINTS[newRank];
+                    alert(`${USERS[userIndex].mcname} wurde auf den Rang ${newRank} herabgestuft!`);
+                } else {
+                    // Wenn kein niedrigerer Rang verfügbar ist, entferne den Benutzer
+                    alert(`${USERS[userIndex].mcname} wurde aus dem Team entfernt (0 oder weniger Punkte und niedrigster Rang)!`);
+                    USERS.splice(userIndex, 1);
+                }
             }
 
             localStorage.setItem('users', JSON.stringify(USERS));
@@ -296,7 +387,8 @@ function handlePoints(event) {
             mcname: mcname,
             points: points,
             reason: reasonText,
-            fromRank: currentRank
+            fromRank: currentRank,
+            date: new Date().toISOString()
         });
         localStorage.setItem('suggestions', JSON.stringify(SUGGESTIONS));
         alert('Dein Vorschlag für einen Punkteabzug wurde an die Team-Leitung gesendet!');
@@ -315,9 +407,13 @@ function handleLogout() {
 
 // Beim Laden der Seite
 window.onload = function() {
+    // Prüfen, ob ein monatliches Zurücksetzen der Punkte erforderlich ist
+    checkMonthlyReset();
+    
     updateTeamList();
     const currentRank = localStorage.getItem('currentRank');
-    if (currentRank) {
+    
+    if (currentRank && RANK_DATA[currentRank]) {
         document.getElementById('loginArea').style.display = 'none';
         document.getElementById('adminArea').style.display = 'block';
         setupAdminArea(currentRank);
