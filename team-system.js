@@ -4,55 +4,64 @@ const RANK_DATA = {
         password: "OwnerSecure123!",
         isAdmin: true,
         canAddOwner: true,
-        canDeductPoints: true
+        canDeductPoints: true,
+        canAddUsers: true
     },
     coowner: {
         password: "CoOwnerSecure123!",
         isAdmin: true,
         canAddOwner: false,
-        canDeductPoints: true
+        canDeductPoints: true,
+        canAddUsers: true
     },
     admin: {
         password: "AdminSecure123!",
         isAdmin: true,
         canAddOwner: false,
-        canDeductPoints: false
+        canDeductPoints: false,
+        canAddUsers: false
     },
     jradmin: {
         password: "JrAdminSecure123!",
         isAdmin: true,
         canAddOwner: false,
-        canDeductPoints: false
+        canDeductPoints: false,
+        canAddUsers: false
     },
     moderator: {
         password: "ModSecure123!",
         isAdmin: true,
         canAddOwner: false,
-        canDeductPoints: false
+        canDeductPoints: false,
+        canAddUsers: false
     },
     jrmoderator: {
         password: "JrModSecure123!",
         isAdmin: true,
         canAddOwner: false,
-        canDeductPoints: false
+        canDeductPoints: false,
+        canAddUsers: false
     },
     supporter: {
         password: "SupporterSecure123!",
         isAdmin: true,
         canAddOwner: false,
-        canDeductPoints: false
+        canDeductPoints: false,
+        canAddUsers: false
     },
     jrsupporter: {
         password: "JrSupporterSecure123!",
         isAdmin: true,
         canAddOwner: false,
-        canDeductPoints: false
+        canDeductPoints: false,
+        canAddUsers: false
     },
     builder: {
         password: "BuilderSecure123!",
         isAdmin: true,
         canAddOwner: false,
-        canDeductPoints: false
+        canDeductPoints: false,
+        canAddUsers: false
     }
 };
 
@@ -316,7 +325,7 @@ function setupAdminArea(currentRank) {
     // Benutzerhinzufügen-Bereich nur für Owner und Co-Owner anzeigen
     const addUserArea = document.getElementById('addUserArea');
     if (addUserArea) {
-        if (RANK_DATA[currentRank].isAdmin && (currentRank === 'owner' || currentRank === 'coowner')) {
+        if (RANK_DATA[currentRank].canAddUsers) {
             addUserArea.style.display = 'block';
         } else {
             addUserArea.style.display = 'none';
