@@ -1,49 +1,19 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minecraft Team Management</title>
-    <link rel="stylesheet" href="design.css">
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>Minecraft Team Management</h1>
-            <p>Punktesystem und Teamverwaltung</p>
-        </header>
+<!-- Füge diese Elemente am Ende des body-Tags hinzu, vor dem script-Tag -->
 
-        <div id="loginArea" class="login-container">
-            <h2>Team Login</h2>
-            <!-- Wichtig: onsubmit direkt im form-Tag -->
-            <form id="loginForm" onsubmit="return handleLogin(event)">
-                <div class="form-group">
-                    <label for="rank">Rang:</label>
-                    <select id="rank" required>
-                        <option value="">Wähle deinen Rang</option>
-                        <option value="owner">Owner</option>
-                        <option value="coowner">Co-Owner</option>
-                        <option value="admin">Admin</option>
-                        <option value="jradmin">Jr. Admin</option>
-                        <option value="moderator">Moderator</option>
-                        <option value="jrmoderator">Jr. Moderator</option>
-                        <option value="supporter">Supporter</option>
-                        <option value="jrsupporter">Jr. Supporter</option>
-                        <option value="builder">Builder</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="password">Rang-Passwort:</label>
-                    <input type="password" id="password" required>
-                </div>
-                <!-- Wichtig: type="submit" -->
-                <button type="submit">Anmelden</button>
-            </form>
-        </div>
-
-        <!-- Rest des Codes bleibt gleich -->
-        
+<!-- Popup für Punktebearbeitung -->
+<div class="popup-backdrop" id="popupBackdrop"></div>
+<div class="edit-points-popup" id="editPointsPopup">
+    <h3>Punkte bearbeiten</h3>
+    <div class="form-group">
+        <label for="editPoints">Neue Punktzahl:</label>
+        <input type="number" id="editPoints" min="0" required>
     </div>
-    <script src="team-system.js"></script>
-</body>
-</html>
+    <button onclick="savePoints()">Speichern</button>
+    <button onclick="closePopup()" class="logout-button">Abbrechen</button>
+</div>
+
+<!-- Kontextmenü -->
+<div class="context-menu" id="contextMenu">
+    <div class="context-menu-item" onclick="editPoints()">Punkte bearbeiten</div>
+    <div class="context-menu-item" onclick="showHistory()">Punkteabzug-Historie</div>
+</div>
