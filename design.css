@@ -432,3 +432,94 @@ select:invalid {
     from { opacity: 1; }
     to { opacity: 0; }
 }
+
+/* Popup für Punktebearbeitung */
+.edit-points-popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--mc-container);
+    padding: 20px;
+    border: 4px solid #000;
+    box-shadow: 0 0 20px var(--mc-shadow);
+    z-index: 1000;
+    min-width: 300px;
+}
+
+.edit-points-popup.show {
+    display: block;
+}
+
+.popup-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 999;
+}
+
+.popup-backdrop.show {
+    display: block;
+}
+
+/* Vorschläge Liste */
+.suggestions-list {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: var(--mc-background);
+    border: 2px solid #000;
+}
+
+.suggestion-item {
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 1px solid #000;
+}
+
+.suggestion-item:last-child {
+    margin-bottom: 0;
+}
+
+.suggestion-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.suggestion-date {
+    color: var(--mc-text);
+    font-size: 0.9em;
+    opacity: 0.8;
+}
+
+/* Kontextmenü für Rechtsklick */
+.context-menu {
+    display: none;
+    position: fixed;
+    background-color: var(--mc-container);
+    border: 2px solid #000;
+    box-shadow: 0 0 10px var(--mc-shadow);
+    z-index: 1000;
+    padding: 5px 0;
+}
+
+.context-menu.show {
+    display: block;
+}
+
+.context-menu-item {
+    padding: 8px 15px;
+    cursor: pointer;
+    color: var(--mc-text);
+    transition: background-color 0.2s;
+}
+
+.context-menu-item:hover {
+    background-color: var(--mc-button);
+}
