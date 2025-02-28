@@ -170,26 +170,22 @@ function updateTeamList() {
     memberCard.dataset.rank = user.rank
     memberCard.dataset.points = user.points
 
-    // Füge das 3-Punkte-Menü hinzu (nur für Owner und Co-Owner sichtbar)
-    const menuVisible = currentRank === "owner" || currentRank === "coowner"
+    // Prüfe, ob der aktuelle Benutzer Owner oder Co-Owner ist
+    const canEdit = currentRank === "owner" || currentRank === "coowner"
 
     memberCard.innerHTML = `
             <img src="https://mc-heads.net/avatar/${user.mcname}" alt="${user.mcname}" class="mc-head">
             <div class="member-info">
                 <div class="member-header">
                     <h3 class="rank-${user.rank}">${user.rank}</h3>
-                    ${
-                      menuVisible
-                        ? `
-                        <button class="three-dots-menu" onclick="showOptionsMenu(event, '${user.mcname}')">
-                            ⋮
-                        </button>
-                    `
-                        : ""
-                    }
                 </div>
-                <p>${user.mcname}</p>
-                <p class="points">Punkte: ${user.points === Number.POSITIVE_INFINITY ? "∞" : user.points}</p>
+                <p class="username">${user.mcname}</p>
+                <p class="points ${canEdit ? "editable" : ""}" 
+                   onclick="${canEdit ? `showEditMenu('${user.mcname}')` : ""}"
+                   title="${canEdit ? "Klicke zum Bearbeiten" : ""}">
+                    Punkte: ${user.points === Number.POSITIVE_INFINITY ? "∞" : user.points}
+                    ${canEdit ? '<span class="edit-icon">✎</span>' : ""}
+                </p>
             </div>
         `
 
@@ -201,6 +197,100 @@ function updateTeamList() {
   }
 
   updateSuggestionsList()
+}
+
+// Neue Funktion zum Anzeigen des Edit-Menüs
+function showEditMenu(username) {
+  const user = USERS.find((u) => u.mcname === username)
+  if (!user) return
+
+  const editMenu = document.createElement("div")
+  editMenu.className = "minecraft-popup edit-menu"
+  editMenu.innerHTML = `
+        <h3>Bearbeiten: ${user.mcname}</h3>
+        
+        <div class="edit-group">
+            <label>Minecraft Name:</label>
+            <input type="text" id="editMcname" value="${user.mcname}" class="minecraft-input">
+        </div>
+        
+        <div class="edit-group">
+            <label>Punkte:</label>
+            <input type="number" id="editPoints" value="${user.points === Number.POSITIVE_INFINITY ? "999999" : user.points}" 
+                   min="0" class="minecraft-input">
+            <label class="checkbox-label">
+                <input type="checkbox" id="infinitePoints" 
+                       ${user.points === Number.POSITIVE_INFINITY ? "checked" : ""}>
+                Unendlich Punkte
+            </label>
+        </div>
+        
+        <div class="edit-group">
+            <label>Rang:</label>
+            <select id="editRank" class="minecraft-input">
+                <option value="admin" ${user.rank === "admin" ? "selected" : ""}>Admin</option>
+                <option value="jradmin" ${user.rank === "jradmin" ? "selected" : ""}>Jr. Admin</option>
+                <option value="moderator" ${user.rank === "moderator" ? "selected" : ""}>Moderator</option>
+                <option value="jrmoderator" ${user.rank === "jrmoderator" ? "selected" : ""}>Jr. Moderator</option>
+                <option value="supporter" ${user.rank === "supporter" ? "selected" : ""}>Supporter</option>
+                <option value="jrsupporter" ${user.rank === "jrsupporter" ? "selected" : ""}>Jr. Supporter</option>
+                <option value="builder" ${user.rank === "builder" ? "selected" : ""}>Builder</option>
+            </select>
+        </div>
+
+        <div class="button-group">
+            <button onclick="saveUserChanges('${username}')" class="minecraft-button">Speichern</button>
+            <button onclick="removeUser('${username}')" class="minecraft-button danger">Entfernen</button>
+            <button onclick="closePopup()" class="minecraft-button cancel">Abbrechen</button>
+        </div>
+    `
+
+  document.body.appendChild(editMenu)
+  document.getElementById("popupBackdrop").classList.add("show")
+
+  // Event Listener für Unendlich-Checkbox
+  document.getElementById("infinitePoints").addEventListener("change", function () {
+    const pointsInput = document.getElementById("editPoints")
+    pointsInput.disabled = this.checked
+    if (this.checked) {
+      pointsInput.value = "999999"
+    }
+  })
+}
+
+// Neue Funktion zum Speichern der Änderungen
+function saveUserChanges(oldUsername) {
+  const newMcname = document.getElementById("editMcname").value
+  const newPoints = document.getElementById("infinitePoints").checked
+    ? Number.POSITIVE_INFINITY
+    : Number.parseInt(document.getElementById("editPoints").value)
+  const newRank = document.getElementById("editRank").value
+
+  if (!newMcname) {
+    alert("Bitte gib einen Minecraft Namen ein!")
+    return
+  }
+
+  // Prüfe, ob der neue Name bereits existiert (außer bei gleichem Namen)
+  if (newMcname !== oldUsername && USERS.some((user) => user.mcname.toLowerCase() === newMcname.toLowerCase())) {
+    alert("Dieser Minecraft Name existiert bereits!")
+    return
+  }
+
+  const userIndex = USERS.findIndex((u) => u.mcname === oldUsername)
+  if (userIndex !== -1) {
+    USERS[userIndex] = {
+      ...USERS[userIndex],
+      mcname: newMcname,
+      points: newPoints,
+      rank: newRank,
+    }
+
+    localStorage.setItem("users", JSON.stringify(USERS))
+    updateTeamList()
+    closePopup()
+    alert("Änderungen wurden gespeichert!")
+  }
 }
 
 // Modifiziere die showOptionsMenu Funktion
