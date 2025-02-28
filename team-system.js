@@ -140,9 +140,14 @@ const updateSuggestionsList = () => {} // Deklariere die updateSuggestionsList V
 let selectedUser = null
 const closePopup = () => {
   const popup = document.querySelector(".minecraft-popup")
+  const overlay = document.getElementById("editOverlay")
   const backdrop = document.getElementById("popupBackdrop")
+
   if (popup) {
     popup.remove()
+  }
+  if (overlay) {
+    overlay.remove()
   }
   if (backdrop) {
     backdrop.classList.remove("show")
@@ -198,33 +203,74 @@ function updateTeamList() {
   updateSuggestionsList()
 }
 
-// Funktion zum Anzeigen des Options-Menüs
+// Modifiziere die showOptionsMenu Funktion
 function showOptionsMenu(event, username) {
   event.stopPropagation()
 
-  const optionsMenu = document.getElementById("optionsMenu")
   const user = USERS.find((u) => u.mcname === username)
-
   if (!user) return
 
-  // Position des Menüs setzen
-  const button = event.target
-  const rect = button.getBoundingClientRect()
-  optionsMenu.style.top = `${rect.bottom + window.scrollY}px`
-  optionsMenu.style.left = `${rect.left}px`
+  // Erstelle das Edit-Overlay
+  const overlay = document.createElement("div")
+  overlay.className = "edit-overlay"
+  overlay.id = "editOverlay"
 
-  // Menü mit Optionen füllen
-  optionsMenu.innerHTML = `
-        <div class="menu-item" onclick="editUserRank('${username}')">Rang ändern</div>
-        <div class="menu-item" onclick="editPoints()">Punkte bearbeiten</div>
-        <div class="menu-item" onclick="resetPoints('${username}')">Punkte zurücksetzen</div>
-        <div class="menu-item" onclick="showWarnings('${username}')">Verwarnungen</div>
-        <div class="menu-item warning" onclick="removeUser('${username}')">Benutzer entfernen</div>
+  overlay.innerHTML = `
+        <button class="close-overlay" onclick="closeEditOverlay()">×</button>
+        <h3>${user.mcname} bearbeiten</h3>
+        
+        <div class="edit-section">
+            <div class="edit-section-title">Rang & Punkte</div>
+            <div class="edit-buttons">
+                <button class="edit-button" onclick="editUserRank('${username}')">
+                    Rang ändern
+                </button>
+                <button class="edit-button" onclick="editPoints()">
+                    Punkte bearbeiten
+                </button>
+            </div>
+        </div>
+        
+        <div class="edit-section">
+            <div class="edit-section-title">Verwarnungen</div>
+            <div class="edit-buttons">
+                <button class="edit-button" onclick="showWarnings('${username}')">
+                    Verwarnungen anzeigen
+                </button>
+                <button class="edit-button" onclick="addWarning('${username}')">
+                    Neue Verwarnung
+                </button>
+            </div>
+        </div>
+        
+        <div class="edit-section">
+            <div class="edit-section-title">Weitere Aktionen</div>
+            <div class="edit-buttons">
+                <button class="edit-button" onclick="resetPoints('${username}')">
+                    Punkte zurücksetzen
+                </button>
+                <button class="edit-button warning" onclick="removeUser('${username}')">
+                    Benutzer entfernen
+                </button>
+            </div>
+        </div>
     `
 
-  // Menü anzeigen
-  optionsMenu.classList.add("show")
+  // Füge das Overlay zum Body hinzu
+  document.body.appendChild(overlay)
+  document.getElementById("popupBackdrop").classList.add("show")
+  overlay.classList.add("show")
+
   selectedUser = user
+}
+
+// Neue Funktion zum Schließen des Edit-Overlays
+function closeEditOverlay() {
+  const overlay = document.getElementById("editOverlay")
+  if (overlay) {
+    overlay.remove()
+    document.getElementById("popupBackdrop").classList.remove("show")
+  }
 }
 
 // Neue Funktionen für die Menü-Optionen
@@ -362,6 +408,16 @@ document.addEventListener("click", (event) => {
   const optionsMenu = document.getElementById("optionsMenu")
   if (!event.target.closest(".three-dots-menu") && !event.target.closest("#optionsMenu")) {
     optionsMenu?.classList.remove("show")
+  }
+})
+
+// Event Listener zum Schließen des Overlays bei Klick außerhalb
+document.addEventListener("click", (event) => {
+  const overlay = document.getElementById("editOverlay")
+  const popup = document.querySelector(".minecraft-popup")
+
+  if (event.target.id === "popupBackdrop" && !popup) {
+    closeEditOverlay()
   }
 })
 
