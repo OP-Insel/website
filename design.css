@@ -1,98 +1,451 @@
-/* Füge diese Stile zu deiner bestehenden CSS-Datei hinzu */
+/* Minecraft-inspirierte Farbpalette */
+:root {
+  --mc-dark: #1d1d1d;
+  --mc-background: #2c2c2c;
+  --mc-container: #373737;
+  --mc-accent: #404040;
+  --mc-text: #ffffff;
+  --mc-gold: #ffd700;
+  --mc-error: #ff5555;
+  --mc-success: #55ff55;
+  --mc-button: #535353;
+  --mc-button-hover: #656565;
+  --mc-shadow: rgba(0, 0, 0, 0.5);
+  --mc-border: #212121;
+}
 
-/* Editierbare Punkte */
-.points.editable {
-  cursor: pointer;
+/* Grundlegende Stile */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Minecraft", Arial, sans-serif;
+}
+
+body {
+  background-color: var(--mc-dark);
+  color: var(--mc-text);
+  line-height: 1.6;
+  min-height: 100vh;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+    url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAA2NjYxMTEwMDAuLi4tLS0zMzMvLy+Rw/hlAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AgSEBczHhXF/QAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAA4SURBVDjLY2AYBaNg1EDGQAaGAQwMjAwMDEwMDAwsQB4jA4MomCwAkiDpgNIZGRiEoLLMo2AUjAIA9BIDxceWxXAAAAAASUVORK5CYII=");
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header */
+header {
+  text-align: center;
+  background-color: var(--mc-container);
+  padding: 20px;
+  margin-bottom: 30px;
+  border: 3px solid var(--mc-border);
+  box-shadow: 0 0 15px var(--mc-shadow);
   position: relative;
-  padding-right: 25px;
-  transition: color 0.2s;
+  overflow: hidden;
 }
 
-.points.editable:hover {
+header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 45%, var(--mc-accent) 45%, var(--mc-accent) 55%, transparent 55%);
+  opacity: 0.1;
+}
+
+header h1 {
   color: var(--mc-gold);
+  font-size: 2.5em;
+  text-shadow: 2px 2px 0 #000;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
 }
 
-.edit-icon {
-  font-size: 14px;
-  opacity: 0.7;
-  margin-left: 5px;
+/* Container Stile */
+.login-container,
+.admin-container,
+.team-overview,
+.add-user-section,
+.points-section,
+.suggestions-container {
+  background-color: var(--mc-container);
+  border: 3px solid var(--mc-border);
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 15px var(--mc-shadow);
+  position: relative;
 }
 
-.points.editable:hover .edit-icon {
-  opacity: 1;
-}
-
-/* Edit Menü Styling */
-.edit-menu {
-  width: 90%;
-  max-width: 400px;
-}
-
-.edit-group {
+/* Formular Stile */
+.form-group {
   margin-bottom: 15px;
 }
 
-.edit-group label {
+label {
   display: block;
   margin-bottom: 5px;
   color: var(--mc-gold);
   font-weight: bold;
+  text-shadow: 1px 1px 0 #000;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 10px;
+  background-color: var(--mc-accent);
+  border: 2px solid var(--mc-border);
+  color: var(--mc-text);
+  font-size: 16px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--mc-gold);
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--mc-button);
+  border: 2px solid var(--mc-border);
+  color: var(--mc-text);
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-top: 10px;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+button:hover {
+  background-color: var(--mc-button-hover);
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* Team Liste */
+.team-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.member-card {
+  background-color: var(--mc-accent);
+  border: 2px solid var(--mc-border);
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.member-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 45%,
+    rgba(255, 255, 255, 0.1) 45%,
+    rgba(255, 255, 255, 0.1) 55%,
+    transparent 55%
+  );
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.member-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px var(--mc-shadow);
+}
+
+.member-card:hover::before {
+  opacity: 1;
+}
+
+.mc-head {
+  width: 64px;
+  height: 64px;
+  border: 2px solid var(--mc-border);
+  border-radius: 4px;
+}
+
+.member-info {
+  flex: 1;
+}
+
+.member-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.member-info h3 {
+  color: var(--mc-gold);
+  margin-bottom: 5px;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.points {
+  font-weight: bold;
+  padding: 5px;
+  background-color: var(--mc-container);
+  border: 1px solid var(--mc-border);
+  border-radius: 3px;
+  display: inline-block;
+}
+
+/* Rang Farben mit verbesserten Kontrasten */
+.rank-owner {
+  color: #55ffff;
+  text-shadow: 1px 1px 0 #000;
+}
+.rank-coowner {
+  color: var(--mc-gold);
+  text-shadow: 1px 1px 0 #000;
+}
+.rank-admin {
+  color: #ff5555;
+  text-shadow: 1px 1px 0 #000;
+}
+.rank-jradmin {
+  color: #ff7f7f;
+  text-shadow: 1px 1px 0 #000;
+}
+.rank-moderator {
+  color: #55ff55;
+  text-shadow: 1px 1px 0 #000;
+}
+.rank-jrmoderator {
+  color: #7fff7f;
+  text-shadow: 1px 1px 0 #000;
+}
+.rank-supporter {
+  color: #5555ff;
+  text-shadow: 1px 1px 0 #000;
+}
+.rank-jrsupporter {
+  color: #7f7fff;
+  text-shadow: 1px 1px 0 #000;
+}
+.rank-builder {
+  color: #ffaa00;
+  text-shadow: 1px 1px 0 #000;
+}
+
+/* Edit Menu Styles */
+.edit-menu {
+  background-color: var(--mc-container);
+  border: 3px solid var(--mc-border);
+  padding: 20px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 0 20px var(--mc-shadow);
+}
+
+.edit-menu h3 {
+  color: var(--mc-gold);
+  text-align: center;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 0 #000;
+}
+
+.edit-group {
+  margin-bottom: 15px;
+  background-color: var(--mc-accent);
+  padding: 10px;
+  border: 2px solid var(--mc-border);
 }
 
 .minecraft-input {
   width: 100%;
   padding: 8px;
-  background-color: var(--mc-accent);
-  border: 2px solid #000;
+  background-color: var(--mc-container);
+  border: 2px solid var(--mc-border);
   color: var(--mc-text);
-  font-size: 14px;
-}
-
-.minecraft-input:focus {
-  outline: none;
-  border-color: var(--mc-gold);
+  margin-top: 5px;
 }
 
 .checkbox-label {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 5px;
+  margin-top: 8px;
   cursor: pointer;
-}
-
-.checkbox-label input[type="checkbox"] {
-  width: auto;
-  margin: 0;
-}
-
-.button-group {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.button-group button:first-child {
-  grid-column: 1 / -1;
-}
-
-.minecraft-button {
-  padding: 10px;
-  border: 2px solid #000;
-  background-color: var(--mc-button);
   color: var(--mc-text);
+}
+
+/* Editierbare Elemente */
+.points.editable {
   cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s;
+  position: relative;
+  padding-right: 25px;
+  transition: all 0.2s;
+}
+
+.points.editable:hover {
+  color: var(--mc-gold);
+  transform: scale(1.05);
+}
+
+.edit-icon {
+  font-size: 14px;
+  opacity: 0.7;
+  margin-left: 5px;
+  transition: opacity 0.2s;
+}
+
+.points.editable:hover .edit-icon {
+  opacity: 1;
+}
+
+/* Popup Backdrop */
+.popup-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 999;
+}
+
+.popup-backdrop.show {
+  display: block;
+}
+
+/* Animationen */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.member-card {
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+
+  .team-list {
+    grid-template-columns: 1fr;
+  }
+
+  .edit-menu {
+    width: 95%;
+  }
+
+  header h1 {
+    font-size: 2em;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--mc-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--mc-button);
+  border: 2px solid var(--mc-border);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--mc-button-hover);
+}
+
+/* Erfolgs- und Fehlermeldungen */
+.success-message {
+  background-color: rgba(85, 255, 85, 0.2);
+  border: 2px solid var(--mc-success);
+  color: var(--mc-success);
+  padding: 10px;
+  margin: 10px 0;
+  text-align: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.error-message {
+  background-color: rgba(255, 85, 85, 0.2);
+  border: 2px solid var(--mc-error);
+  color: var(--mc-error);
+  padding: 10px;
+  margin: 10px 0;
+  text-align: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Button Varianten */
+.minecraft-button {
+  position: relative;
+  padding: 10px;
+  background-color: var(--mc-button);
+  border: 2px solid var(--mc-border);
+  color: var(--mc-text);
+  text-shadow: 1px 1px 0 #000;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
 .minecraft-button:hover {
   background-color: var(--mc-button-hover);
+  transform: translateY(-2px);
 }
 
 .minecraft-button.danger {
-  background-color: #ff5555;
+  background-color: var(--mc-error);
 }
 
 .minecraft-button.danger:hover {
@@ -103,35 +456,30 @@
   background-color: var(--mc-accent);
 }
 
-.minecraft-button.cancel:hover {
-  background-color: var(--mc-button);
+/* Überschriften */
+h2,
+h3 {
+  color: var(--mc-gold);
+  text-align: center;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 0 #000;
+  letter-spacing: 1px;
 }
 
-/* Verbesserte Popup Animation */
-.minecraft-popup {
-  animation: popupAppear 0.3s ease-out;
+/* Hierarchie Container */
+.hierarchy-container {
+  background-color: var(--mc-container);
+  border: 3px solid var(--mc-border);
+  padding: 20px;
+  margin-top: 30px;
+  box-shadow: 0 0 15px var(--mc-shadow);
 }
 
-@keyframes popupAppear {
-  from {
-    transform: translate(-50%, -60%);
-    opacity: 0;
-  }
-  to {
-    transform: translate(-50%, -50%);
-    opacity: 1;
-  }
-}
-
-/* Responsive Anpassungen */
-@media (max-width: 480px) {
-  .button-group {
-    grid-template-columns: 1fr;
-  }
-
-  .button-group button:first-child {
-    grid-column: auto;
-  }
+.hierarchy-image {
+  max-width: 100%;
+  height: auto;
+  border: 3px solid var(--mc-border);
+  box-shadow: 0 0 15px var(--mc-shadow);
 }
 
 
