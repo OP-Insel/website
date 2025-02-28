@@ -1,64 +1,25 @@
-/* Füge diese Stile zu deiner bestehenden CSS-Datei hinzu */
-
-/* 3-Punkte-Menü Button */
-.member-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 5px;
-}
-
+/* Ändere den Stil des 3-Punkte-Menü Buttons */
 .three-dots-menu {
   background: none;
   border: none;
   color: var(--mc-text);
-  font-size: 20px;
+  font-size: 14px;
   cursor: pointer;
-  padding: 0 5px;
+  padding: 2px 5px;
   width: auto;
   margin: 0;
+  opacity: 0.6;
+  transition: opacity 0.2s;
 }
 
 .three-dots-menu:hover {
+  opacity: 1;
   color: var(--mc-gold);
 }
 
-/* Options Menü */
-#optionsMenu {
+/* Neues Edit-Overlay */
+.edit-overlay {
   display: none;
-  position: absolute;
-  background-color: var(--mc-container);
-  border: 2px solid #000;
-  box-shadow: 0 0 10px var(--mc-shadow);
-  z-index: 1000;
-  min-width: 200px;
-}
-
-#optionsMenu.show {
-  display: block;
-}
-
-.menu-item {
-  padding: 10px 15px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  color: var(--mc-text);
-}
-
-.menu-item:hover {
-  background-color: var(--mc-accent);
-}
-
-.menu-item.warning {
-  color: #ff5555;
-}
-
-.menu-item.warning:hover {
-  background-color: rgba(255, 85, 85, 0.2);
-}
-
-/* Minecraft-Style Popup */
-.minecraft-popup {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -67,72 +28,81 @@
   border: 4px solid #000;
   padding: 20px;
   z-index: 1000;
-  min-width: 300px;
+  width: 90%;
+  max-width: 400px;
   box-shadow: 0 0 20px var(--mc-shadow);
 }
 
-.minecraft-popup h3 {
-  margin-bottom: 15px;
-  text-align: center;
-  color: var(--mc-gold);
+.edit-overlay.show {
+  display: block;
 }
 
-.minecraft-popup select,
-.minecraft-popup textarea {
-  width: 100%;
-  padding: 10px;
+.edit-overlay h3 {
+  color: var(--mc-gold);
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.5em;
+  text-shadow: 2px 2px 0 #000;
+}
+
+.edit-section {
   background-color: var(--mc-accent);
+  border: 2px solid #000;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.edit-section-title {
+  color: var(--mc-gold);
+  font-size: 1.1em;
+  margin-bottom: 10px;
+}
+
+.edit-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.edit-button {
+  background-color: var(--mc-button);
   border: 2px solid #000;
   color: var(--mc-text);
-  margin-bottom: 15px;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.2s;
 }
 
-.minecraft-popup textarea {
-  min-height: 100px;
-  resize: vertical;
+.edit-button:hover {
+  background-color: var(--mc-button-hover);
 }
 
-.popup-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.popup-buttons button {
-  flex: 1;
-}
-
-.cancel-button {
+.edit-button.warning {
   background-color: #ff5555;
 }
 
-.cancel-button:hover {
+.edit-button.warning:hover {
   background-color: #ff7777;
 }
 
-/* Verwarnungen Liste */
-.warnings-list {
-  max-height: 300px;
-  overflow-y: auto;
-  margin-bottom: 15px;
+.close-overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--mc-text);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
 }
 
-.warning-item {
-  background-color: var(--mc-accent);
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 2px solid #000;
+.close-overlay:hover {
+  opacity: 1;
 }
 
-.warning-item p {
-  margin: 5px 0;
-}
-
-.warning-button {
-  background-color: #ff5555;
-  margin-bottom: 10px;
-}
-
-.warning-button:hover {
-  background-color: #ff7777;
-}
 
