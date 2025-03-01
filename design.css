@@ -1,24 +1,23 @@
-/* Minecraft-inspirierte Farbpalette */
+/* Minecraft-Style Font */
+@font-face {
+    font-family: 'Minecraft';
+    src: url('https://db.onlinewebfonts.com/t/6ab539c6fc2b21ff0b149b3d06d7f97c.woff2') format('woff2');
+}
+
+/* Minecraft-Farbpalette */
 :root {
-    --mc-dirt: #8B5A2B;
-    --mc-grass: #5D8731;
-    --mc-stone: #7F7F7F;
-    --mc-wood: #9C6E3B;
-    --mc-leaves: #3A5F0B;
-    --mc-water: #3D6AFF;
-    --mc-lava: #E25822;
-    --mc-gold: #FFCC00;
-    --mc-diamond: #4AEDD9;
-    --mc-redstone: #FF0000;
-    --mc-obsidian: #150E1F;
-    --mc-netherrack: #723333;
-    --mc-text: #EEEEEE;
-    --mc-shadow: rgba(0, 0, 0, 0.5);
-    --mc-button: #677D68;
-    --mc-button-hover: #7B9A7C;
-    --mc-button-active: #566756;
-    --mc-background: #3C2A1A;
-    --mc-container: #2C1E12;
+    --minecraft-dirt: #856043;
+    --minecraft-stone: #7A7A7A;
+    --minecraft-grass: #567D3E;
+    --minecraft-wood: #9B6B3F;
+    --minecraft-leaves: #4A7A26;
+    --minecraft-water: #2D5299;
+    --minecraft-gold: #FCCE4B;
+    --minecraft-diamond: #4AEDD9;
+    --minecraft-redstone: #FF0000;
+    --minecraft-text: #FFFFFF;
+    --minecraft-shadow: rgba(0, 0, 0, 0.5);
+    --minecraft-border: #000000;
 }
 
 /* Grundlegende Stile */
@@ -26,178 +25,120 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Minecraft', Arial, sans-serif;
 }
 
 body {
-    font-family: 'MinecraftiaRegular', Arial, sans-serif;
+    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAGASURBVGhD7ZgxTsMwFIZ9hB6BI3AEjsARcgSOwBFyhBwhR+AIHIEjcAR+y5PiKE2aNk2avvyftGRw/Pz8Z+zYbVOSJEmSJEmSJEmSJEmSJEmSJEkSyX6/v4B38AF+wV+4hR/wDT7Ba1jnNgZwcQ/wHf7AY9nBN3gP6x7HAS7qEa6hFd6KdT3AuufxgAt5gdZ8K7bxDOveY4EG38IGWuEtsM1b2CCxQGOvYAOt4JbY9gOMCxp6hjuYJ/YQbDsucGEPcA1OxG94DWOAhs0kW2AFt8KEiAcafoRWcCtMiHigYVNpC6zgVpgQ8UDDptIWWMGtMCHigYZNpS2wglthQsQDDZtKW2AFt8KEiAcaNpW2wApuhQkRDzRsKm2BFdwKEyIeaNhU2gIruBUmRDzQsKm0BVZwK0yIeKBhU2kLrOBWmBDxQMOm0hZYwa0wIeKBhk2lLbCCW2FCxAMNm0pbYAW3woSIBxo2lbbACm6FCZEkSZIkSZIkSZIkSZIkSZIkSU5lszlqHVx1H1mZRgAAAABJRU5ErkJggg==') repeat;
+    color: var(--minecraft-text);
     line-height: 1.6;
-    background: linear-gradient(45deg, var(--mc-dirt), var(--mc-obsidian));
-    color: var(--mc-text);
     min-height: 100vh;
-    position: relative;
-    background-attachment: fixed;
 }
 
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: repeating-linear-gradient(
-        45deg,
-        rgba(0, 0, 0, 0.1) 0px,
-        rgba(0, 0, 0, 0.1) 2px,
-        transparent 2px,
-        transparent 4px
-    );
-    pointer-events: none;
-    z-index: 1;
-}
-
+/* Container */
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+}
+
+/* Minecraft-Style Box */
+.minecraft-box {
+    background: #C6C6C6;
+    border: 3px solid #000000;
     position: relative;
-    z-index: 2;
+    padding: 10px;
+    margin: 10px;
 }
 
-/* Minecraft-Stil Buttons */
-button {
-    background: linear-gradient(to bottom, var(--mc-button-hover), var(--mc-button));
-    border: 3px solid #000;
-    border-bottom: 4px solid #000;
-    color: white;
-    padding: 12px 20px;
-    cursor: pointer;
-    width: 100%;
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    text-shadow: 2px 2px 0 #000;
-    position: relative;
-    transition: all 0.1s;
-    font-family: 'MinecraftiaRegular', Arial, sans-serif;
-}
-
-button:hover {
-    background: linear-gradient(to bottom, var(--mc-button-hover), var(--mc-button-hover));
-    transform: translateY(-2px);
-    box-shadow: 0 2px 8px var(--mc-shadow);
-}
-
-button:active {
-    transform: translateY(2px);
-    border-bottom: 2px solid #000;
-    background: var(--mc-button-active);
+.minecraft-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, 
+        transparent 0%, 
+        transparent 45%, 
+        rgba(0,0,0,0.1) 45%, 
+        rgba(0,0,0,0.1) 55%, 
+        transparent 55%, 
+        transparent 100%
+    );
+    background-size: 8px 8px;
 }
 
 /* Header */
 header {
     text-align: center;
-    margin-bottom: 40px;
-    padding: 30px;
-    background: linear-gradient(to bottom, var(--mc-container), var(--mc-background));
-    border: 4px solid #000;
-    box-shadow: 0 0 20px var(--mc-shadow);
-    position: relative;
-    overflow: hidden;
-}
-
-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: repeating-linear-gradient(
-        45deg,
-        rgba(255, 255, 255, 0.03) 0px,
-        rgba(255, 255, 255, 0.03) 2px,
-        transparent 2px,
-        transparent 4px
-    );
+    padding: 20px;
+    margin-bottom: 30px;
+    background: #2D2D2D;
+    border: 4px solid #000000;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
 }
 
 header h1 {
-    font-size: 3em;
-    margin-bottom: 15px;
-    text-shadow: 2px 2px 0 #000,
-                 -2px -2px 0 #000,
-                 2px -2px 0 #000,
-                 -2px 2px 0 #000;
-    color: var(--mc-gold);
+    font-size: 48px;
+    color: var(--minecraft-gold);
+    text-shadow: 2px 2px var(--minecraft-border);
+    margin-bottom: 10px;
+}
+
+/* Minecraft Button */
+.minecraft-button {
+    background: #999999;
+    border: 3px solid #000000;
+    padding: 10px 15px;
+    color: var(--minecraft-text);
+    text-shadow: 2px 2px var(--minecraft-border);
+    cursor: pointer;
     position: relative;
+    display: inline-block;
+    text-align: center;
+    min-width: 200px;
+    margin: 5px;
+    font-size: 16px;
+    text-transform: uppercase;
 }
 
-/* Container Stile mit Minecraft-Textur */
-.login-container,
-.admin-container,
-.add-user-section,
-.points-section,
-.team-overview,
-.suggestions-container {
-    background: linear-gradient(to bottom, var(--mc-container), var(--mc-background));
-    padding: 30px;
-    border: 4px solid #000;
-    margin-bottom: 30px;
-    max-width: 600px;
-    margin: 20px auto;
-    box-shadow: 0 0 20px var(--mc-shadow);
-    position: relative;
-    overflow: hidden;
+.minecraft-button:hover {
+    background: #AAAAAA;
 }
 
-.login-container::before,
-.admin-container::before,
-.add-user-section::before,
-.points-section::before,
-.team-overview::before,
-.suggestions-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: repeating-linear-gradient(
-        45deg,
-        rgba(255, 255, 255, 0.03) 0px,
-        rgba(255, 255, 255, 0.03) 2px,
-        transparent 2px,
-        transparent 4px
-    );
-    pointer-events: none;
+.minecraft-button:active {
+    background: #888888;
+    transform: translateY(2px);
 }
 
-/* Team Übersicht */
-.team-overview {
-    max-width: 1000px;
+/* Form Elements */
+input, select {
+    background: #000000;
+    border: 2px solid #555555;
+    color: var(--minecraft-text);
+    padding: 8px;
+    width: 100%;
+    margin-bottom: 10px;
+    font-family: 'Minecraft', Arial, sans-serif;
 }
 
+/* Team Cards */
 .team-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
     padding: 20px;
-    position: relative;
 }
 
 .member-card {
-    background: linear-gradient(135deg, var(--mc-background), var(--mc-container));
-    border: 3px solid #000;
-    padding: 20px;
+    background: #2D2D2D;
+    border: 4px solid #000000;
+    padding: 15px;
     display: flex;
     align-items: center;
     gap: 15px;
-    transition: all 0.3s ease;
     position: relative;
-    overflow: hidden;
 }
 
 .member-card::before {
@@ -207,198 +148,127 @@ header h1 {
     left: 0;
     right: 0;
     bottom: 0;
-    background: repeating-linear-gradient(
-        45deg,
-        rgba(255, 255, 255, 0.03) 0px,
-        rgba(255, 255, 255, 0.03) 2px,
-        transparent 2px,
-        transparent 4px
+    background: linear-gradient(45deg, 
+        transparent 0%, 
+        transparent 45%, 
+        rgba(255,255,255,0.05) 45%, 
+        rgba(255,255,255,0.05) 55%, 
+        transparent 55%, 
+        transparent 100%
     );
+    background-size: 8px 8px;
     pointer-events: none;
-}
-
-.member-card:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 5px 15px var(--mc-shadow);
 }
 
 .mc-head {
     width: 64px;
     height: 64px;
-    border: 3px solid #000;
-    box-shadow: 0 2px 5px var(--mc-shadow);
+    border: 3px solid #000000;
     image-rendering: pixelated;
-    position: relative;
-    z-index: 2;
 }
 
-.member-info {
-    flex-grow: 1;
-    position: relative;
-    z-index: 2;
-}
+/* Rang Farben */
+.rank-owner { color: var(--minecraft-diamond); }
+.rank-coowner { color: var(--minecraft-gold); }
+.rank-admin { color: var(--minecraft-redstone); }
+.rank-moderator { color: var(--minecraft-grass); }
+.rank-supporter { color: var(--minecraft-water); }
+.rank-builder { color: var(--minecraft-wood); }
 
-.member-info h3 {
-    font-size: 1.4em;
-    margin-bottom: 8px;
-    text-shadow: 2px 2px 0 #000;
-}
-
-.points {
-    color: var(--mc-gold);
-    font-size: 1.1em;
-    font-weight: bold;
-    text-shadow: 1px 1px 0 #000;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.points::before {
-    content: '⭐';
-    font-size: 1.2em;
-}
-
-/* Formular Stile */
-.form-group {
+/* Container Styles */
+.login-container,
+.admin-container,
+.team-overview {
+    background: rgba(0, 0, 0, 0.8);
+    border: 4px solid #000000;
+    padding: 20px;
     margin-bottom: 20px;
     position: relative;
 }
 
-label {
-    display: block;
-    margin-bottom: 8px;
-    color: var(--mc-text);
+.login-container::before,
+.admin-container::before,
+.team-overview::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, 
+        transparent 0%, 
+        transparent 45%, 
+        rgba(255,255,255,0.05) 45%, 
+        rgba(255,255,255,0.05) 55%, 
+        transparent 55%, 
+        transparent 100%
+    );
+    background-size: 8px 8px;
+    pointer-events: none;
+}
+
+/* Points Display */
+.points {
+    color: var(--minecraft-gold);
     font-weight: bold;
-    text-shadow: 1px 1px 0 #000;
-    font-size: 1.1em;
+    text-shadow: 1px 1px var(--minecraft-border);
 }
 
-input, select {
-    width: 100%;
-    padding: 12px;
-    border: 3px solid #000;
-    background: rgba(0, 0, 0, 0.7);
-    color: var(--mc-text);
-    font-size: 16px;
-    font-family: 'MinecraftiaRegular', Arial, sans-serif;
-    transition: all 0.3s ease;
-}
-
-input:focus, select:focus {
-    outline: none;
-    border-color: var(--mc-gold);
-    box-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
-}
-
-/* Benachrichtigungen */
+/* Notifications */
 .notification {
     position: fixed;
     top: 20px;
     right: 20px;
-    background: linear-gradient(135deg, var(--mc-container), var(--mc-background));
-    color: var(--mc-text);
-    border: 3px solid #000;
-    padding: 15px 20px;
+    background: #2D2D2D;
+    border: 3px solid #000000;
+    color: var(--minecraft-text);
+    padding: 15px;
     max-width: 300px;
     z-index: 1000;
-    box-shadow: 0 0 20px var(--mc-shadow);
     animation: slideIn 0.3s ease-out;
-    font-family: 'MinecraftiaRegular', Arial, sans-serif;
-}
-
-.notification::before {
-    content: '⚠️';
-    margin-right: 10px;
-}
-
-.notification.fade-out {
-    animation: fadeOut 0.5s ease-out forwards;
 }
 
 @keyframes slideIn {
-    from { transform: translateX(120%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
 }
 
-@keyframes fadeOut {
-    from { opacity: 1; transform: translateX(0); }
-    to { opacity: 0; transform: translateX(120%); }
-}
-
-/* Rang-spezifische Farben mit verbesserten Effekten */
-.rank-owner { 
-    color: var(--mc-diamond);
-    text-shadow: 0 0 5px rgba(74, 237, 217, 0.5);
-}
-.rank-coowner { 
-    color: var(--mc-gold);
-    text-shadow: 0 0 5px rgba(255, 204, 0, 0.5);
-}
-.rank-admin { 
-    color: var(--mc-redstone);
-    text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
-}
-.rank-jradmin { 
-    color: #FF6347;
-    text-shadow: 0 0 5px rgba(255, 99, 71, 0.5);
-}
-.rank-moderator { 
-    color: var(--mc-grass);
-    text-shadow: 0 0 5px rgba(93, 135, 49, 0.5);
-}
-.rank-jrmoderator { 
-    color: #8FBC8F;
-    text-shadow: 0 0 5px rgba(143, 188, 143, 0.5);
-}
-.rank-supporter { 
-    color: var(--mc-water);
-    text-shadow: 0 0 5px rgba(61, 106, 255, 0.5);
-}
-.rank-jrsupporter { 
-    color: #87CEEB;
-    text-shadow: 0 0 5px rgba(135, 206, 235, 0.5);
-}
-.rank-builder { 
-    color: var(--mc-wood);
-    text-shadow: 0 0 5px rgba(156, 110, 59, 0.5);
-}
-
-/* Verbesserte Scrollbar */
+/* Minecraft-Style Scrollbar */
 ::-webkit-scrollbar {
     width: 12px;
+    height: 12px;
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--mc-container);
-    border-left: 2px solid #000;
+    background: #2D2D2D;
+    border: 2px solid #000000;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, var(--mc-button-hover), var(--mc-button));
-    border: 2px solid #000;
+    background: #555555;
+    border: 2px solid #000000;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--mc-button-hover);
+    background: #666666;
 }
 
-/* Responsive Design mit verbesserten Anpassungen */
+/* Form Labels */
+label {
+    display: block;
+    color: var(--minecraft-text);
+    margin-bottom: 5px;
+    text-shadow: 1px 1px var(--minecraft-border);
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
     .container {
         padding: 10px;
     }
 
     header h1 {
-        font-size: 2em;
-    }
-
-    .login-container,
-    .admin-container,
-    .add-user-section,
-    .points-section {
-        padding: 15px;
-        margin: 10px;
+        font-size: 32px;
     }
 
     .team-list {
@@ -409,15 +279,52 @@ input:focus, select:focus {
         flex-direction: column;
         text-align: center;
     }
+}
 
-    .member-info {
-        text-align: center;
-    }
+/* Edit Mode Styles */
+.editable {
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
 
-    .notification {
-        width: 90%;
-        left: 50%;
-        transform: translateX(-50%);
-        top: 10px;
-    }
+.editable:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.edit-form {
+    background: #2D2D2D;
+    border: 3px solid #000000;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.edit-form input {
+    margin-bottom: 10px;
+}
+
+.edit-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.edit-buttons button {
+    flex: 1;
+}
+
+/* Success/Error Messages */
+.message {
+    padding: 10px;
+    margin: 10px 0;
+    border: 2px solid #000000;
+    text-align: center;
+}
+
+.success {
+    background: var(--minecraft-grass);
+    color: var(--minecraft-text);
+}
+
+.error {
+    background: var(--minecraft-redstone);
+    color: var(--minecraft-text);
 }
