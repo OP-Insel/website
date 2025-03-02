@@ -1,23 +1,24 @@
-/* Minecraft-Style Font */
-@font-face {
-    font-family: 'Minecraft';
-    src: url('https://db.onlinewebfonts.com/t/6ab539c6fc2b21ff0b149b3d06d7f97c.woff2') format('woff2');
-}
-
-/* Minecraft-Farbpalette */
+/* Minecraft-inspirierte Farbpalette */
 :root {
-    --minecraft-dirt: #856043;
-    --minecraft-stone: #7A7A7A;
-    --minecraft-grass: #567D3E;
-    --minecraft-wood: #9B6B3F;
-    --minecraft-leaves: #4A7A26;
-    --minecraft-water: #2D5299;
-    --minecraft-gold: #FCCE4B;
-    --minecraft-diamond: #4AEDD9;
-    --minecraft-redstone: #FF0000;
-    --minecraft-text: #FFFFFF;
-    --minecraft-shadow: rgba(0, 0, 0, 0.5);
-    --minecraft-border: #000000;
+    --mc-dirt: #8B5A2B;
+    --mc-grass: #5D8731;
+    --mc-stone: #7F7F7F;
+    --mc-wood: #9C6E3B;
+    --mc-leaves: #3A5F0B;
+    --mc-water: #3D6AFF;
+    --mc-lava: #E25822;
+    --mc-gold: #FFCC00;
+    --mc-diamond: #4AEDD9;
+    --mc-redstone: #FF0000;
+    --mc-obsidian: #150E1F;
+    --mc-netherrack: #723333;
+    --mc-text: #EEEEEE;
+    --mc-shadow: rgba(0, 0, 0, 0.5);
+    --mc-button: #677D68;
+    --mc-button-hover: #7B9A7C;
+    --mc-button-active: #566756;
+    --mc-background: #3C2A1A;
+    --mc-container: #2C1E12;
 }
 
 /* Grundlegende Stile */
@@ -25,105 +26,112 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Minecraft', Arial, sans-serif;
 }
 
 body {
-    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAGASURBVGhD7ZgxTsMwFIZ9hB6BI3AEjsARcgSOwBFyhBwhR+AIHIEjcAR+y5PiKE2aNk2avvyftGRw/Pz8Z+zYbVOSJEmSJEmSJEmSJEmSJEmSJEkSyX6/v4B38AF+wV+4hR/wDT7Ba1jnNgZwcQ/wHf7AY9nBN3gP6x7HAS7qEa6hFd6KdT3AuufxgAt5gdZ8K7bxDOveY4EG38IGWuEtsM1b2CCxQGOvYAOt4JbY9gOMCxp6hjuYJ/YQbDsucGEPcA1OxG94DWOAhs0kW2AFt8KEiAcafoRWcCtMiHigYVNpC6zgVpgQ8UDDptIWWMGtMCHigYZNpS2wglthQsQDDZtKW2AFt8KEiAcaNpW2wApuhQkRDzRsKm2BFdwKEyIeaNhU2gIruBUmRDzQsKm0BVZwK0yIeKBhU2kLrOBWmBDxQMOm0hZYwa0wIeKBhk2lLbCCW2FCxAMNm0pbYAW3woSIBxo2lbbACm6FCZEkSZIkSZIkSZIkSZIkSZIkSU5lszlqHVx1H1mZRgAAAABJRU5ErkJggg==') repeat;
-    color: var(--minecraft-text);
+    font-family: Arial, sans-serif;
     line-height: 1.6;
+    background: linear-gradient(to bottom, #3C2A1A, #1A1410);
+    color: var(--mc-text);
     min-height: 100vh;
+    position: relative;
 }
 
-/* Container */
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
 }
 
-/* Minecraft-Style Box */
-.minecraft-box {
-    background: #C6C6C6;
-    border: 3px solid #000000;
+/* Minecraft-Stil Buttons */
+button {
+    background-color: var(--mc-button);
+    border: 2px solid #000;
+    color: white;
+    padding: 14px 20px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 0 #000;
     position: relative;
-    padding: 10px;
-    margin: 10px;
+    transition: all 0.1s;
 }
 
-.minecraft-box::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(45deg, 
-        transparent 0%, 
-        transparent 45%, 
-        rgba(0,0,0,0.1) 45%, 
-        rgba(0,0,0,0.1) 55%, 
-        transparent 55%, 
-        transparent 100%
-    );
-    background-size: 8px 8px;
+button:hover {
+    background-color: var(--mc-button-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px var(--mc-shadow);
+}
+
+button:active {
+    transform: translateY(0);
+    background-color: var(--mc-button-active);
+}
+
+/* Logout Button */
+.logout-button {
+    background-color: var(--mc-lava);
+    margin-top: 20px;
+}
+
+.logout-button:hover {
+    background-color: #FF6347;
 }
 
 /* Header */
 header {
     text-align: center;
+    margin-bottom: 40px;
     padding: 20px;
-    margin-bottom: 30px;
-    background: #2D2D2D;
-    border: 4px solid #000000;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+    background-color: var(--mc-container);
+    border: 4px solid #000;
+    box-shadow: 0 0 20px var(--mc-shadow);
 }
 
 header h1 {
-    font-size: 48px;
-    color: var(--minecraft-gold);
-    text-shadow: 2px 2px var(--minecraft-border);
+    font-size: 2.5em;
     margin-bottom: 10px;
+    text-shadow: 2px 2px 0 #000;
+    color: var(--mc-gold);
 }
 
-/* Minecraft Button */
-.minecraft-button {
-    background: #999999;
-    border: 3px solid #000000;
-    padding: 10px 15px;
-    color: var(--minecraft-text);
-    text-shadow: 2px 2px var(--minecraft-border);
-    cursor: pointer;
-    position: relative;
-    display: inline-block;
+header p {
+    color: var(--mc-text);
+    text-shadow: 1px 1px 0 #000;
+}
+
+/* Container Stile */
+.login-container,
+.admin-container,
+.add-user-section,
+.points-section,
+.team-overview,
+.suggestions-container {
+    background-color: var(--mc-container);
+    padding: 30px;
+    border: 4px solid #000;
+    margin-bottom: 30px;
+    max-width: 600px;
+    margin: 0 auto 30px;
+    box-shadow: 0 0 20px var(--mc-shadow);
+}
+
+/* Team Übersicht */
+.team-overview {
+    max-width: 1000px;
+}
+
+.team-overview h2 {
     text-align: center;
-    min-width: 200px;
-    margin: 5px;
-    font-size: 16px;
-    text-transform: uppercase;
+    margin-bottom: 20px;
+    color: var(--mc-gold);
+    text-shadow: 2px 2px 0 #000;
 }
 
-.minecraft-button:hover {
-    background: #AAAAAA;
-}
-
-.minecraft-button:active {
-    background: #888888;
-    transform: translateY(2px);
-}
-
-/* Form Elements */
-input, select {
-    background: #000000;
-    border: 2px solid #555555;
-    color: var(--minecraft-text);
-    padding: 8px;
-    width: 100%;
-    margin-bottom: 10px;
-    font-family: 'Minecraft', Arial, sans-serif;
-}
-
-/* Team Cards */
 .team-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -132,133 +140,136 @@ input, select {
 }
 
 .member-card {
-    background: #2D2D2D;
-    border: 4px solid #000000;
-    padding: 15px;
+    background-color: var(--mc-background);
+    border: 2px solid #000;
+    padding: 20px;
     display: flex;
     align-items: center;
     gap: 15px;
-    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.member-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(45deg, 
-        transparent 0%, 
-        transparent 45%, 
-        rgba(255,255,255,0.05) 45%, 
-        rgba(255,255,255,0.05) 55%, 
-        transparent 55%, 
-        transparent 100%
-    );
-    background-size: 8px 8px;
-    pointer-events: none;
+.member-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px var(--mc-shadow);
 }
 
 .mc-head {
     width: 64px;
     height: 64px;
-    border: 3px solid #000000;
-    image-rendering: pixelated;
+    border: 2px solid #000;
+    box-shadow: 0 2px 5px var(--mc-shadow);
 }
 
-/* Rang Farben */
-.rank-owner { color: var(--minecraft-diamond); }
-.rank-coowner { color: var(--minecraft-gold); }
-.rank-admin { color: var(--minecraft-redstone); }
-.rank-moderator { color: var(--minecraft-grass); }
-.rank-supporter { color: var(--minecraft-water); }
-.rank-builder { color: var(--minecraft-wood); }
-
-/* Container Styles */
-.login-container,
-.admin-container,
-.team-overview {
-    background: rgba(0, 0, 0, 0.8);
-    border: 4px solid #000000;
-    padding: 20px;
-    margin-bottom: 20px;
-    position: relative;
+.member-info h3 {
+    margin-bottom: 5px;
+    font-size: 1.2em;
+    text-shadow: 1px 1px 0 #000;
 }
 
-.login-container::before,
-.admin-container::before,
-.team-overview::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(45deg, 
-        transparent 0%, 
-        transparent 45%, 
-        rgba(255,255,255,0.05) 45%, 
-        rgba(255,255,255,0.05) 55%, 
-        transparent 55%, 
-        transparent 100%
-    );
-    background-size: 8px 8px;
-    pointer-events: none;
-}
-
-/* Points Display */
 .points {
-    color: var(--minecraft-gold);
+    color: var(--mc-gold);
     font-weight: bold;
-    text-shadow: 1px 1px var(--minecraft-border);
+    margin-top: 5px;
+    text-shadow: 1px 1px 0 #000;
 }
 
-/* Notifications */
-.notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #2D2D2D;
-    border: 3px solid #000000;
-    color: var(--minecraft-text);
-    padding: 15px;
-    max-width: 300px;
-    z-index: 1000;
-    animation: slideIn 0.3s ease-out;
+/* Formular Stile */
+.form-group {
+    margin-bottom: 20px;
 }
 
-@keyframes slideIn {
-    from { transform: translateX(100%); }
-    to { transform: translateX(0); }
-}
-
-/* Minecraft-Style Scrollbar */
-::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-
-::-webkit-scrollbar-track {
-    background: #2D2D2D;
-    border: 2px solid #000000;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #555555;
-    border: 2px solid #000000;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #666666;
-}
-
-/* Form Labels */
 label {
     display: block;
-    color: var(--minecraft-text);
-    margin-bottom: 5px;
-    text-shadow: 1px 1px var(--minecraft-border);
+    margin-bottom: 8px;
+    color: var(--mc-text);
+    font-weight: bold;
+    text-shadow: 1px 1px 0 #000;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #000;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: var(--mc-text);
+    font-size: 16px;
+}
+
+input[type="number"] {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: var(--mc-text);
+}
+
+select option {
+    background-color: #333;
+    color: var(--mc-text);
+}
+
+select option:disabled {
+    color: #666;
+}
+
+/* Hierarchie Bereich */
+.hierarchy-container {
+    text-align: center;
+    margin: 40px 0;
+}
+
+.hierarchy-container h2 {
+    color: var(--mc-gold);
+    text-shadow: 2px 2px 0 #000;
+    margin-bottom: 20px;
+}
+
+.hierarchy-image {
+    max-width: 100%;
+    height: auto;
+    border: 4px solid #000;
+    box-shadow: 0 0 20px var(--mc-shadow);
+}
+
+/* Keine Benutzer Nachricht */
+.no-users {
+    text-align: center;
+    color: #AAA;
+    font-style: italic;
+    padding: 20px;
+    text-shadow: 1px 1px 0 #000;
+}
+
+/* Vorschläge Bereich */
+.suggestion-item {
+    background-color: var(--mc-background);
+    border: 2px solid #000;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.suggestion-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.suggestion-actions button {
+    flex: 1;
+}
+
+.suggestion-actions button.reject {
+    background-color: var(--mc-lava);
+}
+
+.suggestion-actions button.reject:hover {
+    background-color: #FF6347;
+}
+
+/* Section Überschriften */
+h2, h3 {
+    margin-bottom: 20px;
+    color: var(--mc-gold);
+    text-align: center;
+    text-shadow: 2px 2px 0 #000;
 }
 
 /* Responsive Design */
@@ -268,7 +279,14 @@ label {
     }
 
     header h1 {
-        font-size: 32px;
+        font-size: 2em;
+    }
+
+    .login-container,
+    .admin-container,
+    .add-user-section,
+    .points-section {
+        padding: 20px;
     }
 
     .team-list {
@@ -279,52 +297,239 @@ label {
         flex-direction: column;
         text-align: center;
     }
+
+    .member-info {
+        text-align: center;
+    }
 }
 
-/* Edit Mode Styles */
-.editable {
+/* Animationen */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.member-card {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Rang-spezifische Farben */
+.rank-owner { color: var(--mc-diamond); }
+.rank-coowner { color: var(--mc-gold); }
+.rank-admin { color: var(--mc-redstone); }
+.rank-jradmin { color: #FF6347; }
+.rank-moderator { color: var(--mc-grass); }
+.rank-jrmoderator { color: #8FBC8F; }
+.rank-supporter { color: var(--mc-water); }
+.rank-jrsupporter { color: #87CEEB; }
+.rank-builder { color: var(--mc-wood); }
+
+/* Minecraft-Stil Tooltips */
+[data-tooltip] {
+    position: relative;
+    cursor: help;
+}
+
+[data-tooltip]:before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 5px 10px;
+    background-color: #000;
+    color: white;
+    border: 2px solid #555;
+    font-size: 14px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s;
+}
+
+[data-tooltip]:hover:before {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Minecraft-Stil Scrollbar */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: var(--mc-container);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--mc-button);
+    border: 2px solid #000;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--mc-button-hover);
+}
+
+/* Status-Anzeigen */
+.status-active {
+    color: var(--mc-grass);
+    font-weight: bold;
+}
+
+.status-inactive {
+    color: var(--mc-lava);
+    font-weight: bold;
+}
+
+/* Form Validation Styles */
+input:invalid,
+select:invalid {
+    border-color: var(--mc-lava);
+}
+
+/* Login Fehler Styles */
+.error-message {
+    background-color: rgba(226, 88, 34, 0.2);
+    color: var(--mc-lava);
+    padding: 10px;
+    margin-top: 10px;
+    border: 2px solid var(--mc-lava);
+    text-align: center;
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Schüttel-Animation für Fehler */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Login Form Styles verbessern */
+.login-container {
+    background-color: var(--mc-container);
+    padding: 30px;
+    border: 4px solid #000;
+    margin-bottom: 30px;
+    max-width: 400px;
+    margin: 0 auto 30px;
+    box-shadow: 0 0 20px var(--mc-shadow);
+}
+
+.login-container h2 {
+    color: var(--mc-gold);
+    text-align: center;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 0 #000;
+}
+
+.login-container .form-group {
+    margin-bottom: 15px;
+}
+
+.login-container input,
+.login-container select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #000;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: var(--mc-text);
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+.login-container input:focus,
+.login-container select:focus {
+    border-color: var(--mc-gold);
+    outline: none;
+}
+
+.login-container button {
+    background-color: var(--mc-button);
+    color: white;
+    padding: 14px 20px;
+    border: 2px solid #000;
     cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.editable:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.edit-form {
-    background: #2D2D2D;
-    border: 3px solid #000000;
-    padding: 15px;
+    width: 100%;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 0 #000;
+    transition: all 0.2s ease;
     margin-top: 10px;
 }
 
-.edit-form input {
-    margin-bottom: 10px;
+.login-container button:hover {
+    background-color: var(--mc-button-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px var(--mc-shadow);
 }
 
-.edit-buttons {
-    display: flex;
-    gap: 10px;
+.login-container button:active {
+    transform: translateY(0);
+    background-color: var(--mc-button-active);
 }
 
-.edit-buttons button {
-    flex: 1;
+/* Verbesserte Fehlermeldung Animation */
+@keyframes fadeInShake {
+    0% { 
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    60%, 80%, 100% { transform: translateX(0); }
+    65%, 75%, 85% { transform: translateX(-5px); }
+    70%, 80%, 90% { transform: translateX(5px); }
 }
 
-/* Success/Error Messages */
-.message {
+.error-message {
+    animation: fadeInShake 0.8s ease-out;
+}
+
+/* Success Messages */
+.success-message {
+    background-color: rgba(93, 135, 49, 0.3);
+    color: var(--mc-grass);
     padding: 10px;
-    margin: 10px 0;
-    border: 2px solid #000000;
+    border-radius: 4px;
+    margin-bottom: 15px;
     text-align: center;
+    border: 1px solid var(--mc-grass);
 }
 
-.success {
-    background: var(--minecraft-grass);
-    color: var(--minecraft-text);
+/* Benachrichtigungen */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: var(--mc-container);
+    color: var(--mc-text);
+    border: 2px solid #000;
+    padding: 15px;
+    max-width: 300px;
+    z-index: 1000;
+    box-shadow: 0 0 10px var(--mc-shadow);
+    animation: slideIn 0.3s ease-out;
 }
 
-.error {
-    background: var(--minecraft-redstone);
-    color: var(--minecraft-text);
+.notification.fade-out {
+    animation: fadeOut 0.5s ease-out forwards;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
 }
