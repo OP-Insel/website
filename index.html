@@ -13,7 +13,7 @@
             <p>Punktesystem und Teamverwaltung</p>
         </header>
 
-        <!-- Login Bereich -->
+        <!-- Login-Bereich (wird zuerst angezeigt) -->
         <div id="loginArea" class="login-container">
             <h2>Team Login</h2>
             <form id="loginForm" onsubmit="return handleLogin(event)">
@@ -40,12 +40,12 @@
             </form>
         </div>
 
-        <!-- Admin Bereich -->
+        <!-- Admin-Bereich (wird erst nach Login angezeigt) -->
         <div id="adminArea" class="admin-container" style="display: none;">
             <h2>Admin Bereich</h2>
             
-            <!-- Benutzer hinzufügen -->
-            <div id="addUserArea" class="add-user-section">
+            <!-- Benutzer hinzufügen (nur für Owner/Co-Owner) -->
+            <div id="addUserArea" class="add-user-section" style="display: none;">
                 <h3>Neuen Benutzer hinzufügen</h3>
                 <form id="addUserForm" onsubmit="return handleAddUser(event)">
                     <div class="form-group">
@@ -74,7 +74,7 @@
                 </form>
             </div>
 
-            <!-- Punkteabzug -->
+            <!-- Punkteabzug (für alle Ränge) -->
             <div class="points-section">
                 <h3>Punkteabzug</h3>
                 <form id="pointsForm" onsubmit="return handlePoints(event)">
@@ -100,15 +100,15 @@
                 </form>
             </div>
 
-            <!-- Vorschläge Container -->
-            <div id="suggestionsContainer" class="suggestions-container">
+            <!-- Vorschläge (nur für Owner/Co-Owner) -->
+            <div id="suggestionsContainer" class="suggestions-container" style="display: none;">
                 <!-- Wird durch JavaScript gefüllt -->
             </div>
 
             <button onclick="handleLogout()" class="logout-button">Ausloggen</button>
         </div>
 
-        <!-- Team Übersicht -->
+        <!-- Team Übersicht (immer sichtbar) -->
         <div class="team-overview">
             <h2>Team Übersicht</h2>
             <div id="teamList" class="team-list">
@@ -116,34 +116,11 @@
             </div>
         </div>
 
-        <!-- Hierarchie -->
         <div class="hierarchy-container">
             <h2>Team Hierarchie</h2>
             <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-5ITqJSBI1JcsL9HuyVnmNpMk498cRQ.png" alt="Team Hierarchie" class="hierarchy-image">
         </div>
     </div>
-
-    <!-- Popup für Punktebearbeitung -->
-    <div class="popup-backdrop" id="popupBackdrop"></div>
-    <div class="edit-points-popup" id="editPointsPopup">
-        <h3>Punkte bearbeiten</h3>
-        <div class="form-group">
-            <label for="editPoints">Neue Punktzahl:</label>
-            <input type="number" id="editPoints" min="0" required>
-        </div>
-        <button onclick="savePoints()">Speichern</button>
-        <button onclick="closePopup()" class="logout-button">Abbrechen</button>
-    </div>
-
-    <!-- Kontextmenü -->
-    <div class="context-menu" id="contextMenu">
-        <div class="context-menu-item" onclick="editPoints()">Punkte bearbeiten</div>
-        <div class="context-menu-item" onclick="showHistory()">Punkteabzug-Historie</div>
-    </div>
-
-    <!-- JavaScript einbinden -->
-    <div id="optionsMenu" class="options-menu"></div>
     <script src="team-system.js"></script>
 </body>
 </html>
-
