@@ -1,5 +1,5 @@
-// Filename: LoginPanel.cs
-// Handles login and registration UI
+// File: LoginPanel.cs
+// Handles the login and registration UI
 
 using UnityEngine;
 using UnityEngine.UI;
