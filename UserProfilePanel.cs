@@ -1,5 +1,5 @@
-// Filename: UserProfilePanel.cs
-// Displays and manages user profile information
+// File: UserProfilePanel.cs
+// Handles user profile viewing and editing
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -44,6 +44,11 @@ public class UserProfilePanel : MonoBehaviour
     public GameObject projectItemPrefab;
     public Transform projectsContainer;
     
+    [Header("Death Points")]
+    public Button addDeathPointButton;
+    public Button resetDeathPointsButton;
+    public TMP_InputField deathPointsToAddInput;
+    
     [Header("Navigation")]
     public Button editButton;
     public Button backButton;
@@ -70,6 +75,10 @@ public class UserProfilePanel : MonoBehaviour
         addViolationButton.onClick.AddListener(ShowAddViolationPanel);
         confirmViolationButton.onClick.AddListener(AddViolation);
         cancelViolationButton.onClick.AddListener(HideAddViolationPanel);
+        
+        // Set up death points buttons
+        addDeathPointButton.onClick.AddListener(AddDeathPoints);
+        resetDeathPointsButton.onClick.AddListener(ResetDeathPoints);
         
         // Hide panels initially
         editPanel.SetActive(false);
@@ -142,7 +151,7 @@ public class UserProfilePanel : MonoBehaviour
         moodIndicatorText.text = user.GetMoodIndicator();
         
         // Set avatar image (in a real implementation, you would load the Minecraft skin)
-        // Example: https://mc-heads.net/avatar/{username}/64
+        // For now, we'll just use a placeholder
         
         // Show/hide edit button based on permissions
         bool canEdit = viewer.HasPermission("editUsers") || viewer.id == user.id;
@@ -150,6 +159,12 @@ public class UserProfilePanel : MonoBehaviour
         
         // Show/hide violation history button based on permissions
         violationHistoryButton.gameObject.SetActive(viewer.HasPermission("editUsers"));
+        
+        // Show/hide death points buttons based on permissions
+        bool canEditDeathPoints = viewer.HasPermission("editDeathPoints");
+        addDeathPointButton.gameObject.SetActive(canEditDeathPoints);
+        resetDeathPointsButton.gameObject.SetActive(canEditDeathPoints);
+        deathPointsToAddInput.gameObject.SetActive(canEditDeathPoints);
         
         // Load projects
         LoadProjects();
@@ -189,29 +204,13 @@ public class UserProfilePanel : MonoBehaviour
     
     private void SaveChanges()
     {
-        // Validate inputs
-        if (string.IsNullOrEmpty(usernameInput.text))
-        {
-            editStatusText.text = "Username cannot be empty.";
-            editStatusText.color = Color.red;
-            return;
-        }
-        
-        int points, deathPoints;
-        if (!int.TryParse(pointsInput.text, out points) || !int.TryParse(deathPointsInput.text, out deathPoints))
-        {
-            editStatusText.text = "Points must be valid numbers.";
-            editStatusText.color = Color.red;
-            return;
-        }
-        
         // Create updated user
         TeamMember updatedUser = new TeamMember(
             usernameInput.text,
             displayedUser.email,
             displayedUser.password,
             rankDropdown.options[rankDropdown.value].text,
-            points
+            int.Parse(pointsInput.text)
         );
         
         // Copy over other properties
@@ -220,7 +219,7 @@ public class UserProfilePanel : MonoBehaviour
         updatedUser.lastActive = displayedUser.lastActive;
         updatedUser.violationHistory = displayedUser.violationHistory;
         updatedUser.assignedProjects = displayedUser.assignedProjects;
-        updatedUser.deathPoints = deathPoints;
+        updatedUser.deathPoints = int.Parse(deathPointsInput.text);
         
         bool success = teamSystem.UpdateTeamMember(updatedUser);
         
@@ -272,28 +271,26 @@ public class UserProfilePanel : MonoBehaviour
         }
         
         // Add violation history items
-        if (displayedUser.violationHistory != null && displayedUser.violationHistory.Count > 0)
+        foreach (ViolationRecord violation in displayedUser.violationHistory)
         {
-            foreach (ViolationRecord violation in displayedUser.violationHistory)
-            {
-                GameObject item = Instantiate(violationItemPrefab, violationContainer);
-                
-                item.transform.Find("Date").GetComponent<TextMeshProUGUI>().text = 
-                    violation.date.ToShortDateString();
-                
-                item.transform.Find("Type").GetComponent<TextMeshProUGUI>().text = 
-                    violation.violationType;
-                
-                item.transform.Find("Points").GetComponent<TextMeshProUGUI>().text = 
-                    violation.pointDeduction.ToString();
-                
-                item.transform.Find("Admin").GetComponent<TextMeshProUGUI>().text = 
-                    violation.adminName;
-            }
+            GameObject item = Instantiate(violationItemPrefab, violationContainer);
+            
+            item.transform.Find("Date").GetComponent<TextMeshProUGUI>().text = 
+                violation.date.ToShortDateString();
+            
+            item.transform.Find("Type").GetComponent<TextMeshProUGUI>().text = 
+                violation.violationType;
+            
+            item.transform.Find("Points").GetComponent<TextMeshProUGUI>().text = 
+                violation.pointDeduction.ToString();
+            
+            item.transform.Find("Admin").GetComponent<TextMeshProUGUI>().text = 
+                violation.adminName;
         }
-        else
+        
+        // Show "No violations" message if empty
+        if (displayedUser.violationHistory.Count == 0)
         {
-            // Show "No violations" message if empty
             GameObject item = Instantiate(violationItemPrefab, violationContainer);
             item.transform.Find("Type").GetComponent<TextMeshProUGUI>().text = "No violations recorded";
             item.transform.Find("Date").GetComponent<TextMeshProUGUI>().text = "";
@@ -342,6 +339,43 @@ public class UserProfilePanel : MonoBehaviour
         HideAddViolationPanel();
     }
     
+    private void AddDeathPoints()
+    {
+        if (!int.TryParse(deathPointsToAddInput.text, out int pointsToAdd) || pointsToAdd <= 0)
+        {
+            teamSystem.ShowNotification("Please enter a valid number of death points to add");
+            return;
+        }
+        
+        bool success = teamSystem.AddDeathPoints(displayedUser.id, pointsToAdd);
+        
+        if (success)
+        {
+            // Refresh displayed user
+            displayedUser = teamSystem.GetMemberById(displayedUser.id);
+            if (displayedUser != null)
+            {
+                SetupProfile(displayedUser, currentUser);
+                deathPointsToAddInput.text = "";
+            }
+        }
+    }
+    
+    private void ResetDeathPoints()
+    {
+        bool success = teamSystem.ResetDeathPoints(displayedUser.id);
+        
+        if (success)
+        {
+            // Refresh displayed user
+            displayedUser = teamSystem.GetMemberById(displayedUser.id);
+            if (displayedUser != null)
+            {
+                SetupProfile(displayedUser, currentUser);
+            }
+        }
+    }
+    
     private void ToggleProjects()
     {
         bool isActive = projectsPanel.activeSelf;
@@ -365,35 +399,31 @@ public class UserProfilePanel : MonoBehaviour
         List<Project> userProjects = teamSystem.GetProjectsForMember(displayedUser.id);
         
         // Add project items
-        if (userProjects.Count > 0)
+        foreach (Project project in userProjects)
         {
-            foreach (Project project in userProjects)
+            GameObject item = Instantiate(projectItemPrefab, projectsContainer);
+            
+            item.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = project.name;
+            
+            string deadlineText = project.deadline.ToShortDateString();
+            if (project.completed)
             {
-                GameObject item = Instantiate(projectItemPrefab, projectsContainer);
-                
-                item.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = project.name;
-                
-                string deadlineText = project.deadline.ToShortDateString();
-                TextMeshProUGUI deadlineTextUI = item.transform.Find("Deadline").GetComponent<TextMeshProUGUI>();
-                
-                if (project.completed)
-                {
-                    deadlineText += " (Completed)";
-                    deadlineTextUI.color = Color.green;
-                }
-                else if (DateTime.Now > project.deadline)
-                {
-                    deadlineText += " (Overdue)";
-                    deadlineTextUI.color = Color.red;
-                }
-                
-                deadlineTextUI.text = deadlineText;
-                item.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = project.description;
+                deadlineText += " (Completed)";
+                item.transform.Find("Deadline").GetComponent<TextMeshProUGUI>().color = Color.green;
             }
+            else if (DateTime.Now > project.deadline)
+            {
+                deadlineText += " (Overdue)";
+                item.transform.Find("Deadline").GetComponent<TextMeshProUGUI>().color = Color.red;
+            }
+            
+            item.transform.Find("Deadline").GetComponent<TextMeshProUGUI>().text = deadlineText;
+            item.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = project.description;
         }
-        else
+        
+        // Show "No projects" message if empty
+        if (userProjects.Count == 0)
         {
-            // Show "No projects" message if empty
             GameObject item = Instantiate(projectItemPrefab, projectsContainer);
             item.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = "No assigned projects";
             item.transform.Find("Deadline").GetComponent<TextMeshProUGUI>().text = "";
@@ -416,6 +446,9 @@ public class UserProfilePanel : MonoBehaviour
                 break;
             case "Admin":
                 text.color = new Color(1f, 0.2f, 0.2f); // Red
+                break;
+            case "Jr-Admin":
+                text.color =  0.2f, 0.2f); // Red
                 break;
             case "Jr-Admin":
                 text.color = new Color(1f, 0.5f, 0.5f); // Light red
