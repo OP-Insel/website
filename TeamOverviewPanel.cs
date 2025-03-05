@@ -1,4 +1,4 @@
-// Filename: TeamOverviewPanel.cs
+// File: TeamOverviewPanel.cs
 // Displays the team members list with filtering options
 
 using UnityEngine;
@@ -142,8 +142,7 @@ public class TeamOverviewPanel : MonoBehaviour
         // Set avatar image (in a real implementation, you would load the Minecraft skin)
         // For now, we'll just use a placeholder
         Image avatarImage = card.transform.Find("Avatar").GetComponent<Image>();
-        // You would load the actual avatar here using the Minecraft API
-        // Example: https://mc-heads.net/avatar/{username}/64
+        // You would load the actual avatar here
     }
     
     private void SetRankColor(TextMeshProUGUI text, string rank)
