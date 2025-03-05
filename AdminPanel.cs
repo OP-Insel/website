@@ -1,5 +1,5 @@
-// Filename: AdminPanel.cs
-// Admin panel for user management
+// File: AdminPanel.cs
+// Handles the admin panel for user management
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -130,6 +130,7 @@ public class AdminPanel : MonoBehaviour
         SetRankColor(rankText, member.rank);
         
         item.transform.Find("Points").GetComponent<TextMeshProUGUI>().text = $"Points: {member.points}";
+        item.transform.Find("DeathPoints").GetComponent<TextMeshProUGUI>().text = $"Death Points: {member.deathPoints}";
         item.transform.Find("MoodIndicator").GetComponent<TextMeshProUGUI>().text = member.GetMoodIndicator();
         
         // Set up edit button
@@ -149,7 +150,7 @@ public class AdminPanel : MonoBehaviour
         else
         {
             deleteButton.onClick.AddListener(() => {
-                DeleteUser(member.id, member.username);
+                DeleteUser(member.id);
             });
         }
     }
@@ -201,13 +202,21 @@ public class AdminPanel : MonoBehaviour
         }
     }
     
-    private void DeleteUser(string userId, string username)
+    private void DeleteUser(string userId)
     {
         // Confirm deletion
-        if (Application.platform != RuntimePlatform.WebGLPlayer && 
-            !UnityEngine.Windows.Dialog.Confirm("Delete User", $"Are you sure you want to delete {username}?"))
+        if (!UnityEngine.Application.isMobilePlatform)
         {
-            return;
+            // On non-mobile platforms, use a confirmation dialog
+            if (!UnityEngine.Windows.Dialog.Confirm("Delete User", "Are you sure you want to delete this user?"))
+            {
+                return;
+            }
+        }
+        else
+        {
+            // On mobile, we'd need a custom dialog
+            // For this example, we'll just proceed with deletion
         }
         
         bool success = teamSystem.DeleteTeamMember(userId);
@@ -215,6 +224,10 @@ public class AdminPanel : MonoBehaviour
         if (success)
         {
             RefreshPanel();
+        }
+        else
+        {
+            Debug.LogError("Failed to delete user. Check permissions.");
         }
     }
     
