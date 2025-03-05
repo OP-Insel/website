@@ -1,5 +1,5 @@
-// Filename: TeamManagementSystem.cs
-// Core system for Minecraft team management
+// File: TeamManagementSystem.cs
+// Main system controller for the Minecraft Team Management System
 
 using UnityEngine;
 using System;
@@ -17,11 +17,11 @@ public class TeamMember
     public string password;
     public string rank;
     public int points;
+    public int deathPoints;
     public DateTime joinDate;
     public DateTime lastActive;
     public List<ViolationRecord> violationHistory = new List<ViolationRecord>();
     public List<string> assignedProjects = new List<string>();
-    public int deathPoints;
     public Dictionary<string, bool> permissions = new Dictionary<string, bool>();
     
     // Constructor
@@ -33,9 +33,9 @@ public class TeamMember
         this.password = password;
         this.rank = rank;
         this.points = points;
+        this.deathPoints = 0;
         this.joinDate = DateTime.Now;
         this.lastActive = DateTime.Now;
-        this.deathPoints = 0;
         InitializePermissions();
     }
     
@@ -48,13 +48,6 @@ public class TeamMember
         switch (rank)
         {
             case "Owner":
-                permissions["editUsers"] = true;
-                permissions["deleteUsers"] = true;
-                permissions["assignRanks"] = true;
-                permissions["manageProjects"] = true;
-                permissions["manageSchedule"] = true;
-                permissions["resetPoints"] = true;
-                break;
             case "Co-Owner":
                 permissions["editUsers"] = true;
                 permissions["deleteUsers"] = true;
@@ -62,6 +55,7 @@ public class TeamMember
                 permissions["manageProjects"] = true;
                 permissions["manageSchedule"] = true;
                 permissions["resetPoints"] = true;
+                permissions["editDeathPoints"] = true;
                 break;
             case "Admin":
                 permissions["manageProjects"] = true;
@@ -228,8 +222,7 @@ public class TeamManagementSystem : MonoBehaviour
         {"Supporter", 200},
         {"Jr-Supporter", 150},
         {"Sr-Builder", 300},
-        {"Builder", 200},
-        {"Member", 100}
+        {"Builder", 200}
     };
     
     // Rank degradation paths
@@ -241,11 +234,10 @@ public class TeamManagementSystem : MonoBehaviour
         {"Moderator", "Jr-Moderator"},
         {"Jr-Moderator", "Supporter"},
         {"Supporter", "Jr-Supporter"},
-        {"Jr-Supporter", "Member"},
+        {"Jr-Supporter", "Removed"},
         {"Sr-Builder", "Builder"},
-        {"Builder", "Member"},
-        {"Developer", "Member"},
-        {"Member", "Removed"}
+        {"Builder", "Removed"},
+        {"Developer", "Removed"}
     };
     
     // File path for saving data
@@ -355,7 +347,6 @@ public class TeamManagementSystem : MonoBehaviour
         catch (Exception e)
         {
             Debug.LogError("Error saving team data: " + e.Message);
-            ShowNotification("Error saving data: " + e.Message, true);
         }
     }
     
@@ -374,7 +365,6 @@ public class TeamManagementSystem : MonoBehaviour
         {
             Debug.LogError("Error loading team data: " + e.Message);
             teamData = new TeamData();
-            ShowNotification("Error loading data. Starting with fresh data.", true);
         }
     }
     
@@ -393,7 +383,7 @@ public class TeamManagementSystem : MonoBehaviour
             SaveData();
             
             ShowMainPanel();
-            ShowNotification("Welcome back, " + user.username + "!");
+            ShowNotification($"Welcome back, {user.username}!");
             return true;
         }
         
@@ -419,7 +409,7 @@ public class TeamManagementSystem : MonoBehaviour
         teamData.members.Add(newUser);
         SaveData();
         
-        ShowNotification("Registration successful! You can now login.");
+        ShowNotification($"New user registered: {username}");
         return true;
     }
     
@@ -427,7 +417,6 @@ public class TeamManagementSystem : MonoBehaviour
     {
         currentUser = null;
         ShowLoginPanel();
-        ShowNotification("You have been logged out.");
     }
     
     #endregion
@@ -500,10 +489,6 @@ public class TeamManagementSystem : MonoBehaviour
             // Refresh admin panel
             adminPanel.GetComponent<AdminPanel>().RefreshPanel();
         }
-        else
-        {
-            ShowNotification("You don't have permission to access the admin panel.", true);
-        }
     }
     
     public void ShowProjectsPanel()
@@ -536,36 +521,19 @@ public class TeamManagementSystem : MonoBehaviour
         teamOverviewPanel.GetComponent<TeamOverviewPanel>().RefreshTeamList();
     }
     
-    public void ShowNotification(string message, bool isError = false)
+    public void ShowNotification(string message)
     {
-        if (notificationPrefab == null || notificationContainer == null)
+        if (notificationPrefab != null && notificationContainer != null)
         {
-            Debug.LogWarning("Notification system not set up properly");
-            return;
-        }
-        
-        GameObject notification = Instantiate(notificationPrefab, notificationContainer);
-        NotificationItem notificationItem = notification.GetComponent<NotificationItem>();
-        
-        if (notificationItem != null)
-        {
-            notificationItem.SetMessage(message, isError);
+            GameObject notification = Instantiate(notificationPrefab, notificationContainer);
+            notification.GetComponentInChildren<TextMeshProUGUI>().text = message;
+            
+            // Destroy after 3 seconds
+            Destroy(notification, 3f);
         }
         else
         {
-            // Fallback if NotificationItem component is missing
-            TextMeshProUGUI text = notification.GetComponentInChildren<TextMeshProUGUI>();
-            if (text != null)
-            {
-                text.text = message;
-                if (isError)
-                {
-                    text.color = Color.red;
-                }
-            }
-            
-            // Auto-destroy after 3 seconds
-            Destroy(notification, 3f);
+            Debug.Log("Notification: " + message);
         }
     }
     
@@ -593,21 +561,18 @@ public class TeamManagementSystem : MonoBehaviour
         // Check if user has permission
         if (!currentUser.HasPermission("editUsers"))
         {
-            ShowNotification("You don't have permission to add users.", true);
             return false;
         }
         
         // Check if email already exists
         if (teamData.members.Exists(m => m.email == email))
         {
-            ShowNotification("Email already in use.", true);
             return false;
         }
         
         // Check if username already exists
         if (teamData.members.Exists(m => m.username == username))
         {
-            ShowNotification("Username already in use.", true);
             return false;
         }
         
@@ -616,7 +581,7 @@ public class TeamManagementSystem : MonoBehaviour
         teamData.members.Add(newUser);
         SaveData();
         
-        ShowNotification($"User {username} added successfully!");
+        ShowNotification($"New team member added: {username}");
         return true;
     }
     
@@ -628,14 +593,12 @@ public class TeamManagementSystem : MonoBehaviour
         
         if (!isAdmin && !isSelf)
         {
-            ShowNotification("You don't have permission to update this user.", true);
             return false;
         }
         
         int index = teamData.members.FindIndex(m => m.id == updatedMember.id);
         if (index == -1)
         {
-            ShowNotification("User not found.", true);
             return false;
         }
         
@@ -644,21 +607,18 @@ public class TeamManagementSystem : MonoBehaviour
         // Only Owner can change Co-Owner rank
         if (existingMember.rank == "Co-Owner" && updatedMember.rank != "Co-Owner" && currentUser.rank != "Owner")
         {
-            ShowNotification("Only the Owner can change a Co-Owner's rank.", true);
             return false;
         }
         
         // Only Owner can assign Co-Owner rank
         if (existingMember.rank != "Co-Owner" && updatedMember.rank == "Co-Owner" && currentUser.rank != "Owner")
         {
-            ShowNotification("Only the Owner can assign the Co-Owner rank.", true);
             return false;
         }
         
         // Owner cannot be demoted
         if (existingMember.rank == "Owner" && updatedMember.rank != "Owner")
         {
-            ShowNotification("The Owner's rank cannot be changed.", true);
             return false;
         }
         
@@ -666,13 +626,9 @@ public class TeamManagementSystem : MonoBehaviour
         if (!isAdmin)
         {
             existingMember.username = updatedMember.username;
-            ShowNotification("Username updated successfully!");
         }
         else
         {
-            // Store old rank for notification
-            string oldRank = existingMember.rank;
-            
             // Admin can update everything
             existingMember.username = updatedMember.username;
             existingMember.rank = updatedMember.rank;
@@ -681,41 +637,11 @@ public class TeamManagementSystem : MonoBehaviour
             
             // Update permissions based on new rank
             existingMember.UpdatePermissions();
-            
-            // Show appropriate notification
-            if (oldRank != updatedMember.rank)
-            {
-                ShowNotification($"{existingMember.username} has been {(RankValue(oldRank) > RankValue(updatedMember.rank) ? "demoted to" : "promoted to")} {updatedMember.rank}!");
-            }
-            else
-            {
-                ShowNotification($"User {existingMember.username} updated successfully!");
-            }
         }
         
         SaveData();
+        ShowNotification($"User {existingMember.username} updated");
         return true;
-    }
-    
-    private int RankValue(string rank)
-    {
-        Dictionary<string, int> rankValues = new Dictionary<string, int>
-        {
-            {"Owner", 0},
-            {"Co-Owner", 1},
-            {"Developer", 2},
-            {"Admin", 3},
-            {"Jr-Admin", 4},
-            {"Moderator", 5},
-            {"Jr-Moderator", 6},
-            {"Supporter", 7},
-            {"Jr-Supporter", 8},
-            {"Sr-Builder", 9},
-            {"Builder", 10},
-            {"Member", 11}
-        };
-        
-        return rankValues.ContainsKey(rank) ? rankValues[rank] : 999;
     }
     
     public bool DeleteTeamMember(string memberId)
@@ -723,7 +649,6 @@ public class TeamManagementSystem : MonoBehaviour
         // Check if user has permission
         if (!currentUser.HasPermission("deleteUsers"))
         {
-            ShowNotification("You don't have permission to delete users.", true);
             return false;
         }
         
@@ -731,28 +656,18 @@ public class TeamManagementSystem : MonoBehaviour
         
         if (memberToDelete == null)
         {
-            ShowNotification("User not found.", true);
             return false;
         }
         
         // Cannot delete Owner
         if (memberToDelete.rank == "Owner")
         {
-            ShowNotification("The Owner cannot be deleted.", true);
             return false;
         }
         
         // Only Owner can delete Co-Owner
         if (memberToDelete.rank == "Co-Owner" && currentUser.rank != "Owner")
         {
-            ShowNotification("Only the Owner can delete a Co-Owner.", true);
-            return false;
-        }
-        
-        // Cannot delete self
-        if (memberToDelete.id == currentUser.id)
-        {
-            ShowNotification("You cannot delete yourself.", true);
             return false;
         }
         
@@ -773,7 +688,7 @@ public class TeamManagementSystem : MonoBehaviour
         teamData.members.Remove(memberToDelete);
         SaveData();
         
-        ShowNotification($"User {username} has been deleted.");
+        ShowNotification($"User {username} has been removed");
         return true;
     }
     
@@ -782,27 +697,17 @@ public class TeamManagementSystem : MonoBehaviour
         // Check if user has permission
         if (!currentUser.HasPermission("editUsers"))
         {
-            ShowNotification("You don't have permission to apply violations.", true);
             return false;
         }
         
         if (!ruleViolations.ContainsKey(violationType))
         {
-            ShowNotification("Invalid violation type.", true);
             return false;
         }
         
         TeamMember member = teamData.members.Find(m => m.id == memberId);
         if (member == null)
         {
-            ShowNotification("User not found.", true);
-            return false;
-        }
-        
-        // Owner cannot receive violations
-        if (member.rank == "Owner")
-        {
-            ShowNotification("The Owner cannot receive violations.", true);
             return false;
         }
         
@@ -813,8 +718,6 @@ public class TeamManagementSystem : MonoBehaviour
         ViolationRecord violation = new ViolationRecord(violationType, deduction, adminName);
         member.violationHistory.Add(violation);
         
-        ShowNotification($"Applied violation to {member.username}: {violationType} ({deduction} points)");
-        
         // Check for automatic removal
         if (member.points <= 0)
         {
@@ -823,7 +726,7 @@ public class TeamManagementSystem : MonoBehaviour
             {
                 string username = member.username;
                 teamData.members.Remove(member);
-                ShowNotification($"{username} has been removed from the team due to having 0 or fewer points!");
+                ShowNotification($"{username} has been removed from the team due to having 0 or fewer points");
             }
             else
             {
@@ -837,36 +740,38 @@ public class TeamManagementSystem : MonoBehaviour
         CheckForDegradation(member);
         SaveData();
         
+        ShowNotification($"Applied violation to {member.username}: {violationType} ({deduction} points)");
         return true;
     }
     
-    private void CheckForDegradation(TeamMember member)
+    private bool CheckForDegradation(TeamMember member)
     {
-        if (member.rank == "Owner") return; // Owner can't be degraded
+        if (member.rank == "Owner") return false; // Owner can't be degraded
         
         int currentThreshold = GetRankThreshold(member.rank);
         if (member.points < currentThreshold)
         {
-            string oldRank = member.rank;
-            
             // Determine new rank based on degradation path
+            string oldRank = member.rank;
             string newRank = GetDegradedRank(member.rank);
             if (newRank != member.rank)
             {
                 member.rank = newRank;
                 member.UpdatePermissions();
                 
-                ShowNotification($"{member.username} has been demoted from {oldRank} to {newRank} due to low points!");
+                ShowNotification($"{member.username} degraded from {oldRank} to {newRank}");
                 
                 // If removed, actually remove from team
                 if (newRank == "Removed")
                 {
-                    string username = member.username;
                     teamData.members.Remove(member);
-                    ShowNotification($"{username} has been removed from the team!");
                 }
+                
+                return true;
             }
         }
+        
+        return false;
     }
     
     private static string GetDegradedRank(string currentRank)
@@ -901,14 +806,13 @@ public class TeamManagementSystem : MonoBehaviour
     
     private void CheckMonthlyReset()
     {
-        if (DateTime.Now.Month != teamData.lastMonthlyReset.Month || 
-            DateTime.Now.Year != teamData.lastMonthlyReset.Year)
+        if (DateTime.Now.Month != teamData.lastMonthlyReset.Month)
         {
             ResetMonthlyPoints();
             teamData.lastMonthlyReset = DateTime.Now;
             SaveData();
             
-            ShowNotification("Monthly points have been reset for all team members.");
+            ShowNotification("Monthly points have been reset for all team members");
         }
     }
     
@@ -938,28 +842,35 @@ public class TeamManagementSystem : MonoBehaviour
         }
     }
     
-    private void CheckProjectDeadlines()
-    {
-        foreach (Project project in teamData.projects)
-        {
-            if (!project.completed && DateTime.Now > project.deadline && 
-                DateTime.Now.Date == project.deadline.Date) // Only notify on the exact day
-            {
-                ShowNotification($"Project deadline reached: {project.name}", true);
-            }
-        }
-    }
-    
-    public void AddDeathPoints(string memberId, int points)
+    public bool AddDeathPoints(string memberId, int points)
     {
         TeamMember member = teamData.members.Find(m => m.id == memberId);
         if (member != null)
         {
             member.deathPoints += points;
             SaveData();
-            
-            ShowNotification($"{member.username} received {points} death points.");
+            ShowNotification($"Added {points} death points to {member.username}");
+            return true;
         }
+        return false;
+    }
+    
+    public bool ResetDeathPoints(string memberId)
+    {
+        if (!currentUser.HasPermission("editDeathPoints"))
+        {
+            return false;
+        }
+        
+        TeamMember member = teamData.members.Find(m => m.id == memberId);
+        if (member != null)
+        {
+            member.deathPoints = 0;
+            SaveData();
+            ShowNotification($"Reset death points for {member.username}");
+            return true;
+        }
+        return false;
     }
     
     #endregion
@@ -986,7 +897,6 @@ public class TeamManagementSystem : MonoBehaviour
         // Check if user has permission
         if (!currentUser.HasPermission("manageProjects"))
         {
-            ShowNotification("You don't have permission to add projects.", true);
             return false;
         }
         
@@ -994,7 +904,7 @@ public class TeamManagementSystem : MonoBehaviour
         teamData.projects.Add(newProject);
         SaveData();
         
-        ShowNotification($"Project '{name}' added successfully!");
+        ShowNotification($"New project added: {name}");
         return true;
     }
     
@@ -1003,21 +913,19 @@ public class TeamManagementSystem : MonoBehaviour
         // Check if user has permission
         if (!currentUser.HasPermission("manageProjects"))
         {
-            ShowNotification("You don't have permission to update projects.", true);
             return false;
         }
         
         int index = teamData.projects.FindIndex(p => p.id == updatedProject.id);
         if (index == -1)
         {
-            ShowNotification("Project not found.", true);
             return false;
         }
         
         teamData.projects[index] = updatedProject;
         SaveData();
         
-        ShowNotification($"Project '{updatedProject.name}' updated successfully!");
+        ShowNotification($"Project updated: {updatedProject.name}");
         return true;
     }
     
@@ -1026,21 +934,20 @@ public class TeamManagementSystem : MonoBehaviour
         // Check if user has permission
         if (!currentUser.HasPermission("manageProjects"))
         {
-            ShowNotification("You don't have permission to delete projects.", true);
             return false;
         }
         
         Project projectToDelete = teamData.projects.Find(p => p.id == projectId);
         if (projectToDelete == null)
         {
-            ShowNotification("Project not found.", true);
             return false;
         }
         
+        string projectName = projectToDelete.name;
         teamData.projects.Remove(projectToDelete);
         SaveData();
         
-        ShowNotification($"Project '{projectToDelete.name}' deleted successfully!");
+        ShowNotification($"Project deleted: {projectName}");
         return true;
     }
     
@@ -1049,7 +956,6 @@ public class TeamManagementSystem : MonoBehaviour
         // Check if user has permission
         if (!currentUser.HasPermission("manageProjects"))
         {
-            ShowNotification("You don't have permission to assign members to projects.", true);
             return false;
         }
         
@@ -1058,7 +964,6 @@ public class TeamManagementSystem : MonoBehaviour
         
         if (project == null || member == null)
         {
-            ShowNotification("Project or member not found.", true);
             return false;
         }
         
@@ -1068,7 +973,7 @@ public class TeamManagementSystem : MonoBehaviour
             member.assignedProjects.Add(projectId);
             SaveData();
             
-            ShowNotification($"{member.username} assigned to project '{project.name}'!");
+            ShowNotification($"{member.username} assigned to project: {project.name}");
         }
         
         return true;
@@ -1079,7 +984,6 @@ public class TeamManagementSystem : MonoBehaviour
         // Check if user has permission
         if (!currentUser.HasPermission("manageProjects"))
         {
-            ShowNotification("You don't have permission to remove members from projects.", true);
             return false;
         }
         
@@ -1088,7 +992,6 @@ public class TeamManagementSystem : MonoBehaviour
         
         if (project == null || member == null)
         {
-            ShowNotification("Project or member not found.", true);
             return false;
         }
         
@@ -1098,7 +1001,7 @@ public class TeamManagementSystem : MonoBehaviour
             member.assignedProjects.Remove(projectId);
             SaveData();
             
-            ShowNotification($"{member.username} removed from project '{project.name}'!");
+            ShowNotification($"{member.username} removed from project: {project.name}");
         }
         
         return true;
@@ -1109,22 +1012,35 @@ public class TeamManagementSystem : MonoBehaviour
         // Check if user has permission
         if (!currentUser.HasPermission("manageProjects"))
         {
-            ShowNotification("You don't have permission to complete projects.", true);
             return false;
         }
         
         Project project = teamData.projects.Find(p => p.id == projectId);
         if (project == null)
         {
-            ShowNotification("Project not found.", true);
             return false;
         }
         
         project.completed = true;
         SaveData();
         
-        ShowNotification($"Project '{project.name}' marked as completed!");
+        ShowNotification($"Project marked as completed: {project.name}");
         return true;
+    }
+    
+    private void CheckProjectDeadlines()
+    {
+        foreach (Project project in teamData.projects)
+        {
+            if (!project.completed && DateTime.Now > project.deadline)
+            {
+                // Notify about missed deadline
+                Debug.Log($"Project deadline missed: {project.name}");
+                
+                // Could implement notification system here
+                ShowNotification($"Project deadline missed: {project.name}");
+            }
+        }
     }
     
     #endregion
@@ -1151,7 +1067,6 @@ public class TeamManagementSystem : MonoBehaviour
         // Check if user has permission
         if (!currentUser.HasPermission("manageSchedule"))
         {
-            ShowNotification("You don't have permission to add events.", true);
             return false;
         }
         
@@ -1159,7 +1074,7 @@ public class TeamManagementSystem : MonoBehaviour
         teamData.events.Add(newEvent);
         SaveData();
         
-        ShowNotification($"Event '{title}' added successfully!");
+        ShowNotification($"New event added: {title}");
         return true;
     }
     
@@ -1168,21 +1083,19 @@ public class TeamManagementSystem : MonoBehaviour
         // Check if user has permission
         if (!currentUser.HasPermission("manageSchedule"))
         {
-            ShowNotification("You don't have permission to update events.", true);
             return false;
         }
         
         int index = teamData.events.FindIndex(e => e.id == updatedEvent.id);
         if (index == -1)
         {
-            ShowNotification("Event not found.", true);
             return false;
         }
         
         teamData.events[index] = updatedEvent;
         SaveData();
         
-        ShowNotification($"Event '{updatedEvent.title}' updated successfully!");
+        ShowNotification($"Event updated: {updatedEvent.title}");
         return true;
     }
     
@@ -1191,21 +1104,20 @@ public class TeamManagementSystem : MonoBehaviour
         // Check if user has permission
         if (!currentUser.HasPermission("manageSchedule"))
         {
-            ShowNotification("You don't have permission to delete events.", true);
             return false;
         }
         
         ScheduleEvent eventToDelete = teamData.events.Find(e => e.id == eventId);
         if (eventToDelete == null)
         {
-            ShowNotification("Event not found.", true);
             return false;
         }
         
+        string eventTitle = eventToDelete.title;
         teamData.events.Remove(eventToDelete);
         SaveData();
         
-        ShowNotification($"Event '{eventToDelete.title}' deleted successfully!");
+        ShowNotification($"Event deleted: {eventTitle}");
         return true;
     }
     
@@ -1214,7 +1126,6 @@ public class TeamManagementSystem : MonoBehaviour
         // Check if user has permission
         if (!currentUser.HasPermission("manageSchedule"))
         {
-            ShowNotification("You don't have permission to add participants to events.", true);
             return false;
         }
         
@@ -1223,7 +1134,6 @@ public class TeamManagementSystem : MonoBehaviour
         
         if (evt == null || member == null)
         {
-            ShowNotification("Event or member not found.", true);
             return false;
         }
         
@@ -1232,7 +1142,7 @@ public class TeamManagementSystem : MonoBehaviour
             evt.participants.Add(memberId);
             SaveData();
             
-            ShowNotification($"{member.username} added to event '{evt.title}'!");
+            ShowNotification($"{member.username} added to event: {evt.title}");
         }
         
         return true;
@@ -1243,7 +1153,6 @@ public class TeamManagementSystem : MonoBehaviour
         // Check if user has permission
         if (!currentUser.HasPermission("manageSchedule"))
         {
-            ShowNotification("You don't have permission to remove participants from events.", true);
             return false;
         }
         
@@ -1252,7 +1161,6 @@ public class TeamManagementSystem : MonoBehaviour
         
         if (evt == null || member == null)
         {
-            ShowNotification("Event or member not found.", true);
             return false;
         }
         
@@ -1261,7 +1169,7 @@ public class TeamManagementSystem : MonoBehaviour
             evt.participants.Remove(memberId);
             SaveData();
             
-            ShowNotification($"{member.username} removed from event '{evt.title}'!");
+            ShowNotification($"{member.username} removed from event: {evt.title}");
         }
         
         return true;
