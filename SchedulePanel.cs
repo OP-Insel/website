@@ -1,5 +1,5 @@
-// Filename: SchedulePanel.cs
-// Manages team schedule and events
+// File: SchedulePanel.cs
+// Handles team schedule and events
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -379,40 +379,38 @@ public class SchedulePanel : MonoBehaviour
         }
         
         // Add participants
-        if (currentEvent.participants != null && currentEvent.participants.Count > 0)
+        foreach (string participantId in currentEvent.participants)
         {
-            foreach (string participantId in currentEvent.participants)
+            TeamMember member = teamSystem.GetMemberById(participantId);
+            if (member != null)
             {
-                TeamMember member = teamSystem.GetMemberById(participantId);
-                if (member != null)
+                GameObject item = Instantiate(participantItemPrefab, participantsContainer);
+                
+                item.transform.Find("Username").GetComponent<TextMeshProUGUI>().text = member.username;
+                
+                TextMeshProUGUI rankText = item.transform.Find("Rank").GetComponent<TextMeshProUGUI>();
+                rankText.text = member.rank;
+                SetRankColor(rankText, member.rank);
+                
+                // Set up remove button
+                Button removeButton = item.transform.Find("RemoveButton").GetComponent<Button>();
+                
+                if (teamSystem.GetCurrentUser().HasPermission("manageSchedule"))
                 {
-                    GameObject item = Instantiate(participantItemPrefab, participantsContainer);
-                    
-                    item.transform.Find("Username").GetComponent<TextMeshProUGUI>().text = member.username;
-                    
-                    TextMeshProUGUI rankText = item.transform.Find("Rank").GetComponent<TextMeshProUGUI>();
-                    rankText.text = member.rank;
-                    SetRankColor(rankText, member.rank);
-                    
-                    // Set up remove button
-                    Button removeButton = item.transform.Find("RemoveButton").GetComponent<Button>();
-                    
-                    if (teamSystem.GetCurrentUser().HasPermission("manageSchedule"))
-                    {
-                        removeButton.onClick.AddListener(() => {
-                            RemoveParticipantFromEvent(participantId);
-                        });
-                    }
-                    else
-                    {
-                        removeButton.gameObject.SetActive(false);
-                    }
+                    removeButton.onClick.AddListener(() => {
+                        RemoveParticipantFromEvent(participantId);
+                    });
+                }
+                else
+                {
+                    removeButton.gameObject.SetActive(false);
                 }
             }
         }
-        else
+        
+        // Show "No participants" message if empty
+        if (currentEvent.participants.Count == 0)
         {
-            // Show "No participants" message if empty
             GameObject item = Instantiate(participantItemPrefab, participantsContainer);
             item.transform.Find("Username").GetComponent<TextMeshProUGUI>().text = "No participants";
             item.transform.Find("Rank").GetComponent<TextMeshProUGUI>().text = "";
@@ -422,4 +420,224 @@ public class SchedulePanel : MonoBehaviour
     
     private void ShowEditEvent()
     {
-        editTitleInput.text =
+        editTitleInput.text = currentEvent.title;
+        editDescriptionInput.text = currentEvent.description;
+        editStartDateInput.text = currentEvent.startTime.ToString("MM/dd/yyyy");
+        editStartTimeInput.text = currentEvent.startTime.ToString("HH:mm");
+        editEndDateInput.text = currentEvent.endTime.ToString("MM/dd/yyyy");
+        editEndTimeInput.text = currentEvent.endTime.ToString("HH:mm");
+        
+        editEventPanel.SetActive(true);
+        eventDetailsPanel.SetActive(false);
+        editStatusText.text = "";
+    }
+    
+    private void SaveEventEdit()
+    {
+        string title = editTitleInput.text.Trim();
+        string description = editDescriptionInput.text.Trim();
+        string startDateStr = editStartDateInput.text.Trim();
+        string startTimeStr = editStartTimeInput.text.Trim();
+        string endDateStr = editEndDateInput.text.Trim();
+        string endTimeStr = editEndTimeInput.text.Trim();
+        
+        // Validate inputs
+        if (string.IsNullOrEmpty(title))
+        {
+            editStatusText.text = "Please enter an event title.";
+            editStatusText.color = Color.red;
+            return;
+        }
+        
+        DateTime startDateTime, endDateTime;
+        
+        try
+        {
+            startDateTime = ParseDateTime(startDateStr, startTimeStr);
+            endDateTime = ParseDateTime(endDateStr, endTimeStr);
+        }
+        catch (Exception)
+        {
+            editStatusText.text = "Please enter valid date and time (MM/DD/YYYY and HH:MM).";
+            editStatusText.color = Color.red;
+            return;
+        }
+        
+        if (endDateTime <= startDateTime)
+        {
+            editStatusText.text = "End time must be after start time.";
+            editStatusText.color = Color.red;
+            return;
+        }
+        
+        // Update event
+        ScheduleEvent updatedEvent = new ScheduleEvent(title, description, startDateTime, endDateTime);
+        updatedEvent.id = currentEvent.id;
+        updatedEvent.participants = currentEvent.participants;
+        
+        bool success = teamSystem.UpdateEvent(updatedEvent);
+        
+        if (success)
+        {
+            editStatusText.text = "Event updated successfully!";
+            editStatusText.color = Color.green;
+            
+            // Update current event
+            currentEvent = updatedEvent;
+            
+            // Refresh event list
+            RefreshSchedule();
+            
+            // Return to details after a delay
+            Invoke("ReturnToDetails", 1.5f);
+        }
+        else
+        {
+            editStatusText.text = "Failed to update event. Check permissions.";
+            editStatusText.color = Color.red;
+        }
+    }
+    
+    private void ReturnToDetails()
+    {
+        editEventPanel.SetActive(false);
+        ShowEventDetails(currentEvent);
+    }
+    
+    private void DeleteEvent()
+    {
+        // Confirm deletion
+        if (!UnityEngine.Application.isMobilePlatform)
+        {
+            // On non-mobile platforms, use a confirmation dialog
+            if (!UnityEngine.Windows.Dialog.Confirm("Delete Event", "Are you sure you want to delete this event?"))
+            {
+                return;
+            }
+        }
+        else
+        {
+            // On mobile, we'd need a custom dialog
+            // For this example, we'll just proceed with deletion
+        }
+        
+        bool success = teamSystem.DeleteEvent(currentEvent.id);
+        
+        if (success)
+        {
+            // Return to event list
+            eventDetailsPanel.SetActive(false);
+            eventListPanel.SetActive(true);
+            
+            // Refresh event list
+            RefreshSchedule();
+        }
+    }
+    
+    private void ShowAddParticipant()
+    {
+        // Set up participant dropdown
+        SetupParticipantDropdown();
+        
+        addParticipantPanel.SetActive(true);
+        eventDetailsPanel.SetActive(false);
+    }
+    
+    private void SetupParticipantDropdown()
+    {
+        participantDropdown.ClearOptions();
+        List<string> options = new List<string>();
+        List<TeamMember> allMembers = teamSystem.GetAllMembers();
+        
+        foreach (TeamMember member in allMembers)
+        {
+            // Only show members not already participating
+            if (!currentEvent.participants.Contains(member.id))
+            {
+                options.Add(member.username);
+            }
+        }
+        
+        participantDropdown.AddOptions(options);
+        
+        // Disable button if no members available
+        confirmAddParticipantButton.interactable = options.Count > 0;
+    }
+    
+    private void AddParticipantToEvent()
+    {
+        if (participantDropdown.options.Count == 0)
+        {
+            return;
+        }
+        
+        string selectedUsername = participantDropdown.options[participantDropdown.value].text;
+        TeamMember selectedMember = teamSystem.GetAllMembers().Find(m => m.username == selectedUsername);
+        
+        if (selectedMember != null)
+        {
+            bool success = teamSystem.AddParticipantToEvent(currentEvent.id, selectedMember.id);
+            
+            if (success)
+            {
+                // Return to details
+                addParticipantPanel.SetActive(false);
+                ShowEventDetails(teamSystem.GetEventById(currentEvent.id));
+            }
+        }
+    }
+    
+    private void RemoveParticipantFromEvent(string participantId)
+    {
+        bool success = teamSystem.RemoveParticipantFromEvent(currentEvent.id, participantId);
+        
+        if (success)
+        {
+            // Refresh details
+            ShowEventDetails(teamSystem.GetEventById(currentEvent.id));
+        }
+    }
+    
+    private void SetRankColor(TextMeshProUGUI text, string rank)
+    {
+        switch (rank)
+        {
+            case "Owner":
+                text.color = new Color(0.2f, 0.8f, 1f); // Light blue
+                break;
+            case "Co-Owner":
+                text.color = new Color(1f, 0.84f, 0f); // Gold
+                break;
+            case "Developer":
+                text.color = new Color(0.55f, 0f, 1f); // Purple
+                break;
+            case "Admin":
+                text.color = new Color(1f, 0.2f, 0.2f); // Red
+                break;
+            case "Jr-Admin":
+                text.color = new Color(1f, 0.5f, 0.5f); // Light red
+                break;
+            case "Moderator":
+                text.color = new Color(0.2f, 0.8f, 0.2f); // Green
+                break;
+            case "Jr-Moderator":
+                text.color = new Color(0.5f, 0.8f, 0.5f); // Light green
+                break;
+            case "Supporter":
+                text.color = new Color(0.2f, 0.6f, 1f); // Blue
+                break;
+            case "Jr-Supporter":
+                text.color = new Color(0.5f, 0.7f, 1f); // Light blue
+                break;
+            case "Sr-Builder":
+                text.color = new Color(1f, 0.6f, 0.2f); // Orange
+                break;
+            case "Builder":
+                text.color = new Color(1f, 0.8f, 0.4f); // Light orange
+                break;
+            default:
+                text.color = Color.white;
+                break;
+        }
+    }
+}
