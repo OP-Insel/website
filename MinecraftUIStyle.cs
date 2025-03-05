@@ -1,5 +1,5 @@
-// Filename: MinecraftUIStyle.cs
-// Applies Minecraft-style UI theming
+// File: MinecraftUIStyle.cs
+// Applies Minecraft-style UI theming to all UI elements
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -189,4 +189,9 @@ public class MinecraftUIStyle : MonoBehaviour
             // Apply font to dropdown text
             if (minecraftFont != null)
             {
-                dropdown.cap
+                dropdown.captionText.font = minecraftFont;
+                dropdown.itemText.font = minecraftFont;
+            }
+        }
+    }
+}
