@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
       createdAt: new Date(Date.now() - 604800000).toISOString(), // 7 days ago
       reviewedBy: '2', // Jane Doe
       reviewedAt: new Date(Date.now() - 518400000).toISOString(), // 6 days ago
-      reviewNote: 'Delay was due to server issues, not Sam\'s fault'
+      reviewNote: "Delay was due to server issues, not Sam's fault"
     }
   ];
   
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
         pendingGrid.appendChild(card);
       });
       
-      // Add event listeners to review buttons
+      // Add event listeners to review and reject buttons in pending requests
       document.querySelectorAll('.review-button').forEach(button => {
         button.addEventListener('click', function() {
           const requestId = this.dataset.requestId;
@@ -185,7 +185,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       });
       
-      // Add event listeners to reject buttons
       document.querySelectorAll('.reject-button').forEach(button => {
         button.addEventListener('click', function() {
           const requestId = this.dataset.requestId;
@@ -204,7 +203,6 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
       approvedRequests.forEach(request => {
         const targetUser = users.find(user => user.id === request.userId);
-        const requestedBy = users.find(user => user.id === request.requestedBy);
         const reviewedBy = users.find(user => user.id === request.reviewedBy);
         
         const card = document.createElement('div');
@@ -263,7 +261,6 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
       rejectedRequests.forEach(request => {
         const targetUser = users.find(user => user.id === request.userId);
-        const requestedBy = users.find(user => user.id === request.requestedBy);
         const reviewedBy = users.find(user => user.id === request.reviewedBy);
         
         const card = document.createElement('div');
@@ -297,4 +294,79 @@ document.addEventListener('DOMContentLoaded', function() {
             
             ${request.reviewNote ? `
               <div style="background-color: rgba(239, 68, 68, 0.1); padding: 0.75rem; border-radius: 0.25rem; margin-bottom: 1rem; border: 1px solid rgba(239, 68, 68, 0.2);">
-                <div style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">
+                <div style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Review note:</div>
+                <p style="font-size: 0.875rem;">${request.reviewNote}</p>
+              </div>
+            ` : ''}
+            
+            <div style="font-size: 0.75rem; opacity: 0.7; display: flex; align-items: center; gap: 0.25rem;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>Rejected by ${reviewedBy?.name || 'Admin'}</span>
+            </div>
+          </div>
+        `;
+        
+        rejectedGrid.appendChild(card);
+      });
+    }
+  }
+  
+  // Update requests in localStorage and re-render
+  function updateRequests() {
+    localStorage.setItem('minecraft_team_requests', JSON.stringify(requests));
+    renderRequests();
+  }
+  
+  // Show review modal for a request
+  function showReviewModal(request) {
+    const modal = document.getElementById('review-modal');
+    const modalContent = document.getElementById('review-modal-content');
+    
+    // Populate modal content with request details and controls
+    modalContent.innerHTML = `
+      <h2>Review Request</h2>
+      <p><strong>User ID:</strong> ${request.userId}</p>
+      <p><strong>Points to Deduct:</strong> ${request.points}</p>
+      <p><strong>Reason:</strong> ${request.reason}</p>
+      <textarea id="review-note" placeholder="Enter review note" style="width: 100%; height: 80px; margin-top: 1rem;"></textarea>
+      <div class="modal-buttons" style="margin-top: 1rem; display: flex; gap: 1rem;">
+        <button id="approve-button" class="button">Approve</button>
+        <button id="close-modal" class="button outline-button">Cancel</button>
+      </div>
+    `;
+    modal.style.display = 'block';
+    
+    // Approve the request
+    document.getElementById('approve-button').addEventListener('click', function() {
+      request.status = 'approved';
+      request.reviewedBy = currentUser.id;
+      request.reviewedAt = new Date().toISOString();
+      request.reviewNote = document.getElementById('review-note').value;
+      updateRequests();
+      modal.style.display = 'none';
+    });
+    
+    // Close the modal without action
+    document.getElementById('close-modal').addEventListener('click', function() {
+      modal.style.display = 'none';
+    });
+  }
+  
+  // Reject a request
+  function rejectRequest(request) {
+    if (confirm('Are you sure you want to reject this request?')) {
+      request.status = 'rejected';
+      request.reviewedBy = currentUser.id;
+      request.reviewedAt = new Date().toISOString();
+      // Optionally prompt for a review note
+      request.reviewNote = prompt('Enter a note for rejection:', 'Request rejected') || 'Request rejected';
+      updateRequests();
+    }
+  }
+  
+  // Initial render of requests
+  renderRequests();
+});
