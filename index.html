@@ -4,12 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Minecraft Team Management</title>
-  <link rel="stylesheet" href="app/globals.css">
   <style>
-    /* Additional styles for the landing page */
-    body {
+    /* Base styles */
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background: linear-gradient(to bottom right, #000000, #333333);
       color: white;
@@ -20,63 +23,117 @@
       justify-content: center;
     }
     
-    .container {
-      max-width: 800px;
+    /* Login form styles */
+    .login-container {
+      width: 100%;
+      max-width: 400px;
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    .login-header {
+      padding: 1.5rem;
       text-align: center;
-      padding: 2rem;
-      animation: fadeIn 0.8s ease-out;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .logo {
-      width: 120px;
-      height: 120px;
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
       background-color: rgba(255, 255, 255, 0.1);
-      margin: 0 auto 2rem;
+      margin: 0 auto 1rem;
       display: flex;
       align-items: center;
       justify-content: center;
       animation: scaleIn 0.5s ease-out;
     }
     
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      animation: slideUp 0.5s ease-out;
+    .login-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
     }
     
-    p {
-      font-size: 1.2rem;
-      margin-bottom: 2rem;
-      opacity: 0.8;
-      animation: slideUp 0.5s ease-out 0.1s both;
+    .login-description {
+      font-size: 0.875rem;
+      opacity: 0.7;
+    }
+    
+    .login-content {
+      padding: 1.5rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+    }
+    
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.25rem;
+      color: white;
+      font-size: 1rem;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .info-box {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 0.25rem;
+      font-size: 0.75rem;
+    }
+    
+    .login-footer {
+      padding: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .button {
-      display: inline-block;
+      display: block;
+      width: 100%;
       background-color: white;
       color: black;
-      padding: 0.75rem 1.5rem;
-      border-radius: 0.5rem;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 0.25rem;
       font-weight: bold;
-      text-decoration: none;
+      cursor: pointer;
       transition: all 0.2s;
-      animation: slideUp 0.5s ease-out 0.2s both;
     }
     
     .button:hover {
       background-color: #f0f0f0;
-      transform: translateY(-2px);
     }
     
+    .error-message {
+      color: #ff6b6b;
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+      display: none;
+    }
+    
+    /* Animations */
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
-    }
-    
-    @keyframes slideUp {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
     }
     
     @keyframes scaleIn {
@@ -86,27 +143,92 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="logo">
-      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M2 20h20"></path>
-        <path d="M5 20v-4a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v4"></path>
-        <path d="M12 7V4"></path>
-        <path d="M9 4h6"></path>
-      </svg>
+  <div class="login-container">
+    <div class="login-header">
+      <div class="logo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 20h20"></path>
+          <path d="M5 20v-4a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v4"></path>
+          <path d="M12 7V4"></path>
+          <path d="M9 4h6"></path>
+        </svg>
+      </div>
+      <h2 class="login-title">Minecraft Team Portal</h2>
+      <p class="login-description">Enter your credentials to access the team management system</p>
     </div>
-    <h1>Minecraft Team Management</h1>
-    <p>A comprehensive system for managing your Minecraft server team, tracking points, and handling story elements.</p>
-    <a href="app/dashboard/page.html" class="button">Enter Dashboard</a>
+    <form id="login-form">
+      <div class="login-content">
+        <div class="form-group">
+          <label for="username">Minecraft Username</label>
+          <input type="text" id="username" placeholder="Enter your username" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Enter your password" required>
+        </div>
+        <div id="error-message" class="error-message">Invalid username or password</div>
+        <div class="info-box">
+          <p style="font-weight: 600; margin-bottom: 4px;">Demo Login Information:</p>
+          <p>Use any of these usernames: MaxMC, JaneDoeMC, AlexMC, SamBuilds, ChrisSupport, EmilyDev</p>
+          <p>Password: any password will work for the demo</p>
+        </div>
+      </div>
+      <div class="login-footer">
+        <button type="submit" class="button">Login</button>
+      </div>
+    </form>
   </div>
 
   <script>
-    // Redirect to the login page
+    // Check if user is already logged in
     document.addEventListener('DOMContentLoaded', function() {
-      // For GitHub Pages, we'll use the direct HTML files
-      document.querySelector('.button').addEventListener('click', function(e) {
+      const currentUser = localStorage.getItem('minecraft_team_user');
+      
+      if (currentUser) {
+        // User is already logged in, redirect to dashboard
+        window.location.href = 'dashboard.html';
+      }
+      
+      // Handle login form submission
+      document.getElementById('login-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        window.location.href = 'components/login-page.html';
+        
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        
+        // For demo purposes, check if username is one of the demo users
+        const validUsernames = ['MaxMC', 'JaneDoeMC', 'AlexMC', 'SamBuilds', 'ChrisSupport', 'EmilyDev'];
+        
+        if (validUsernames.includes(username) && password.length > 0) {
+          // Create user object
+          const user = {
+            username: username,
+            displayName: username === 'MaxMC' ? 'Max Owner' : 
+                        username === 'JaneDoeMC' ? 'Jane Doe' : 
+                        username === 'AlexMC' ? 'Alex Admin' : 
+                        username === 'SamBuilds' ? 'Sam Builder' : 
+                        username === 'ChrisSupport' ? 'Chris Support' : 'Emily Developer',
+            rank: username === 'MaxMC' ? 'Owner' : 
+                  username === 'JaneDoeMC' ? 'Co-Owner' : 
+                  username === 'AlexMC' ? 'Admin' : 
+                  username === 'SamBuilds' ? 'Builder' : 
+                  username === 'ChrisSupport' ? 'Supporter' : 'Developer',
+            permissions: username === 'MaxMC' || username === 'JaneDoeMC' ? 
+                        ['manage_users', 'manage_points', 'approve_requests', 'manage_story'] : 
+                        username === 'AlexMC' ? 
+                        ['manage_users', 'suggest_points', 'manage_story'] : 
+                        ['suggest_points']
+          };
+          
+          // Store user in localStorage
+          localStorage.setItem('minecraft_team_user', JSON.stringify(user));
+          
+          // Redirect to dashboard
+          window.location.href = 'dashboard.html';
+        } else {
+          // Show error message
+          document.getElementById('error-message').style.display = 'block';
+        }
       });
     });
   </script>
