@@ -47,7 +47,7 @@ const App = {
 const Auth = {
     // Discord OAuth2 configuration
     config: {
-        clientId: '123456789012345678', // REPLACE WITH YOUR DISCORD CLIENT ID
+        clientId: '1348277069380849746', // REPLACE WITH YOUR DISCORD CLIENT ID
         redirectUri: window.location.origin + window.location.pathname,
         scope: 'identify email',
         authUrl: 'https://discord.com/api/oauth2/authorize',
