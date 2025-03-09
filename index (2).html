@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OP-Insel Management</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dark-mode">
+    <div id="app">
+        <!-- Login Screen -->
+        <div id="login-screen" class="screen">
+            <div class="login-container">
+                <div class="logo">
+                    <img src="https://mc-heads.net/avatar/Steve/100" alt="OP-Insel Logo">
+                    <h1>OP-Insel Management</h1>
+                </div>
+                <p class="description">Minecraft Server Team Management System</p>
+                <button id="discord-login" class="discord-btn">
+                    <i class="fab fa-discord"></i> Login with Discord
+                </button>
+                <p class="login-info">You must connect your Discord account to access the system</p>
+            </div>
+        </div>
+
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="screen hidden">
+            <div class="loading-container">
+                <div class="spinner"></div>
+                <p>Loading...</p>
+            </div>
+        </div>
+
+        <!-- No Access Screen -->
+        <div id="no-access-screen" class="screen hidden">
+            <div class="no-access-container">
+                <i class="fas fa-lock lock-icon"></i>
+                <h2>Access Restricted</h2>
+                <p>You don't have permission to access this system.</p>
+                <p>Please contact the server owner to request access.</p>
+                <button id="logout-btn" class="btn btn-danger">Logout</button>
+            </div>
+        </div>
+
+        <!-- Main App -->
+        <div id="main-app" class="screen hidden">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <img id="user-avatar" src="https://mc-heads.net/avatar/Steve/50" alt="User Avatar">
+                    <div class="user-info">
+                        <h3 id="username">Username</h3>
+                        <span id="user-role" class="role-badge">Role</span>
+                    </div>
+                </div>
+                <nav class="sidebar-nav">
+                    <ul>
+                        <li data-page="dashboard" class="active"><i class="fas fa-home"></i> Dashboard</li>
+                        <li data-page="profile"><i class="fas fa-user"></i> Profile</li>
+                        <li data-page="tasks"><i class="fas fa-tasks"></i> Tasks</li>
+                        <li data-page="team"><i class="fas fa-users"></i> Team</li>
+                        <li data-page="admin" class="admin-only hidden"><i class="fas fa-shield-alt"></i> Admin</li>
+                        <li id="logout-nav"><i class="fas fa-sign-out-alt"></i> Logout</li>
+                    </ul>
+                </nav>
+                <div class="sidebar-footer">
+                    <p>Points: <span id="user-points">0</span></p>
+                    <div class="points-indicator">
+                        <div id="points-bar" class="points-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content">
+                <!-- Dashboard Page -->
+                <div id="dashboard-page" class="page">
+                    <h2>Dashboard</h2>
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <i class="fas fa-tasks"></i>
+                            <div class="stat-info">
+                                <h3>Tasks</h3>
+                                <p id="tasks-count">0 Assigned</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-check-circle"></i>
+                            <div class="stat-info">
+                                <h3>Completed</h3>
+                                <p id="completed-count">0 Tasks</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div class="stat-info">
+                                <h3>Infractions</h3>
+                                <p id="infractions-count">0 Points</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-star"></i>
+                            <div class="stat-info">
+                                <h3>Rank Progress</h3>
+                                <p id="rank-progress">0%</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-sections">
+                        <div class="section">
+                            <h3>Recent Tasks</h3>
+                            <div id="recent-tasks" class="task-list">
+                                <p class="empty-state">No tasks assigned yet</p>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <h3>Team Announcements</h3>
+                            <div id="announcements" class="announcements-list">
+                                <div class="announcement">
+                                    <h4>Welcome to OP-Insel Management</h4>
+                                    <p>This is the new management system for our Minecraft server team.</p>
+                                    <span class="announcement-date">Today</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Page -->
+                <div id="profile-page" class="page hidden">
+                    <h2>Your Profile</h2>
+                    <div class="profile-container">
+                        <div class="profile-header">
+                            <div class="profile-avatar">
+                                <img id="profile-avatar-img" src="https://mc-heads.net/avatar/Steve/100" alt="Profile Avatar">
+                            </div>
+                            <div class="profile-info">
+                                <h3 id="profile-username">Username</h3>
+                                <span id="profile-role" class="role-badge">Role</span>
+                                <p>Member since: <span id="profile-joined-date">Jan 1, 2023</span></p>
+                            </div>
+                        </div>
+                        <div class="profile-details">
+                            <div class="profile-section">
+                                <h3>Account Information</h3>
+                                <div class="form-group">
+                                    <label>Discord Username:</label>
+                                    <p id="profile-discord">username#0000</p>
+                                </div>
+                                <div class="form-group">
+                                    <label>Minecraft Username:</label>
+                                    <input type="text" id="minecraft-username" placeholder="Enter your Minecraft username">
+                                    <button id="save-minecraft" class="btn btn-primary">Save</button>
+                                </div>
+                            </div>
+                            <div class="profile-section">
+                                <h3>Points & Rank</h3>
+                                <div class="points-display">
+                                    <p>Current Points: <span id="profile-points">0</span></p>
+                                    <div class="points-progress">
+                                        <div id="profile-points-bar" class="points-bar"></div>
+                                    </div>
+                                    <p>Next Rank: <span id="profile-next-rank">-</span></p>
+                                    <p>Points needed: <span id="profile-points-needed">-</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tasks Page -->
+                <div id="tasks-page" class="page hidden">
+                    <h2>Tasks & Quests</h2>
+                    <div class="tasks-container">
+                        <div class="tasks-header">
+                            <div class="tasks-filter">
+                                <select id="task-filter">
+                                    <option value="all">All Tasks</option>
+                                    <option value="assigned">Assigned to Me</option>
+                                    <option value="available">Available</option>
+                                    <option value="completed">Completed</option>
+                                </select>
+                            </div>
+                            <div class="tasks-search">
+                                <input type="text" id="task-search" placeholder="Search tasks...">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        </div>
+                        <div class="tasks-list" id="tasks-list">
+                            <!-- Tasks will be populated here -->
+                            <p class="empty-state">No tasks available</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Page -->
+                <div id="team-page" class="page hidden">
+                    <h2>Team Members</h2>
+                    <div class="team-container">
+                        <div class="team-filter">
+                            <select id="role-filter">
+                                <option value="all">All Roles</option>
+                                <option value="Owner">Owner</option>
+                                <option value="Co-Owner">Co-Owner</option>
+                                <option value="Admin">Admin</option>
+                                <option value="Jr. Admin">Jr. Admin</option>
+                                <option value="Moderator">Moderator</option>
+                                <option value="Jr. Moderator">Jr. Moderator</option>
+                                <option value="Supporter">Supporter</option>
+                                <option value="Jr. Supporter">Jr. Supporter</option>
+                            </select>
+                            <input type="text" id="member-search" placeholder="Search members...">
+                        </div>
+                        <div class="team-grid" id="team-grid">
+                            <!-- Team members will be populated here -->
+                            <p class="empty-state">No team members found</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Page -->
+                <div id="admin-page" class="page hidden">
+                    <h2>Admin Panel</h2>
+                    <div class="admin-tabs">
+                        <div class="tab-header">
+                            <div class="tab active" data-tab="users">User Management</div>
+                            <div class="tab" data-tab="roles">Role Management</div>
+                            <div class="tab" data-tab="infractions">Infractions</div>
+                            <div class="tab" data-tab="database">Database</div>
+                        </div>
+                        <div class="tab-content">
+                            <!-- Users Tab -->
+                            <div class="tab-pane active" id="users-tab">
+                                <div class="admin-actions">
+                                    <button id="add-user" class="btn btn-primary"><i class="fas fa-plus"></i> Add User</button>
+                                    <div class="search-box">
+                                        <input type="text" id="admin-user-search" placeholder="Search users...">
+                                        <i class="fas fa-search"></i>
+                                    </div>
+                                </div>
+                                <div class="users-table-container">
+                                    <table class="users-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Username</th>
+                                                <th>Role</th>
+                                                <th>Points</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="users-table-body">
+                                            <!-- Users will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Roles Tab -->
+                            <div class="tab-pane" id="roles-tab">
+                                <div class="roles-list" id="roles-list">
+                                    <!-- Roles will be populated here -->
+                                </div>
+                            </div>
+
+                            <!-- Infractions Tab -->
+                            <div class="tab-pane" id="infractions-tab">
+                                <div class="admin-actions">
+                                    <button id="add-infraction" class="btn btn-danger"><i class="fas fa-plus"></i> Add Infraction</button>
+                                    <div class="search-box">
+                                        <input type="text" id="infraction-search" placeholder="Search infractions...">
+                                        <i class="fas fa-search"></i>
+                                    </div>
+                                </div>
+                                <div class="infractions-table-container">
+                                    <table class="infractions-table">
+                                        <thead>
+                                            <tr>
+                                                <th>User</th>
+                                                <th>Type</th>
+                                                <th>Points</th>
+                                                <th>Date</th>
+                                                <th>Reason</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="infractions-table-body">
+                                            <!-- Infractions will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Database Tab -->
+                            <div class="tab-pane" id="database-tab">
+                                <div class="database-actions">
+                                    <div class="action-group">
+                                        <h3>Export Database</h3>
+                                        <p>Download a backup of all system data</p>
+                                        <button id="export-db" class="btn btn-primary"><i class="fas fa-download"></i> Export Data</button>
+                                    </div>
+                                    <div class="action-group">
+                                        <h3>Import Database</h3>
+                                        <p>Restore from a previous backup</p>
+                                        <input type="file" id="import-file" accept=".json" style="display: none;">
+                                        <button id="import-db" class="btn btn-warning"><i class="fas fa-upload"></i> Import Data</button>
+                                    </div>
+                                    <div class="action-group">
+                                        <h3>Reset Database</h3>
+                                        <p>Warning: This will delete all data</p>
+                                        <button id="reset-db" class="btn btn-danger"><i class="fas fa-trash"></i> Reset Data</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <!-- Edit User Modal -->
+        <div id="edit-user-modal" class="modal hidden">
+            <div class="modal-header">
+                <h3>Edit User</h3>
+                <button class="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="edit-user-id">
+                <div class="form-group">
+                    <label for="edit-username">Username</label>
+                    <input type="text" id="edit-username" placeholder="Username">
+                </div>
+                <div class="form-group">
+                    <label for="edit-minecraft">Minecraft Username</label>
+                    <input type="text" id="edit-minecraft" placeholder="Minecraft Username">
+                </div>
+                <div class="form-group">
+                    <label for="edit-role">Role</label>
+                    <select id="edit-role">
+                        <option value="Owner">Owner</option>
+                        <option value="Co-Owner">Co-Owner</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Jr. Admin">Jr. Admin</option>
+                        <option value="Moderator">Moderator</option>
+                        <option value="Jr. Moderator">Jr. Moderator</option>
+                        <option value="Supporter">Supporter</option>
+                        <option value="Jr. Supporter">Jr. Supporter</option>
+                        <option value="Member">Member</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-points">Points</label>
+                    <input type="number" id="edit-points" placeholder="Points">
+                </div>
+                <div class="form-group">
+                    <label for="edit-status">Status</label>
+                    <select id="edit-status">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="banned">Banned</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary close-modal">Cancel</button>
+                <button id="save-user" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+
+        <!-- Add Infraction Modal -->
+        <div id="add-infraction-modal" class="modal hidden">
+            <div class="modal-header">
+                <h3>Add Infraction</h3>
+                <button class="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="infraction-user">User</label>
+                    <select id="infraction-user">
+                        <!-- Users will be populated here -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="infraction-type">Type</label>
+                    <select id="infraction-type">
+                        <option value="Ban without reason">Ban without reason (-5)</option>
+                        <option value="Unfair punishment">Unfair punishment (-10)</option>
+                        <option value="Admin abuse">Admin abuse (-20)</option>
+                        <option value="Insults">Insults (-15)</option>
+                        <option value="Inactivity">Inactivity (-10)</option>
+                        <option value="Repeated misconduct">Repeated misconduct (-30)</option>
+                        <option value="Spamming">Spamming (-5)</option>
+                        <option value="Severe violation">Severe violation (-20)</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group" id="custom-points-group" style="display: none;">
+                    <label for="infraction-points">Points</label>
+                    <input type="number" id="infraction-points" placeholder="Points (negative value)">
+                </div>
+                <div class="form-group">
+                    <label for="infraction-reason">Reason</label>
+                    <textarea id="infraction-reason" placeholder="Describe the infraction..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary close-modal">Cancel</button>
+                <button id="save-infraction" class="btn btn-danger">Add Infraction</button>
+            </div>
+        </div>
+
+        <!-- Add Task Modal -->
+        <div id="add-task-modal" class="modal hidden">
+            <div class="modal-header">
+                <h3>Add Task</h3>
+                <button class="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="task-title">Title</label>
+                    <input type="text" id="task-title" placeholder="Task title">
+                </div>
+                <div class="form-group">
+                    <label for="task-description">Description</label>
+                    <textarea id="task-description" placeholder="Task description..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="task-type">Type</label>
+                    <select id="task-type">
+                        <option value="Main Quest">Main Quest</option>
+                        <option value="Side Quest">Side Quest</option>
+                        <option value="Daily Task">Daily Task</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="task-assignee">Assign To</label>
+                    <select id="task-assignee">
+                        <option value="">Available to All</option>
+                        <!-- Users will be populated here -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="task-deadline">Deadline</label>
+                    <input type="date" id="task-deadline">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary close-modal">Cancel</button>
+                <button id="save-task" class="btn btn-primary">Add Task</button>
+            </div>
+        </div>
+
+        <!-- Confirmation Modal -->
+        <div id="confirm-modal" class="modal hidden">
+            <div class="modal-header">
+                <h3 id="confirm-title">Confirmation</h3>
+                <button class="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <p id="confirm-message">Are you sure you want to proceed?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary close-modal">Cancel</button>
+                <button id="confirm-action" class="btn btn-danger">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/database.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
