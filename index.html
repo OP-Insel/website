@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authentication System</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Content will be loaded here by the router -->
+    <div id="loading">
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <!-- Templates -->
+  <template id="login-template">
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="auth-header">
+          <h1>Login</h1>
+          <p>Sign in to your account</p>
+        </div>
+        <div class="auth-content">
+          <div id="login-error" class="alert error hidden">
+            <i class="fas fa-exclamation-circle"></i>
+            <span class="message">Invalid username or password</span>
+          </div>
+          <form id="login-form" class="auth-form">
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" id="password" name="password" required>
+            </div>
+            <div class="button-group">
+              <button type="submit" class="button primary full-width">Sign In</button>
+            </div>
+          </form>
+          <div class="auth-link">
+            <p>Don't have an account? <a href="#" id="register-link">Register</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="register-template">
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="auth-header">
+          <h1>Register</h1>
+          <p>Create a new account</p>
+        </div>
+        <div class="auth-content">
+          <div id="register-error" class="alert error hidden">
+            <i class="fas fa-exclamation-circle"></i>
+            <span class="message">Error creating account</span>
+          </div>
+          <form id="register-form" class="auth-form">
+            <div class="form-group">
+              <label for="reg-username">Username</label>
+              <input type="text" id="reg-username" name="username" required>
+            </div>
+            <div class="form-group">
+              <label for="reg-email">Email</label>
+              <input type="email" id="reg-email" name="email" required>
+            </div>
+            <div class="form-group">
+              <label for="reg-password">Password</label>
+              <input type="password" id="reg-password" name="password" required>
+            </div>
+            <div class="form-group">
+              <label for="reg-confirm-password">Confirm Password</label>
+              <input type="password" id="reg-confirm-password" name="confirmPassword" required>
+            </div>
+            <div class="button-group">
+              <button type="submit" class="button primary full-width">Create Account</button>
+            </div>
+          </form>
+          <div class="auth-link">
+            <p>Already have an account? <a href="#" id="login-link">Login</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="dashboard-template">
+    <div class="dashboard">
+      <div class="sidebar">
+        <div class="logo">
+          <i class="fas fa-shield-alt"></i>
+          <span>Auth System</span>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="#" class="sidebar-link active" data-page="dashboard">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="#" class="sidebar-link" data-page="profile">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+          </a>
+          <a href="#" class="sidebar-link admin-only hidden" data-page="admin">
+            <i class="fas fa-cog"></i>
+            <span>Admin Panel</span>
+          </a>
+          <a href="#" class="sidebar-link logout">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </a>
+        </nav>
+      </div>
+      <div class="dashboard-main">
+        <header class="dashboard-header">
+          <h1>Dashboard</h1>
+          <div class="user-info">
+            <span id="user-role" class="badge">User</span>
+            <span id="user-name">Username</span>
+          </div>
+        </header>
+        <main id="dashboard-content">
+          <div class="card-grid">
+            <div class="card">
+              <div class="card-header">
+                <h2>Welcome</h2>
+                <p>Your personal dashboard</p>
+              </div>
+              <div class="card-content">
+                <p>Welcome to your dashboard. This is a secure area that requires authentication.</p>
+                <p>Your role: <span id="role-display" class="badge">User</span></p>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <h2>Activity</h2>
+                <p>Recent system activity</p>
+              </div>
+              <div class="card-content">
+                <div class="activity-list">
+                  <div class="activity-item">
+                    <div class="activity-avatar">
+                      <i class="fas fa-user"></i>
+                    </div>
+                    <div class="activity-details">
+                      <p class="activity-user">System</p>
+                      <p class="activity-action">User logged in</p>
+                    </div>
+                    <div class="activity-time">Just now</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-grid-large">
+            <div class="card">
+              <div class="card-header">
+                <h2>System Status</h2>
+                <p>Current system health</p>
+              </div>
+              <div class="card-content">
+                <div class="health-metrics">
+                  <div class="health-metric">
+                    <div class="health-metric-label">System</div>
+                    <div class="status-active">Active</div>
+                  </div>
+                  <div class="health-metric">
+                    <div class="health-metric-label">Users</div>
+                    <div id="user-count">0</div>
+                  </div>
+                  <div class="health-metric">
+                    <div class="health-metric-label">Uptime</div>
+                    <div>100%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </template>
+
+  <template id="admin-template">
+    <div class="dashboard">
+      <div class="sidebar">
+        <div class="logo">
+          <i class="fas fa-shield-alt"></i>
+          <span>Auth System</span>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="#" class="sidebar-link" data-page="dashboard">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="#" class="sidebar-link" data-page="profile">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+          </a>
+          <a href="#" class="sidebar-link admin-only active" data-page="admin">
+            <i class="fas fa-cog"></i>
+            <span>Admin Panel</span>
+          </a>
+          <a href="#" class="sidebar-link logout">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </a>
+        </nav>
+      </div>
+      <div class="dashboard-main">
+        <header class="dashboard-header">
+          <h1>Admin Panel</h1>
+          <div class="user-info">
+            <span id="admin-user-role" class="badge owner">Owner</span>
+            <span id="admin-user-name">Username</span>
+          </div>
+        </header>
+        <main id="admin-content">
+          <div class="admin-tabs">
+            <button class="tab-button active" data-tab="users">User Management</button>
+            <button class="tab-button" data-tab="permissions">Permissions</button>
+            <button class="tab-button" data-tab="logs">System Logs</button>
+            <button class="tab-button" data-tab="settings">Settings</button>
+          </div>
+          
+          <div class="tab-content active" id="users-tab">
+            <div class="card">
+              <div class="card-header">
+                <h2>User Management</h2>
+                <p>Manage system users</p>
+              </div>
+              <div class="card-content">
+                <div class="table-container">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="users-table-body">
+                      <!-- User rows will be added here dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="tab-content" id="permissions-tab">
+            <div class="card">
+              <div class="card-header">
+                <h2>Role Permissions</h2>
+                <p>Manage role-based permissions</p>
+              </div>
+              <div class="card-content">
+                <div class="permissions-grid">
+                  <div class="permission-role">
+                    <h3>Owner</h3>
+                    <ul class="permission-list">
+                      <li>Full system access</li>
+                      <li>Manage all users</li>
+                      <li>Change user roles</li>
+                      <li>System configuration</li>
+                    </ul>
+                  </div>
+                  <div class="permission-role">
+                    <h3>Co-Owner</h3>
+                    <ul class="permission-list">
+                      <li>Manage regular users</li>
+                      <li>View system logs</li>
+                      <li>Change some settings</li>
+                    </ul>
+                  </div>
+                  <div class="permission-role">
+                    <h3>User</h3>
+                    <ul class="permission-list">
+                      <li>Access dashboard</li>
+                      <li>View profile</li>
+                      <li>Update own information</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="tab-content" id="logs-tab">
+            <div class="card">
+              <div class="card-header">
+                <h2>System Logs</h2>
+                <p>Recent system activity</p>
+              </div>
+              <div class="card-content">
+                <div class="table-container">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Timestamp</th>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Details</th>
+                      </tr>
+                    </thead>
+                    <tbody id="logs-table-body">
+                      <!-- Log entries will be added here dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="tab-content" id="settings-tab">
+            <div class="card">
+              <div class="card-header">
+                <h2>System Settings</h2>
+                <p>Configure system behavior</p>
+              </div>
+              <div class="card-content">
+                <form id="settings-form" class="settings-form">
+                  <div class="form-group">
+                    <label for="site-name">Site Name</label>
+                    <input type="text" id="site-name" name="siteName" value="Authentication System">
+                  </div>
+                  <div class="form-group">
+                    <label for="allow-registration">Allow Registration</label>
+                    <select id="allow-registration" name="allowRegistration">
+                      <option value="true">Enabled</option>
+                      <option value="false">Disabled</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="default-role">Default User Role</label>
+                    <select id="default-role" name="defaultRole">
+                      <option value="user">User</option>
+                      <option value="co-owner">Co-Owner</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="session-timeout">Session Timeout (minutes)</label>
+                    <input type="number" id="session-timeout" name="sessionTimeout" value="30" min="5" max="120">
+                  </div>
+                  <div class="button-group">
+                    <button type="submit" class="button primary">Save Settings</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </template>
+
+  <template id="profile-template">
+    <div class="dashboard">
+      <div class="sidebar">
+        <div class="logo">
+          <i class="fas fa-shield-alt"></i>
+          <span>Auth System</span>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="#" class="sidebar-link" data-page="dashboard">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="#" class="sidebar-link active" data-page="profile">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+          </a>
+          <a href="#" class="sidebar-link admin-only hidden" data-page="admin">
+            <i class="fas fa-cog"></i>
+            <span>Admin Panel</span>
+          </a>
+          <a href="#" class="sidebar-link logout">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </a>
+        </nav>
+      </div>
+      <div class="dashboard-main">
+        <header class="dashboard-header">
+          <h1>Profile</h1>
+          <div class="user-info">
+            <span id="profile-user-role" class="badge">User</span>
+            <span id="profile-user-name">Username</span>
+          </div>
+        </header>
+        <main id="profile-content">
+          <div class="card-grid-large">
+            <div class="card">
+              <div class="card-header">
+                <h2>User Profile</h2>
+                <p>Your account information</p>
+              </div>
+              <div class="card-content">
+                <div id="profile-update-success" class="alert success hidden">
+                  <i class="fas fa-check-circle"></i>
+                  <span class="message">Profile updated successfully</span>
+                </div>
+                <div id="profile-update-error" class="alert error hidden">
+                  <i class="fas fa-exclamation-circle"></i>
+                  <span class="message">Error updating profile</span>
+                </div>
+                <form id="profile-form" class="profile-form">
+                  <div class="form-group">
+                    <label for="profile-username">Username</label>
+                    <input type="text" id="profile-username" name="username" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="profile-email">Email</label>
+                    <input type="email" id="profile-email" name="email">
+                  </div>
+                  <div class="form-group">
+                    <label for="profile-role">Role</label>
+                    <input type="text" id="profile-role" name="role" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="profile-password">New Password</label>
+                    <input type="password" id="profile-password" name="password" placeholder="Leave blank to keep current password">
+                  </div>
+                  <div class="form-group">
+                    <label for="profile-confirm-password">Confirm New Password</label>
+                    <input type="password" id="profile-confirm-password" name="confirmPassword" placeholder="Leave blank to keep current password">
+                  </div>
+                  <div class="button-group">
+                    <button type="submit" class="button primary">Update Profile</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </template>
+
+  <template id="edit-user-modal-template">
+    <div class="modal" id="edit-user-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Edit User</h2>
+          <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div id="edit-user-error" class="alert error hidden">
+            <i class="fas fa-exclamation-circle"></i>
+            <span class="message">Error updating user</span>
+          </div>
+          <form id="edit-user-form">
+            <input type="hidden" id="edit-user-id" name="userId">
+            <div class="form-group">
+              <label for="edit-username">Username</label>
+              <input type="text" id="edit-username" name="username" readonly>
+            </div>
+            <div class="form-group">
+              <label for="edit-email">Email</label>
+              <input type="email" id="edit-email" name="email">
+            </div>
+            <div class="form-group">
+              <label for="edit-role">Role</label>
+              <select id="edit-role" name="role">
+                <option value="user">User</option>
+                <option value="co-owner">Co-Owner</option>
+                <option value="owner">Owner</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="edit-status">Status</label>
+              <select id="edit-status" name="status">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="suspended">Suspended</option>
+              </select>
+            </div>
+            <div class="button-group">
+              <button type="submit" class="button primary">Save Changes</button>
+              <button type="button" class="button secondary close-modal">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/users.js"></script>
+  <script src="js/logs.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
+
