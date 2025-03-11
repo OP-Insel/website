@@ -1,2 +1,0 @@
-# Diese Datei verhindert, dass GitHub Pages versucht, das Projekt als Jekyll-Projekt zu behandeln
-
