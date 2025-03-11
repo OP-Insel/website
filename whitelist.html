@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whitelist - OP Insel</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="dashboard-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+          <div class="sidebar-header">
+              <div class="sidebar-logo">
+                  <div class="logo-icon">OP</div>
+                  <span class="logo-text">OP Insel</span>
+              </div>
+              <div class="server-ip">OPinsel.de</div>
+          </div>
+          <nav class="sidebar-nav">
+              <ul>
+                  <li>
+                      <a href="dashboard.html">
+                          <i class="fas fa-home"></i>
+                          <span>Dashboard</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="tasks.html">
+                          <i class="fas fa-tasks"></i>
+                          <span>Tasks</span>
+                      </a>
+                  </li>
+                  <li class="active">
+                      <a href="whitelist.html">
+                          <i class="fas fa-user-shield"></i>
+                          <span>Whitelist</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="story.html">
+                          <i class="fas fa-book"></i>
+                          <span>Story System</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="characters.html">
+                          <i class="fas fa-users"></i>
+                          <span>Characters</span>
+                      </a>
+                  </li>
+              </ul>
+          </nav>
+          <div class="sidebar-footer">
+              <div class="user-menu" id="user-menu">
+                  <div class="user-avatar">
+                      <img src="avatar-placeholder.jpg" alt="User Avatar">
+                  </div>
+                  <span class="user-name" id="user-name">User</span>
+                  <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="user-dropdown" id="user-dropdown">
+                  <ul>
+                      <li><a href="#">Profile</a></li>
+                      <li><a href="#">Settings</a></li>
+                      <li><a href="#" id="logout-button">Log out</a></li>
+                  </ul>
+              </div>
+          </div>
+      </aside>
+
+      <!-- Main content -->
+      <main class="main-content">
+          <header class="dashboard-header">
+              <div class="header-left">
+                  <button class="sidebar-toggle" id="sidebar-toggle">
+                      <i class="fas fa-bars"></i>
+                  </button>
+                  <div>
+                      <h1>Whitelist Verwaltung</h1>
+                      <p>Verwalte die Whitelist für deinen OP Insel Server.</p>
+                  </div>
+              </div>
+          </header>
+
+          <div class="dashboard-content">
+              <div class="grid-container whitelist-grid">
+                  <div class="card">
+                      <div class="card-header">
+                          <h3>Spieler hinzufügen</h3>
+                      </div>
+                      <div class="card-content">
+                          <div class="form-group">
+                              <label for="username" class="form-label">Minecraft Benutzername</label>
+                              <div class="input-with-button">
+                                  <input type="text" id="username" class="form-input" placeholder="Benutzername">
+                                  <button class="btn btn-primary" id="add-player-btn">
+                                      <i class="fas fa-user-plus"></i>
+                                  </button>
+                              </div>
+                              <p class="form-help">Füge Spieler zur Whitelist hinzu, um ihnen Zugang zum Server zu gewähren.</p>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="card whitelist-table-card">
+                      <div class="card-header">
+                          <h3>Whitelist</h3>
+                      </div>
+                      <div class="card-content">
+                          <div class="search-container">
+                              <div class="search-input">
+                                  <i class="fas fa-search"></i>
+                                  <input type="text" id="search-input" class="form-input" placeholder="Spieler suchen...">
+                              </div>
+                          </div>
+
+                          <div class="whitelist-table-container">
+                              <table class="whitelist-table">
+                                  <thead>
+                                      <tr>
+                                          <th>Benutzername</th>
+                                          <th>Hinzugefügt am</th>
+                                          <th>Hinzugefügt von</th>
+                                          <th></th>
+                                      </tr>
+                                  </thead>
+                                  <tbody id="whitelist-table-body">
+                                      <!-- Will be populated by JavaScript -->
+                                  </tbody>
+                              </table>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </main>
+  </div>
+
+  <div id="toast" class="toast">
+      <div class="toast-content">
+          <i class="fas fa-check-circle toast-icon"></i>
+          <div class="toast-message">
+              <span class="toast-title">Success</span>
+              <span class="toast-description">Action completed successfully!</span>
+          </div>
+      </div>
+      <div class="toast-progress"></div>
+  </div>
+
+  <script src="whitelist-script.js"></script>
+</body>
+</html>
+
