@@ -1,0 +1,82 @@
+/* Whitelist specific styles */
+.whitelist-grid {
+  grid-template-columns: 1fr 2fr;
+}
+
+.input-with-button {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.input-with-button .form-input {
+  flex: 1;
+}
+
+.form-help {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  margin-top: 0.5rem;
+}
+
+.search-container {
+  margin-bottom: 1rem;
+}
+
+.search-input {
+  position: relative;
+}
+
+.search-input i {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted-foreground);
+}
+
+.search-input .form-input {
+  padding-left: 2.5rem;
+}
+
+.whitelist-table-container {
+  overflow-x: auto;
+}
+
+.whitelist-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.whitelist-table th,
+.whitelist-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.whitelist-table th {
+  font-weight: 600;
+  color: var(--muted-foreground);
+  background-color: var(--muted);
+}
+
+.whitelist-table tbody tr:hover {
+  background-color: var(--muted);
+}
+
+.whitelist-table td:last-child {
+  text-align: right;
+}
+
+.whitelist-empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--muted-foreground);
+}
+
+@media (max-width: 992px) {
+  .whitelist-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
