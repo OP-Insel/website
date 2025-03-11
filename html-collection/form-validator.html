@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Validator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        .error {
+            color: #f44336;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        .input-error {
+            border-color: #f44336;
+        }
+        .password-strength {
+            height: 5px;
+            margin-top: 5px;
+            border-radius: 2px;
+            background-color: #eee;
+            overflow: hidden;
+        }
+        .password-strength-meter {
+            height: 100%;
+            width: 0;
+            transition: width 0.3s, background-color 0.3s;
+        }
+        .password-strength-text {
+            font-size: 14px;
+            margin-top: 5px;
+            color: #777;
+        }
+        .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+        .submit-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .success-message {
+            text-align: center;
+            color: #4CAF50;
+            font-weight: 500;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Registration Form</h1>
+        <form id="registration-form">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" placeholder="Enter your full name">
+                <div class="error" id="name-error">Please enter your full name</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" placeholder="Enter your email address">
+                <div class="error" id="email-error">Please enter a valid email address</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Create a password">
+                <div class="password-strength">
+                    <div class="password-strength-meter" id="password-strength-meter"></div>
+                </div>
+                <div class="password-strength-text" id="password-strength-text">Password strength</div>
+                <div class="error" id="password-error">Password must be at least 8 characters</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" placeholder="Confirm your password">
+                <div class="error" id="confirm-password-error">Passwords do not match</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="age">Age</label>
+                <input type="number" id="age" placeholder="Enter your age" min="18" max="120">
+                <div class="error" id="age-error">You must be at least 18 years old</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="country">Country</label>
+                <select id="country">
+                    <option value="">Select your country</option>
+                    <option value="us">United States</option>
+                    <option value="ca">Canada</option>
+                    <option value="uk">United Kingdom</option>
+                    <option value="au">Australia</option>
+                    <option value="other">Other</option>
+                </select>
+                <div class="error" id="country-error">Please select your country</div>
+            </div>
+            
+            <button type="submit" class="submit-btn" id="submit-btn">Register</button>
+        </form>
+        
+        <div class="success-message" id="success-message">
+            Registration successful! Thank you for signing up.
+        </div>
+    </div>
+
+    <script>
+        // Form Validator script
+        const form = document.getElementById('registration-form');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm-password');
+        const ageInput = document.getElementById('age');
+        const countryInput = document.getElementById('country');
+        const submitBtn = document.getElementById('submit-btn');
+        const successMessage = document.getElementById('success-message');
+        
+        const passwordStrengthMeter = document.getElementById('password-strength-meter');
+        const passwordStrengthText = document.getElementById('password-strength-text');
+        
+        // Validation functions
+        function validateName() {
+            const nameValue = nameInput.value.trim();
+            const nameError = document.getElementById('name-error');
+            
+            if (nameValue === '' || nameValue.length < 3) {
+                nameInput.classList.add('input-error');
+                nameError.style.display = 'block';
+                return false;
+            } else {
+                nameInput.classList.remove('input-error');
+                nameError.style.display = 'none';
+                return true;
+            }
+        }
+        
+        function validateEmail() {
+            const emailValue = emailInput.value.trim();
+            const emailError = document.getElementById('email-error');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (!emailRegex.test(emailValue)) {
+                emailInput.classList.add('input-error');
+                emailError.style.display = 'block';
+                return false;
+            } else {
+                emailInput.classList.remove('input-error');
+                emailError.style.display = 'none';
+                return true;
+            }
+        }
+        
+        function validatePassword() {
+            const passwordValue = passwordInput.value;
+            const passwordError = document.getElementById('password-error');
+            
+            if (passwordValue.length < 8) {
+                passwordInput.classList.add('input-error');
+                passwordError.style.display = 'block';
+                return false;
+            } else {
+                passwordInput.classList.remove('input-error');
+                passwordError.style.display = 'none';
+                return true;
+            }
+        }
+        
+        function validateConfirmPassword() {
+            const passwordValue = passwordInput.value;
+            const confirmPasswordValue = confirmPasswordInput.value;
+            const confirmPasswordError = document.getElementById('confirm-password-error');
+            
+            if (confirmPasswordValue !== passwordValue) {
+                confirmPasswordInput.classList.add('input-error');
+                confirmPasswordError.style.display = 'block';
+                return false;
+            } else {
+                confirmPasswordInput.classList.remove('input-error');
+                confirmPasswordError.style.display = 'none';
+                return true;
+            }
+        }
+        
+        function validateAge() {
+            const ageValue = ageInput.value;
+            const ageError = document.getElementById('age-error');
+            
+            if (ageValue === '' || parseInt(ageValue) < 18) {
+                ageInput.classList.add('input-error');
+                ageError.style.display = 'block';
+                return false;
+            } else {
+                ageInput.classList.remove('input-error');
+                ageError.style.display = 'none';
+                return true;
+            }
+        }
+        
+        function validateCountry() {
+            const countryValue = countryInput.value;
+            const countryError = document.getElementById('country-error');
+            
+            if (countryValue === '') {
+                countryInput.classList.add('input-error');
+                countryError.style.display = 'block';
+                return false;
+            } else {
+                countryInput.classList.remove('input-error');
+                countryError.style.display = 'none';
+                return true;
+            }
+        }
+        
+        // Check password strength
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            
+            // Length check
+            if (password.length >= 8) strength += 1;
+            if (password.length >= 12) strength += 1;
+            
+            // Complexity checks
+            if (/[A-Z]/.test(password)) strength += 1;
+            if (/[a-z]/.test(password)) strength += 1;
+            if (/[0-9]/.test(password)) strength += 1;
+            if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+            
+            return strength;
+        }
+        
+        function updatePasswordStrength() {
+            const password = passwordInput.value;
+            const strength = checkPasswordStrength(password);
+            
+            // Update strength meter
+            let percentage = (strength / 6) * 100;
+            passwordStrengthMeter.style.width = `${percentage}%`;
+            
+            // Update color and text
+            if (strength < 2) {
+                passwordStrengthMeter.style.backgroundColor = '#f44336';
+                passwordStrengthText.textContent = 'Weak password';
+                passwordStrengthText.style.color = '#f44336';
+            } else if (strength < 4) {
+                passwordStrengthMeter.style.backgroundColor = '#ff9800';
+                passwordStrengthText.textContent = 'Moderate password';
+                passwordStrengthText.style.color = '#ff9800';
+            } else {
+                passwordStrengthMeter.style.backgroundColor = '#4CAF50';
+                passwordStrengthText.textContent = 'Strong password';
+                passwordStrengthText.style.color = '#4CAF50';
+            }
+        }
+        
+        // Event listeners
+        nameInput.addEventListener('blur', validateName);
+        emailInput.addEventListener('blur', validateEmail);
+        passwordInput.addEventListener('blur', validatePassword);
+        passwordInput.addEventListener('input', updatePasswordStrength);
+        confirmPasswordInput.addEventListener('blur', validateConfirmPassword);
+        ageInput.addEventListener('blur', validateAge);
+        countryInput.addEventListener('blur', validateCountry);
+        
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validate all fields
+            const isNameValid = validateName();
+            const isEmailValid = validateEmail();
+            const isPasswordValid = validatePassword();
+            const isConfirmPasswordValid = validateConfirmPassword();
+            const isAgeValid = validateAge();
+            const isCountryValid = validateCountry();
+            
+            if (isNameValid && isEmailValid && isPasswordValid && 
+                isConfirmPasswordValid && isAgeValid && isCountryValid) {
+                
+                // Hide form and show success message
+                form.style.display = 'none';
+                successMessage.style.display = 'block';
+                
+                // In a real application, you would submit the form data to a server here
+                console.log('Form submitted successfully');
+            }
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .calculator {
+            background-color: #333;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            width: 300px;
+        }
+        .display {
+            background-color: #eaeaea;
+            border-radius: 5px;
+            font-size: 2rem;
+            height: 60px;
+            margin-bottom: 20px;
+            padding: 10px;
+            text-align: right;
+            overflow: hidden;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 10px;
+        }
+        button {
+            background-color: #4d4d4d;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-size: 1.5rem;
+            height: 60px;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #666;
+        }
+        .operator {
+            background-color: #f79231;
+        }
+        .operator:hover {
+            background-color: #ffa54f;
+        }
+        .equals {
+            background-color: #4CAF50;
+        }
+        .equals:hover {
+            background-color: #45a049;
+        }
+        .clear {
+            background-color: #f44336;
+        }
+        .clear:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="display" id="display">0</div>
+        <div class="buttons">
+            <button class="clear" id="clear">C</button>
+            <button class="operator" id="backspace">⌫</button>
+            <button class="operator" id="percent">%</button>
+            <button class="operator" id="divide">÷</button>
+            
+            <button id="seven">7</button>
+            <button id="eight">8</button>
+            <button id="nine">9</button>
+            <button class="operator" id="multiply">×</button>
+            
+            <button id="four">4</button>
+            <button id="five">5</button>
+            <button id="six">6</button>
+            <button class="operator" id="subtract">-</button>
+            
+            <button id="one">1</button>
+            <button id="two">2</button>
+            <button id="three">3</button>
+            <button class="operator" id="add">+</button>
+            
+            <button id="zero">0</button>
+            <button id="decimal">.</button>
+            <button class="equals" id="equals">=</button>
+        </div>
+    </div>
+
+    <script>
+        // Calculator script
+        const display = document.getElementById('display');
+        const buttons = document.querySelectorAll('button');
+        
+        let currentInput = '0';
+        let previousInput = '';
+        let operation = null;
+        let shouldResetScreen = false;
+        
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const buttonValue = button.textContent;
+                
+                if (!isNaN(buttonValue) || buttonValue === '.') {
+                    inputNumber(buttonValue);
+                } else if (['+', '-', '×', '÷', '%'].includes(buttonValue)) {
+                    handleOperator(buttonValue);
+                } else if (buttonValue === '=') {
+                    calculate();
+                } else if (buttonValue === 'C') {
+                    clear();
+                } else if (buttonValue === '⌫') {
+                    backspace();
+                }
+                
+                updateDisplay();
+            });
+        });
+        
+        function inputNumber(number) {
+            if (shouldResetScreen) {
+                currentInput = '0';
+                shouldResetScreen = false;
+            }
+            
+            if (currentInput === '0' && number !== '.') {
+                currentInput = number;
+            } else if (number === '.' && !currentInput.includes('.')) {
+                currentInput += number;
+            } else if (number !== '.') {
+                currentInput += number;
+            }
+        }
+        
+        function handleOperator(op) {
+            if (operation !== null) calculate();
+            
+            previousInput = currentInput;
+            operation = op;
+            shouldResetScreen = true;
+        }
+        
+        function calculate() {
+            if (operation === null || shouldResetScreen) return;
+            
+            let result;
+            const prev = parseFloat(previousInput);
+            const current = parseFloat(currentInput);
+            
+            switch (operation) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case '×':
+                    result = prev * current;
+                    break;
+                case '÷':
+                    result = prev / current;
+                    break;
+                case '%':
+                    result = prev % current;
+                    break;
+                default:
+                    return;
+            }
+            
+            currentInput = result.toString();
+            operation = null;
+        }
+        
+        function clear() {
+            currentInput = '0';
+            previousInput = '';
+            operation = null;
+        }
+        
+        function backspace() {
+            if (currentInput.length === 1) {
+                currentInput = '0';
+            } else {
+                currentInput = currentInput.slice(0, -1);
+            }
+        }
+        
+        function updateDisplay() {
+            display.textContent = currentInput;
+        }
+    </script>
+</body>
+</html>
+
