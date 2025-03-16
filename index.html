@@ -6,225 +6,203 @@
     <title>Minecraft Admin Tool</title>
     <style>
         :root {
-            --primary: #2c3e50;
-            --secondary: #34495e;
-            --accent: #3498db;
-            --text: #ecf0f1;
+            --primary: #1a1a1a;
+            --secondary: #2a2a2a;
+            --accent: #00ff88;
+            --text: #ffffff;
+            --error: #ff5555;
         }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Inter', sans-serif;
             background: var(--primary);
             color: var(--text);
             margin: 0;
-            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            min-height: 100vh;
         }
 
-        .login-container {
+        .container {
             background: var(--secondary);
             padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             width: 90%;
             max-width: 400px;
-            transform: scale(0.95);
-            animation: scaleUp 0.5s forwards;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
         }
 
-        @keyframes scaleUp {
-            to { transform: scale(1); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
         }
 
         input {
             width: 100%;
             padding: 12px;
             margin: 10px 0;
-            background: rgba(255,255,255,0.1);
-            border: 2px solid var(--accent);
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 8px;
             color: var(--text);
-            font-size: 16px;
-            transition: 0.3s;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
         }
 
         input:focus {
+            border-color: var(--accent);
             outline: none;
-            background: rgba(255,255,255,0.15);
         }
 
         button {
             background: var(--accent);
-            color: white;
-            padding: 12px 25px;
+            color: var(--primary);
+            padding: 12px 24px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            font-size: 1rem;
             font-weight: 600;
-            transition: 0.3s;
-            margin: 10px 5px;
+            margin-top: 10px;
+            transition: background 0.3s ease, transform 0.2s ease;
         }
 
         button:hover {
+            background: #00cc77;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(52,152,219,0.4);
         }
 
-        .dashboard-container {
+        .error-message {
+            color: var(--error);
+            margin-top: 10px;
+            display: none;
+        }
+
+        .dashboard {
+            display: none;
+            width: 90%;
+            max-width: 1200px;
             background: var(--secondary);
             padding: 2rem;
-            border-radius: 15px;
-            width: 95%;
-            max-width: 1200px;
-            min-height: 70vh;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-top: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
         .user-card {
-            background: rgba(0,0,0,0.2);
+            background: rgba(255, 255, 255, 0.05);
             padding: 1rem;
-            border-radius: 10px;
+            border-radius: 8px;
             margin: 10px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .controls {
-            display: flex;
-            gap: 10px;
+        .user-card span {
+            font-size: 1.1rem;
         }
 
-        .point-btn {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            padding: 0;
+        .controls button {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            padding: 8px 16px;
+            margin: 0 5px;
+        }
+
+        .controls button:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
     </style>
 </head>
 <body>
     <!-- Login Container -->
-    <div class="login-container" id="login-container">
-        <h2>🔒 Admin Login</h2>
+    <div class="container" id="login-container">
+        <h1>🔒 Admin Login</h1>
         <form id="login-form">
             <input type="text" id="username" placeholder="Benutzername" required>
             <input type="password" id="password" placeholder="Passwort" required>
-            <button type="submit">Login →</button>
+            <button type="submit">Einloggen</button>
         </form>
-        <p id="login-error" style="color: #e74c3c; display: none;">❌ Falsche Anmeldedaten!</p>
+        <p class="error-message" id="login-error">❌ Falsche Anmeldedaten!</p>
     </div>
 
     <!-- Dashboard -->
-    <div class="dashboard-container" id="dashboard-container" style="display: none;">
+    <div class="container dashboard" id="dashboard-container">
         <h1>👑 Admin Dashboard</h1>
-        <div class="grid">
-            <div>
-                <h3>📋 Benutzerliste</h3>
-                <div id="user-list"></div>
-            </div>
-            
-            <div>
-                <h3>⚙️ Systemregeln</h3>
-                <div class="rules">
-                    <h4>📉 Degradierung</h4>
-                    <ul>
-                        <li>Co-Owner → Admin (500P)</li>
-                        <li>Admin → Jr. Admin (400P)</li>
-                        <!-- Weitere Regeln hier -->
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <button id="logout-button" style="margin-top: 2rem;">🚪 Ausloggen</button>
+        <div id="user-list"></div>
+        <button id="logout-button">🚪 Ausloggen</button>
     </div>
 
-<script>
-// Datenmanagement mit localStorage
-let users = JSON.parse(localStorage.getItem('users')) || [
-    { username: "owner", password: "owner123", role: "Owner", points: 1000 },
-    { username: "admin", password: "admin123", role: "Admin", points: 500 }
-];
+    <script>
+        // Beispiel-Datenbank (Benutzer und Punkte)
+        const users = [
+            { username: "owner", password: "owner123", role: "Owner", points: 1000 },
+            { username: "admin", password: "admin123", role: "Admin", points: 500 }
+        ];
 
-function saveData() {
-    localStorage.setItem('users', JSON.stringify(users));
-    loadUserList();
-}
+        let currentUser = null;
 
-// Login System
-document.getElementById('login-form').addEventListener('submit', e => {
-    e.preventDefault();
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    
-    const user = users.find(u => u.username === username && u.password === password);
-    
-    if(user) {
-        document.getElementById('login-container').style.display = 'none';
-        document.getElementById('dashboard-container').style.display = 'block';
-        loadUserList(user.role);
-    } else {
-        document.getElementById('login-error').style.display = 'block';
-    }
-});
+        // Login-System
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
 
-// Benutzerliste laden
-function loadUserList(role) {
-    const container = document.getElementById('user-list');
-    container.innerHTML = '';
-    
-    users.forEach(user => {
-        const card = document.createElement('div');
-        card.className = 'user-card';
-        card.innerHTML = `
-            <div>
-                <strong>${user.username}</strong><br>
-                <span>${user.points}P | ${user.role}</span>
-            </div>
-            ${role === 'Owner' ? `
-            <div class="controls">
-                <button class="point-btn" onclick="updatePoints('${user.username}', -10)">-</button>
-                <button class="point-btn" onclick="updatePoints('${user.username}', 10)">+</button>
-            </div>` : ''}
-        `;
-        container.appendChild(card);
-    });
-}
+            const user = users.find(u => u.username === username && u.password === password);
 
-// Punkte aktualisieren
-function updatePoints(username, points) {
-    const user = users.find(u => u.username === username);
-    user.points += points;
-    
-    // Automatische Degradierung
-    const ranks = [
-        { role: 'Co-Owner', min: 750 },
-        { role: 'Admin', min: 500 },
-        // Weitere Ränge hier
-    ];
-    
-    const newRank = ranks.find(r => user.points >= r.min)?.role || 'Entfernt';
-    if(newRank !== user.role) user.role = newRank;
-    
-    saveData();
-}
+            if (user) {
+                currentUser = user;
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('dashboard-container').style.display = 'block';
+                document.getElementById('login-error').style.display = 'none';
+                loadUserList();
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        });
 
-// Logout
-document.getElementById('logout-button').addEventListener('click', () => {
-    document.getElementById('login-container').style.display = 'block';
-    document.getElementById('dashboard-container').style.display = 'none';
-});
+        // Benutzerliste laden
+        function loadUserList() {
+            const userList = document.getElementById('user-list');
+            userList.innerHTML = '';
 
-// Initialer Datenload
-if(localStorage.getItem('users')) loadUserList();
-</script>
+            users.forEach(user => {
+                const userCard = document.createElement('div');
+                userCard.className = 'user-card';
+                userCard.innerHTML = `
+                    <span>${user.username} - ${user.points} Punkte</span>
+                    ${currentUser.role === 'Owner' ? `
+                    <div class="controls">
+                        <button onclick="updatePoints('${user.username}', -10)">-10</button>
+                        <button onclick="updatePoints('${user.username}', 10)">+10</button>
+                    </div>` : ''}
+                `;
+                userList.appendChild(userCard);
+            });
+        }
+
+        // Punkte aktualisieren
+        function updatePoints(username, points) {
+            const user = users.find(u => u.username === username);
+            user.points += points;
+            loadUserList();
+        }
+
+        // Logout
+        document.getElementById('logout-button').addEventListener('click', () => {
+            currentUser = null;
+            document.getElementById('login-container').style.display = 'block';
+            document.getElementById('dashboard-container').style.display = 'none';
+        });
+    </script>
 </body>
 </html>
