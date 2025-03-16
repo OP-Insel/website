@@ -3,126 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Punkte System</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Minecraft Admin Tool</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>⚠️ Minecraft Team Punkte System ⚠️</h1>
-        
-        <!-- Login Bereich -->
-        <div id="login-section">
-            <h2>Login</h2>
-            <input type="text" id="username" placeholder="Benutzername">
-            <input type="password" id="password" placeholder="Passwort">
-            <button onclick="login()">Login</button>
-            <p id="login-message"></p>
-        </div>
+    <div class="login-container" id="login-container">
+        <h2>Login</h2>
+        <form id="login-form">
+            <input type="text" id="username" placeholder="Benutzername" required>
+            <input type="password" id="password" placeholder="Passwort" required>
+            <button type="submit">Einloggen</button>
+        </form>
+    </div>
 
-        <!-- Admin Bereich -->
-        <div id="admin-section" class="admin-section" style="display:none;">
-            <h2>Admin Panel</h2>
-            <p>Erstelle Benutzer, weise Punkte zu und entferne sie</p>
-            <input type="text" id="new-username" placeholder="Minecraft Name">
-            <input type="number" id="new-points" placeholder="Punkte hinzufügen">
-            <button onclick="createUser()">Benutzer erstellen</button>
-            <button onclick="addPoints()">Punkte hinzufügen</button>
-            <button onclick="deductPoints()">Punkte abziehen</button>
-            <button onclick="viewPoints()">Punkte ansehen</button>
-        </div>
-        
-        <!-- Benutzerbereich -->
-        <div id="user-section" class="user-section" style="display:none;">
-            <h2>Benutzerbereich</h2>
-            <button onclick="viewPoints()">Punkte ansehen</button>
-            <p id="user-message"></p>
-        </div>
+    <div class="dashboard-container" id="dashboard-container" style="display: none;">
+        <h2>Admin Dashboard</h2>
+        <div id="user-list"></div>
+        <button id="discord-button">Discord Server</button>
+        <button id="logout-button">Ausloggen</button>
 
-        <div id="rules-section">
-            <h3>⚠️ Regelverstöße und Punktabzüge ⚠️</h3>
-            <table>
-                <tr>
-                    <th>Verstoß</th>
-                    <th>Punktabzug</th>
-                </tr>
-                <tr>
-                    <td>Ban ohne Begründung</td>
-                    <td>-5 Punkte</td>
-                </tr>
-                <tr>
-                    <td>Unfaire oder ungerechtfertigte Strafe</td>
-                    <td>-10 Punkte</td>
-                </tr>
-                <tr>
-                    <td>Missbrauch der Admin-Rechte</td>
-                    <td>-20 Punkte</td>
-                </tr>
-                <tr>
-                    <td>Beleidigung oder schlechtes Verhalten</td>
-                    <td>-15 Punkte</td>
-                </tr>
-                <tr>
-                    <td>Inaktiv ohne Abmeldung</td>
-                    <td>-10 Punkte</td>
-                </tr>
-                <tr>
-                    <td>Wiederholtes Fehlverhalten</td>
-                    <td>-30 Punkte</td>
-                </tr>
-                <tr>
-                    <td>Spamming von Befehlen oder Nachrichten</td>
-                    <td>-5 Punkte</td>
-                </tr>
-                <tr>
-                    <td>Schwere Regelverstöße</td>
-                    <td>-20 Punkte</td>
-                </tr>
-            </table>
-        </div>
+        <div class="info-section">
+            <h3>⚠ Punktabzüge für Regelverstöße</h3>
+            <ul>
+                <li>Ban ohne Begründung: -5 Punkte</li>
+                <li>Unfaire oder ungerechtfertigte Strafe gegen Spieler: -10 Punkte</li>
+                <li>Missbrauch der Admin-Rechte: -20 Punkte</li>
+                <li>Beleidigung oder schlechtes Verhalten gegenüber Spielern: -15 Punkte</li>
+                <li>Inaktiv ohne Abmeldung: -10 Punkte</li>
+                <li>Wiederholtes Fehlverhalten trotz Ermahnung: -30 Punkte</li>
+                <li>Spamming von Befehlen oder Nachrichten: -5 Punkte</li>
+                <li>Schwere Regelverstöße: -20 Punkte</li>
+            </ul>
 
-        <div id="degradation-system">
             <h3>📉 Degradierungssystem</h3>
-            <p>Rang → Punkte für automatische Degradierung</p>
-            <table>
-                <tr>
-                    <th>Rang</th>
-                    <th>Punkte für Degradierung</th>
-                </tr>
-                <tr>
-                    <td>Co-Owner → Admin</td>
-                    <td>500 Punkte</td>
-                </tr>
-                <tr>
-                    <td>Admin → Jr. Admin</td>
-                    <td>400 Punkte</td>
-                </tr>
-                <tr>
-                    <td>Jr. Admin → Moderator</td>
-                    <td>300 Punkte</td>
-                </tr>
-                <tr>
-                    <td>Moderator → Jr. Moderator</td>
-                    <td>250 Punkte</td>
-                </tr>
-                <tr>
-                    <td>Jr. Moderator → Supporter</td>
-                    <td>200 Punkte</td>
-                </tr>
-                <tr>
-                    <td>Supporter → Jr. Supporter</td>
-                    <td>150 Punkte</td>
-                </tr>
-                <tr>
-                    <td>Jr. Supporter → Entfernt</td>
-                    <td>0 Punkte</td>
-                </tr>
-            </table>
-        </div>
+            <ul>
+                <li>Co-Owner → Admin: 500 Punkte</li>
+                <li>Admin → Jr. Admin: 400 Punkte</li>
+                <li>Jr. Admin → Moderator: 300 Punkte</li>
+                <li>Moderator → Jr. Moderator: 250 Punkte</li>
+                <li>Jr. Moderator → Supporter: 200 Punkte</li>
+                <li>Supporter → Jr. Supporter: 150 Punkte</li>
+                <li>Jr. Supporter → Entfernt aus dem Team: 0 Punkte</li>
+            </ul>
 
-        <div id="rules-footer">
             <h3>📌 Wichtige Regeln</h3>
             <ul>
-                <li>Punkte werden am 1. jedes Monats zurückgesetzt, aber Abstufungen bleiben bestehen.</li>
+                <li>Punkte werden am 1. jedes Monats zurückgesetzt, aber Runterstufungen bleiben bestehen.</li>
                 <li>Admins und Co-Owner müssen Regelverstöße im Discord protokollieren.</li>
                 <li>Bei 0 Punkten oder weniger wird ein Teammitglied entfernt.</li>
                 <li>Owner & Co-Owner können Punkte zurücksetzen oder vergeben, falls jemand unfair behandelt wurde.</li>
@@ -130,6 +56,6 @@
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <script src="js/scripts.js"></script>
 </body>
 </html>
