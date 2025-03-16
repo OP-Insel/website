@@ -1,0 +1,14 @@
+{
+    "users": [
+        {
+            "username": "admin",
+            "points": 100,
+            "role": "owner"
+        },
+        {
+            "username": "user1",
+            "points": 50,
+            "role": "admin"
+        }
+    ]
+}
