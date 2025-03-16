@@ -18,42 +18,46 @@
 
     <div class="dashboard-container" id="dashboard-container" style="display: none;">
         <h2>Admin Dashboard</h2>
-        <div id="user-list"></div>
+        <div class="dashboard-content">
+            <div class="user-list-section">
+                <h3>Benutzerliste</h3>
+                <div id="user-list"></div>
+            </div>
+            <div class="info-section">
+                <h3>⚠ Punktabzüge für Regelverstöße</h3>
+                <ul>
+                    <li>Ban ohne Begründung: -5 Punkte</li>
+                    <li>Unfaire oder ungerechtfertigte Strafe gegen Spieler: -10 Punkte</li>
+                    <li>Missbrauch der Admin-Rechte: -20 Punkte</li>
+                    <li>Beleidigung oder schlechtes Verhalten gegenüber Spielern: -15 Punkte</li>
+                    <li>Inaktiv ohne Abmeldung: -10 Punkte</li>
+                    <li>Wiederholtes Fehlverhalten trotz Ermahnung: -30 Punkte</li>
+                    <li>Spamming von Befehlen oder Nachrichten: -5 Punkte</li>
+                    <li>Schwere Regelverstöße: -20 Punkte</li>
+                </ul>
+
+                <h3>📉 Degradierungssystem</h3>
+                <ul>
+                    <li>Co-Owner → Admin: 500 Punkte</li>
+                    <li>Admin → Jr. Admin: 400 Punkte</li>
+                    <li>Jr. Admin → Moderator: 300 Punkte</li>
+                    <li>Moderator → Jr. Moderator: 250 Punkte</li>
+                    <li>Jr. Moderator → Supporter: 200 Punkte</li>
+                    <li>Supporter → Jr. Supporter: 150 Punkte</li>
+                    <li>Jr. Supporter → Entfernt aus dem Team: 0 Punkte</li>
+                </ul>
+
+                <h3>📌 Wichtige Regeln</h3>
+                <ul>
+                    <li>Punkte werden am 1. jedes Monats zurückgesetzt, aber Runterstufungen bleiben bestehen.</li>
+                    <li>Admins und Co-Owner müssen Regelverstöße im Discord protokollieren.</li>
+                    <li>Bei 0 Punkten oder weniger wird ein Teammitglied entfernt.</li>
+                    <li>Owner & Co-Owner können Punkte zurücksetzen oder vergeben, falls jemand unfair behandelt wurde.</li>
+                </ul>
+            </div>
+        </div>
         <button id="discord-button">Discord Server</button>
         <button id="logout-button">Ausloggen</button>
-
-        <div class="info-section">
-            <h3>⚠ Punktabzüge für Regelverstöße</h3>
-            <ul>
-                <li>Ban ohne Begründung: -5 Punkte</li>
-                <li>Unfaire oder ungerechtfertigte Strafe gegen Spieler: -10 Punkte</li>
-                <li>Missbrauch der Admin-Rechte: -20 Punkte</li>
-                <li>Beleidigung oder schlechtes Verhalten gegenüber Spielern: -15 Punkte</li>
-                <li>Inaktiv ohne Abmeldung: -10 Punkte</li>
-                <li>Wiederholtes Fehlverhalten trotz Ermahnung: -30 Punkte</li>
-                <li>Spamming von Befehlen oder Nachrichten: -5 Punkte</li>
-                <li>Schwere Regelverstöße: -20 Punkte</li>
-            </ul>
-
-            <h3>📉 Degradierungssystem</h3>
-            <ul>
-                <li>Co-Owner → Admin: 500 Punkte</li>
-                <li>Admin → Jr. Admin: 400 Punkte</li>
-                <li>Jr. Admin → Moderator: 300 Punkte</li>
-                <li>Moderator → Jr. Moderator: 250 Punkte</li>
-                <li>Jr. Moderator → Supporter: 200 Punkte</li>
-                <li>Supporter → Jr. Supporter: 150 Punkte</li>
-                <li>Jr. Supporter → Entfernt aus dem Team: 0 Punkte</li>
-            </ul>
-
-            <h3>📌 Wichtige Regeln</h3>
-            <ul>
-                <li>Punkte werden am 1. jedes Monats zurückgesetzt, aber Runterstufungen bleiben bestehen.</li>
-                <li>Admins und Co-Owner müssen Regelverstöße im Discord protokollieren.</li>
-                <li>Bei 0 Punkten oder weniger wird ein Teammitglied entfernt.</li>
-                <li>Owner & Co-Owner können Punkte zurücksetzen oder vergeben, falls jemand unfair behandelt wurde.</li>
-            </ul>
-        </div>
     </div>
 
     <script src="js/scripts.js"></script>
