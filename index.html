@@ -4,63 +4,227 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minecraft Admin Tool</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #3498db;
+            --text: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--primary);
+            color: var(--text);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            background: var(--secondary);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 400px;
+            transform: scale(0.95);
+            animation: scaleUp 0.5s forwards;
+        }
+
+        @keyframes scaleUp {
+            to { transform: scale(1); }
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            background: rgba(255,255,255,0.15);
+        }
+
+        button {
+            background: var(--accent);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+            margin: 10px 5px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52,152,219,0.4);
+        }
+
+        .dashboard-container {
+            background: var(--secondary);
+            padding: 2rem;
+            border-radius: 15px;
+            width: 95%;
+            max-width: 1200px;
+            min-height: 70vh;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .user-card {
+            background: rgba(0,0,0,0.2);
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .point-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            padding: 0;
+        }
+    </style>
 </head>
 <body>
+    <!-- Login Container -->
     <div class="login-container" id="login-container">
-        <h2>Login</h2>
+        <h2>🔒 Admin Login</h2>
         <form id="login-form">
             <input type="text" id="username" placeholder="Benutzername" required>
             <input type="password" id="password" placeholder="Passwort" required>
-            <button type="submit">Einloggen</button>
+            <button type="submit">Login →</button>
         </form>
-        <p id="login-error" class="error-message" style="display: none;">Falscher Benutzername oder Passwort!</p>
+        <p id="login-error" style="color: #e74c3c; display: none;">❌ Falsche Anmeldedaten!</p>
     </div>
 
+    <!-- Dashboard -->
     <div class="dashboard-container" id="dashboard-container" style="display: none;">
-        <h2>Admin Dashboard</h2>
-        <div class="dashboard-content">
-            <div class="user-list-section">
-                <h3>Benutzerliste</h3>
+        <h1>👑 Admin Dashboard</h1>
+        <div class="grid">
+            <div>
+                <h3>📋 Benutzerliste</h3>
                 <div id="user-list"></div>
             </div>
-            <div class="info-section">
-                <h3>⚠ Punktabzüge für Regelverstöße</h3>
-                <ul>
-                    <li>Ban ohne Begründung: -5 Punkte</li>
-                    <li>Unfaire oder ungerechtfertigte Strafe gegen Spieler: -10 Punkte</li>
-                    <li>Missbrauch der Admin-Rechte: -20 Punkte</li>
-                    <li>Beleidigung oder schlechtes Verhalten gegenüber Spielern: -15 Punkte</li>
-                    <li>Inaktiv ohne Abmeldung: -10 Punkte</li>
-                    <li>Wiederholtes Fehlverhalten trotz Ermahnung: -30 Punkte</li>
-                    <li>Spamming von Befehlen oder Nachrichten: -5 Punkte</li>
-                    <li>Schwere Regelverstöße: -20 Punkte</li>
-                </ul>
-
-                <h3>📉 Degradierungssystem</h3>
-                <ul>
-                    <li>Co-Owner → Admin: 500 Punkte</li>
-                    <li>Admin → Jr. Admin: 400 Punkte</li>
-                    <li>Jr. Admin → Moderator: 300 Punkte</li>
-                    <li>Moderator → Jr. Moderator: 250 Punkte</li>
-                    <li>Jr. Moderator → Supporter: 200 Punkte</li>
-                    <li>Supporter → Jr. Supporter: 150 Punkte</li>
-                    <li>Jr. Supporter → Entfernt aus dem Team: 0 Punkte</li>
-                </ul>
-
-                <h3>📌 Wichtige Regeln</h3>
-                <ul>
-                    <li>Punkte werden am 1. jedes Monats zurückgesetzt, aber Runterstufungen bleiben bestehen.</li>
-                    <li>Admins und Co-Owner müssen Regelverstöße im Discord protokollieren.</li>
-                    <li>Bei 0 Punkten oder weniger wird ein Teammitglied entfernt.</li>
-                    <li>Owner & Co-Owner können Punkte zurücksetzen oder vergeben, falls jemand unfair behandelt wurde.</li>
-                </ul>
+            
+            <div>
+                <h3>⚙️ Systemregeln</h3>
+                <div class="rules">
+                    <h4>📉 Degradierung</h4>
+                    <ul>
+                        <li>Co-Owner → Admin (500P)</li>
+                        <li>Admin → Jr. Admin (400P)</li>
+                        <!-- Weitere Regeln hier -->
+                    </ul>
+                </div>
             </div>
         </div>
-        <button id="discord-button">Discord Server</button>
-        <button id="logout-button">Ausloggen</button>
+        <button id="logout-button" style="margin-top: 2rem;">🚪 Ausloggen</button>
     </div>
 
-    <script src="js/scripts.js"></script>
+<script>
+// Datenmanagement mit localStorage
+let users = JSON.parse(localStorage.getItem('users')) || [
+    { username: "owner", password: "owner123", role: "Owner", points: 1000 },
+    { username: "admin", password: "admin123", role: "Admin", points: 500 }
+];
+
+function saveData() {
+    localStorage.setItem('users', JSON.stringify(users));
+    loadUserList();
+}
+
+// Login System
+document.getElementById('login-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    const user = users.find(u => u.username === username && u.password === password);
+    
+    if(user) {
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('dashboard-container').style.display = 'block';
+        loadUserList(user.role);
+    } else {
+        document.getElementById('login-error').style.display = 'block';
+    }
+});
+
+// Benutzerliste laden
+function loadUserList(role) {
+    const container = document.getElementById('user-list');
+    container.innerHTML = '';
+    
+    users.forEach(user => {
+        const card = document.createElement('div');
+        card.className = 'user-card';
+        card.innerHTML = `
+            <div>
+                <strong>${user.username}</strong><br>
+                <span>${user.points}P | ${user.role}</span>
+            </div>
+            ${role === 'Owner' ? `
+            <div class="controls">
+                <button class="point-btn" onclick="updatePoints('${user.username}', -10)">-</button>
+                <button class="point-btn" onclick="updatePoints('${user.username}', 10)">+</button>
+            </div>` : ''}
+        `;
+        container.appendChild(card);
+    });
+}
+
+// Punkte aktualisieren
+function updatePoints(username, points) {
+    const user = users.find(u => u.username === username);
+    user.points += points;
+    
+    // Automatische Degradierung
+    const ranks = [
+        { role: 'Co-Owner', min: 750 },
+        { role: 'Admin', min: 500 },
+        // Weitere Ränge hier
+    ];
+    
+    const newRank = ranks.find(r => user.points >= r.min)?.role || 'Entfernt';
+    if(newRank !== user.role) user.role = newRank;
+    
+    saveData();
+}
+
+// Logout
+document.getElementById('logout-button').addEventListener('click', () => {
+    document.getElementById('login-container').style.display = 'block';
+    document.getElementById('dashboard-container').style.display = 'none';
+});
+
+// Initialer Datenload
+if(localStorage.getItem('users')) loadUserList();
+</script>
 </body>
 </html>
