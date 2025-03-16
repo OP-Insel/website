@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Punkte System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Punkte System</h1>
+        <p>Gib deinen Minecraft-Namen ein, um deine Punkte zu sehen:</p>
+        <input type="text" id="username" placeholder="Minecraft Benutzername">
+        <button onclick="getPoints()">Punkte anzeigen</button>
+
+        <p id="message"></p>
+
+        <h2>Funktionen</h2>
+        <button onclick="addPoints()">Punkte hinzufügen</button>
+        <button onclick="deductPoints()">Punkte abziehen</button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
