@@ -1,35 +1,43 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
+    background-color: #222;
+    color: #fff;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
+    transition: background-color 0.5s ease;
 }
 
 .container {
-    background: #fff;
+    background: #111;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: center;
-    width: 300px;
+    width: 400px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease-in-out;
+}
+
+h1, h2 {
+    color: #fff;
 }
 
 button {
     padding: 10px 15px;
     margin: 10px;
     border: none;
-    background-color: #007bff;
+    background-color: #444;
     color: white;
     cursor: pointer;
     border-radius: 5px;
     font-size: 16px;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #333;
 }
 
 input {
@@ -38,4 +46,58 @@ input {
     margin: 10px 0;
     border-radius: 5px;
     border: 1px solid #ccc;
+    background-color: #333;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+input:focus {
+    background-color: #444;
+    outline: none;
+}
+
+#login-section {
+    animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+#rules-section, #degradation-system, #rules-footer {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #ddd;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+table th, table td {
+    padding: 8px;
+    text-align: left;
+}
+
+table th {
+    background-color: #444;
+}
+
+table tr:nth-child(even) {
+    background-color: #333;
+}
+
+table tr:hover {
+    background-color: #555;
+}
+
+#admin-section, #user-section {
+    margin-top: 20px;
 }
