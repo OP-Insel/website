@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minecraft Admin Tool</title>
+    <title>Minecraft Admin System</title>
     <style>
         :root {
             --primary: #1a1a1a;
-            --secondary: #2a2a2a;
+            --secondary: #2d2d2d;
             --accent: #00ff88;
             --text: #ffffff;
             --error: #ff5555;
@@ -18,191 +18,240 @@
             background: var(--primary);
             color: var(--text);
             margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             min-height: 100vh;
         }
 
         .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+
+        .login-box {
             background: var(--secondary);
             padding: 2rem;
             border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            animation: fadeIn 0.5s ease-in-out;
+            width: 400px;
+            margin: 10vh auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .user-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
         }
 
-        h1 {
-            font-size: 1.8rem;
-            margin-bottom: 1.5rem;
-            color: var(--accent);
+        .user-card {
+            background: var(--secondary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+            transition: transform 0.3s ease;
         }
 
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
+        .user-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .mc-head {
+            width: 64px;
+            height: 64px;
             border-radius: 8px;
-            color: var(--text);
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
+            margin-right: 1rem;
         }
 
-        input:focus {
-            border-color: var(--accent);
-            outline: none;
+        .user-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
         }
 
         button {
             background: var(--accent);
             color: var(--primary);
-            padding: 12px 24px;
             border: none;
-            border-radius: 8px;
+            padding: 8px 16px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 1rem;
             font-weight: 600;
-            margin-top: 10px;
-            transition: background 0.3s ease, transform 0.2s ease;
+            transition: 0.3s;
         }
 
         button:hover {
-            background: #00cc77;
-            transform: translateY(-2px);
+            opacity: 0.9;
         }
 
-        .error-message {
-            color: var(--error);
-            margin-top: 10px;
-            display: none;
-        }
-
-        .dashboard {
-            display: none;
-            width: 90%;
-            max-width: 1200px;
-            background: var(--secondary);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .user-card {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 10px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .user-card span {
-            font-size: 1.1rem;
-        }
-
-        .controls button {
-            background: rgba(255, 255, 255, 0.1);
+        select, input {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid var(--accent);
             color: var(--text);
-            padding: 8px 16px;
-            margin: 0 5px;
+            padding: 8px;
+            border-radius: 6px;
+            width: 100%;
+            margin: 0.5rem 0;
         }
 
-        .controls button:hover {
-            background: rgba(255, 255, 255, 0.2);
+        .rank-tag {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--accent);
+            color: var(--primary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
         }
     </style>
 </head>
 <body>
-    <!-- Login Container -->
-    <div class="container" id="login-container">
-        <h1>🔒 Admin Login</h1>
+    <!-- Login -->
+    <div class="login-box" id="login-box">
+        <h2>🔑 Minecraft Admin Login</h2>
         <form id="login-form">
-            <input type="text" id="username" placeholder="Benutzername" required>
-            <input type="password" id="password" placeholder="Passwort" required>
+            <input type="text" placeholder="Benutzername" id="username" required>
+            <input type="password" placeholder="Passwort" id="password" required>
             <button type="submit">Einloggen</button>
         </form>
-        <p class="error-message" id="login-error">❌ Falsche Anmeldedaten!</p>
     </div>
 
-    <!-- Dashboard -->
-    <div class="container dashboard" id="dashboard-container">
-        <h1>👑 Admin Dashboard</h1>
-        <div id="user-list"></div>
-        <button id="logout-button">🚪 Ausloggen</button>
+    <!-- Owner Dashboard -->
+    <div class="container" id="dashboard" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>👑 Owner Dashboard</h1>
+            <button onclick="showCreateUser()">➕ Neuer User</button>
+        </div>
+
+        <!-- User Creation Modal -->
+        <div id="create-user" style="display: none; margin: 2rem 0;">
+            <input type="text" id="mc-username" placeholder="Minecraft Benutzername">
+            <button onclick="createUser()">User erstellen</button>
+        </div>
+
+        <!-- User List -->
+        <div class="user-grid" id="user-list"></div>
     </div>
 
-    <script>
-        // Beispiel-Datenbank (Benutzer und Punkte)
-        const users = [
-            { username: "owner", password: "owner123", role: "Owner", points: 1000 },
-            { username: "admin", password: "admin123", role: "Admin", points: 500 }
-        ];
+<script>
+// Datenkonfiguration
+const ranks = [
+    { name: 'Co-Owner', min: 500 },
+    { name: 'Admin', min: 400 },
+    { name: 'Moderator', min: 300 },
+    { name: 'Supporter', min: 200 },
+    { name: 'Entfernt', min: 0 }
+];
 
-        let currentUser = null;
+let users = JSON.parse(localStorage.getItem('users')) || [];
+let currentUser = null;
 
-        // Login-System
-        document.getElementById('login-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+// Login System
+document.getElementById('login-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    // Hardcodierte Owner Anmeldedaten
+    if(username === 'owner' && password === 'owner123') {
+        currentUser = { role: 'Owner' };
+        document.getElementById('login-box').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        loadUsers();
+    }
+});
 
-            const user = users.find(u => u.username === username && u.password === password);
+// Minecraft User erstellen
+function createUser() {
+    const username = document.getElementById('mc-username').value;
+    users.push({
+        mcUsername: username,
+        points: 500,
+        rank: 'Co-Owner'
+    });
+    saveData();
+    loadUsers();
+}
 
-            if (user) {
-                currentUser = user;
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('dashboard-container').style.display = 'block';
-                document.getElementById('login-error').style.display = 'none';
-                loadUserList();
-            } else {
-                document.getElementById('login-error').style.display = 'block';
-            }
+// User Liste laden
+function loadUsers() {
+    const container = document.getElementById('user-list');
+    container.innerHTML = '';
+    
+    users.forEach(user => {
+        const card = document.createElement('div');
+        card.className = 'user-card';
+        card.innerHTML = `
+            <div class="user-header">
+                <img src="https://mc-heads.net/avatar/${user.mcUsername}" class="mc-head">
+                <h3>${user.mcUsername}</h3>
+                <div class="rank-tag">${user.rank}</div>
+            </div>
+            <div>
+                <b>${user.points} Punkte</b>
+                <select id="reason-${user.mcUsername}">
+                    <option value="-5">Ban ohne Grund (-5)</option>
+                    <option value="-10">Unfaire Strafe (-10)</option>
+                    <option value="-20">Admin-Missbrauch (-20)</option>
+                    <option value="custom">Individueller Abzug</option>
+                </select>
+                <input type="number" id="custom-${user.mcUsername}" style="display: none;">
+                <div class="controls">
+                    <button onclick="updatePoints('${user.mcUsername}')">Punkte abziehen</button>
+                </div>
+            </div>
+        `;
+        
+        // Event Listener für Custom Input
+        card.querySelector('select').addEventListener('change', function() {
+            document.getElementById('custom-'+user.mcUsername).style.display = 
+                this.value === 'custom' ? 'block' : 'none';
         });
+        
+        container.appendChild(card);
+    });
+}
 
-        // Benutzerliste laden
-        function loadUserList() {
-            const userList = document.getElementById('user-list');
-            userList.innerHTML = '';
+// Punkte aktualisieren
+function updatePoints(username) {
+    const user = users.find(u => u.mcUsername === username);
+    const select = document.getElementById('reason-'+username);
+    const customInput = document.getElementById('custom-'+username);
+    
+    const points = select.value === 'custom' 
+        ? parseInt(customInput.value)
+        : parseInt(select.value);
+        
+    user.points += points;
+    
+    // Rangüberprüfung
+    const newRank = ranks.find(r => user.points >= r.min).name;
+    if(newRank !== user.rank) {
+        user.rank = newRank;
+        alert(`${username} wurde zu ${newRank} degradiert!`);
+    }
+    
+    saveData();
+    loadUsers();
+}
 
-            users.forEach(user => {
-                const userCard = document.createElement('div');
-                userCard.className = 'user-card';
-                userCard.innerHTML = `
-                    <span>${user.username} - ${user.points} Punkte</span>
-                    ${currentUser.role === 'Owner' ? `
-                    <div class="controls">
-                        <button onclick="updatePoints('${user.username}', -10)">-10</button>
-                        <button onclick="updatePoints('${user.username}', 10)">+10</button>
-                    </div>` : ''}
-                `;
-                userList.appendChild(userCard);
-            });
-        }
+// Hilfsfunktionen
+function showCreateUser() {
+    document.getElementById('create-user').style.display = 'block';
+}
 
-        // Punkte aktualisieren
-        function updatePoints(username, points) {
-            const user = users.find(u => u.username === username);
-            user.points += points;
-            loadUserList();
-        }
+function saveData() {
+    localStorage.setItem('users', JSON.stringify(users));
+}
 
-        // Logout
-        document.getElementById('logout-button').addEventListener('click', () => {
-            currentUser = null;
-            document.getElementById('login-container').style.display = 'block';
-            document.getElementById('dashboard-container').style.display = 'none';
-        });
-    </script>
+// Initialisierung
+if(users.length > 0) loadUsers();
+</script>
 </body>
 </html>
