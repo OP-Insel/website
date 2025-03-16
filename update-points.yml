@@ -1,0 +1,17 @@
+name: Update Points Data
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-points:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Update points data
+        run: |
+          curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -d '{"username": "user1", "points": 10}' http://localhost:3000/add-points
