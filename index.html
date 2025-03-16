@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Punktesystem - Minecraft</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="login-form">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Benutzername">
+        <input type="password" id="password" placeholder="Passwort">
+        <button onclick="login()">Einloggen</button>
+    </div>
+    
+    <div id="dashboard" style="display:none;">
+        <h2>Admin Dashboard</h2>
+        <div id="points-display"></div>
+        <button onclick="addPoints()">Punkte hinzufügen</button>
+        <button onclick="deductPoints()">Punkte abziehen</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
