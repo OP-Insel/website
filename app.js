@@ -1,5 +1,11 @@
+// Hier speichern wir Benutzerdaten simuliert in einem Array (dies ist nur ein Beispiel)
+const usersData = [
+    { username: "Spieler1", points: 100 },
+    { username: "Spieler2", points: 200 },
+];
+
 // Funktion zum Abrufen der Punkte eines Benutzers
-async function getPoints() {
+function getPoints() {
     const username = document.getElementById('username').value;
     const message = document.getElementById('message');
     if (!username) {
@@ -7,55 +13,40 @@ async function getPoints() {
         return;
     }
 
-    try {
-        const response = await fetch(`http://localhost:3000/get-points?username=${username}`);
-        const data = await response.json();
-        if (data.success) {
-            message.textContent = `${username} hat ${data.points} Punkte.`;
-        } else {
-            message.textContent = "Benutzer nicht gefunden!";
-        }
-    } catch (error) {
-        message.textContent = "Fehler beim Abrufen der Punkte!";
+    const user = usersData.find(u => u.username === username);
+    if (user) {
+        message.textContent = `${username} hat ${user.points} Punkte.`;
+    } else {
+        message.textContent = "Benutzer nicht gefunden!";
     }
 }
 
 // Funktion zum Hinzufügen von Punkten
-async function addPoints() {
+function addPoints() {
     const username = document.getElementById('username').value;
     const points = prompt("Wie viele Punkte möchtest du hinzufügen?");
     if (username && points) {
-        try {
-            await fetch('http://localhost:3000/add-points', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username, points: parseInt(points) })
-            });
+        const user = usersData.find(u => u.username === username);
+        if (user) {
+            user.points += parseInt(points);
             alert("Punkte erfolgreich hinzugefügt!");
-        } catch (error) {
-            alert("Fehler beim Hinzufügen der Punkte!");
+        } else {
+            alert("Benutzer nicht gefunden!");
         }
     }
 }
 
 // Funktion zum Abziehen von Punkten
-async function deductPoints() {
+function deductPoints() {
     const username = document.getElementById('username').value;
     const points = prompt("Wie viele Punkte möchtest du abziehen?");
     if (username && points) {
-        try {
-            await fetch('http://localhost:3000/deduct-points', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username, points: parseInt(points) })
-            });
+        const user = usersData.find(u => u.username === username);
+        if (user) {
+            user.points -= parseInt(points);
             alert("Punkte erfolgreich abgezogen!");
-        } catch (error) {
-            alert("Fehler beim Abziehen der Punkte!");
+        } else {
+            alert("Benutzer nicht gefunden!");
         }
     }
 }
