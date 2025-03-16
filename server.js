@@ -3,44 +3,36 @@ const axios = require('axios');
 const app = express();
 const PORT = 3000;
 
-// GitHub API URL für das Repository und die JSON-Datei
+app.use(express.json());
+
 const repoOwner = 'DEIN_GITHUB_USERNAME'; // Ersetze mit deinem GitHub-Benutzernamen
 const repoName = 'minecraft-punkte-system'; // Dein Repository-Name
 const filePath = 'users.json';  // Der Pfad zur JSON-Datei im Repository
-const token = 'DEIN_GITHUB_TOKEN';  // Dein GitHub Token (muss erstellt werden)
+const token = 'DEIN_GITHUB_TOKEN';  // Dein GitHub Token
 
-app.use(express.json());
-
-// Funktion zum Abrufen der JSON-Datei von GitHub
 async function getUsersData() {
     try {
         const response = await axios.get(
             `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,
-            {
-                headers: { Authorization: `Bearer ${token}` }
-            }
+            { headers: { Authorization: `Bearer ${token}` } }
         );
         const fileContent = Buffer.from(response.data.content, 'base64').toString('utf8');
         return JSON.parse(fileContent);
     } catch (error) {
-        console.error('Fehler beim Abrufen der Benutzerdaten:', error);
         return { users: [] };
     }
 }
 
-// Funktion zum Speichern der JSON-Datei auf GitHub
 async function saveUsersData(usersData) {
     try {
         const response = await axios.get(
             `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,
-            {
-                headers: { Authorization: `Bearer ${token}` }
-            }
+            { headers: { Authorization: `Bearer ${token}` } }
         );
-        const sha = response.data.sha;  // Hole die aktuelle SHA der Datei
+        const sha = response.data.sha;
 
         const updatedContent = Buffer.from(JSON.stringify(usersData, null, 2)).toString('base64');
-        
+
         await axios.put(
             `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`,
             {
@@ -57,16 +49,19 @@ async function saveUsersData(usersData) {
     }
 }
 
-// Route zum Abrufen der Benutzerdaten (Punkte anzeigen)
 app.get('/get-points', async (req, res) => {
+    const { username } = req.query;
     const usersData = await getUsersData();
-    res.json(usersData);
+    const user = usersData.users.find(u => u.username === username);
+    if (user) {
+        res.json({ success: true, points: user.points });
+    } else {
+        res.json({ success: false });
+    }
 });
 
-// Route zum Hinzufügen von Punkten
 app.post('/add-points', async (req, res) => {
     const { username, points } = req.body;
-
     const usersData = await getUsersData();
     const user = usersData.users.find(u => u.username === username);
     if (user) {
@@ -74,14 +69,12 @@ app.post('/add-points', async (req, res) => {
         await saveUsersData(usersData);
         res.json({ success: true });
     } else {
-        res.status(400).json({ success: false, message: 'Benutzer nicht gefunden' });
+        res.status(400).json({ success: false });
     }
 });
 
-// Route zum Abziehen von Punkten
 app.post('/deduct-points', async (req, res) => {
     const { username, points } = req.body;
-
     const usersData = await getUsersData();
     const user = usersData.users.find(u => u.username === username);
     if (user) {
@@ -89,11 +82,10 @@ app.post('/deduct-points', async (req, res) => {
         await saveUsersData(usersData);
         res.json({ success: true });
     } else {
-        res.status(400).json({ success: false, message: 'Benutzer nicht gefunden' });
+        res.status(400).json({ success: false });
     }
 });
 
-// Startet den Server
 app.listen(PORT, () => {
     console.log(`Server läuft auf http://localhost:${PORT}`);
 });
