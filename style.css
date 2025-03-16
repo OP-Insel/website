@@ -97,3 +97,8 @@ button:hover {
     from { transform: translateX(-20px); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
 }
+
+.error-message {
+    color: red;
+    margin-top: 10px;
+}
