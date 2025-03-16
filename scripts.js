@@ -17,9 +17,10 @@ document.getElementById('login-form').addEventListener('submit', function(event)
         currentUser = user;
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('dashboard-container').style.display = 'block';
+        document.getElementById('login-error').style.display = 'none';
         loadUserList();
     } else {
-        alert('Login fehlgeschlagen');
+        document.getElementById('login-error').style.display = 'block';
     }
 });
 
