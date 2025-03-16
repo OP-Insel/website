@@ -3,160 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minecraft Ultimate Admin System</title>
+    <title>Minecraft Admin Pro</title>
     <style>
-        /* Base Styles (120 Zeilen) */
         :root {
-            --primary: #0d0f14;
-            --secondary: #1a1d24;
-            --accent: #2ea043;
-            --text: #e3e7ed;
-            --error: #ff4444;
-            --warning: #ffaa33;
-            --success: #2ea043;
+            --primary: #0d1117;
+            --secondary: #161b22;
+            --accent: #238636;
+            --text: #c9d1d9;
+            --error: #f85149;
         }
 
-        @font-face {
-            font-family: 'TechFont';
-            src: url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+        /* Animierte Hintergrundpartikel */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="1" fill="%2323863633"/></svg>');
+            animation: particles 20s linear infinite;
+            z-index: -1;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'JetBrains Mono', monospace;
-            background: var(--primary);
-            color: var(--text);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Login Animationen (80 Zeilen) */
-        .login-wrapper {
-            display: grid;
-            place-items: center;
-            min-height: 100vh;
-            background: linear-gradient(45deg, #0d0f14 0%, #1a1d24 100%);
-            overflow: hidden;
+        @keyframes particles {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(100%); }
         }
 
         .login-container {
-            position: relative;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 2.5rem;
-            border-radius: 20px;
-            width: 400px;
-            transform: translateY(50px);
-            opacity: 0;
-            animation: loginEntrance 1s 0.5s forwards;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        @keyframes loginEntrance {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .login-container::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, #2ea043, #1a6933);
-            z-index: -1;
-            border-radius: 22px;
-            animation: borderGlow 3s infinite;
-        }
-
-        @keyframes borderGlow {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.7; }
-        }
-
-        /* Dashboard Styles (150 Zeilen) */
-        .dashboard {
-            display: none;
-            opacity: 0;
-            animation: dashboardEntrance 1s forwards;
-        }
-
-        @keyframes dashboardEntrance {
-            to {
-                opacity: 1;
-            }
-        }
-
-        .user-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 2rem;
-            padding: 2rem;
-        }
-
-        .user-card {
             background: var(--secondary);
-            border-radius: 15px;
-            padding: 1.5rem;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 400px;
+            margin: 10vh auto;
+            transform: perspective(1000px) rotateX(10deg);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            animation: loginFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes loginFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .input-group {
             position: relative;
-            transform: scale(0.95);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            overflow: hidden;
+            margin: 1.5rem 0;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid var(--accent);
+            border-radius: 6px;
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            background: rgba(255,255,255,0.1);
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        /* Erweiterte Benutzerliste */
+        .user-card {
+            background: linear-gradient(145deg, #161b22, #1a2029);
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            transition: transform 0.3s ease;
         }
 
         .user-card:hover {
-            transform: scale(1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transform: translateY(-5px);
         }
 
-        .user-card::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--accent);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-
-        .user-card:hover::after {
-            transform: scaleX(1);
-        }
-
-        .mc-head {
-            width: 80px;
-            height: 80px;
-            border-radius: 12px;
-            margin-right: 1.5rem;
-            border: 2px solid var(--accent);
-            transition: transform 0.3s ease;
-        }
-
-        .mc-head:hover {
-            transform: rotate(5deg) scale(1.1);
-        }
-
-        /* Notification System (50 Zeilen) */
+        /* Modernes Notificationsystem */
         .notification {
             position: fixed;
             top: 20px;
-            right: -400px;
-            padding: 1rem 2rem;
+            right: -300px;
+            padding: 1rem;
             border-radius: 8px;
             background: var(--secondary);
-            border-left: 5px solid;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border-left: 4px solid;
             transition: right 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -164,102 +97,103 @@
             right: 20px;
         }
 
-        /* Delete Animation (30 Zeilen) */
-        @keyframes deleteAnimation {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(0.8); opacity: 0.5; }
-            100% { transform: scale(0.5); opacity: 0; }
-        }
-
-        .deleting {
-            animation: deleteAnimation 0.4s forwards;
-        }
-
-        /* Advanced Controls (70 Zeilen) */
-        .advanced-controls {
+        /* Löschbestätigungsdialog */
+        .confirm-dialog {
             position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            display: flex;
-            gap: 1rem;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--secondary);
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
         }
-
-        .floating-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: var(--accent);
-            display: grid;
-            place-items: center;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .floating-btn:hover {
-            transform: translateY(-5px) rotate(15deg);
-        }
-
-        /* ... Weitere 100+ Zeilen CSS ... */
     </style>
 </head>
 <body>
     <!-- Login System -->
-    <div class="login-wrapper">
-        <div class="login-container">
-            <h2 style="text-align: center; margin-bottom: 2rem;">🔒 Secure Admin Login</h2>
-            <form id="loginForm">
-                <div class="input-group">
-                    <input type="text" id="loginUser" required>
-                    <label>Benutzername</label>
-                </div>
-                <div class="input-group">
-                    <input type="password" id="loginPass" required>
-                    <label>Passwort</label>
-                </div>
-                <button type="submit" class="auth-btn">🚀 Login</button>
-            </form>
-        </div>
+    <div class="login-container" id="loginContainer">
+        <h2 style="text-align: center;">🔐 Secure Admin Login</h2>
+        <form id="loginForm">
+            <div class="input-group">
+                <input type="text" id="username" placeholder=" " required>
+                <label>Benutzername</label>
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" placeholder=" " required>
+                <label>Passwort</label>
+            </div>
+            <button type="submit" style="width: 100%;">Login →</button>
+        </form>
+        <div id="loginStatus"></div>
     </div>
 
     <!-- Dashboard -->
-    <div class="dashboard">
-        <!-- ... Erweiterte UI-Elemente ... -->
+    <div id="dashboard" style="display: none;">
+        <!-- Erweiterte Benutzerverwaltung -->
     </div>
 
-<script>
-// Erweitertes Security System (150 Zeilen)
-const secureLogin = {
-    hash: 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', // sha256('owner123')
-    attempts: 0,
-    lockout: false,
+    <!-- Notifications -->
+    <div id="notification" class="notification"></div>
 
-    verify(password) {
-        if(this.lockout) return false;
-        const hash = sha256(password);
-        if(hash === this.hash) {
+<script>
+// Erweitertes Security System
+const authSystem = {
+    locked: false,
+    attempts: 0,
+    maxAttempts: 3,
+    lockTimeout: 30000, // 30 Sekunden
+
+    init() {
+        if(localStorage.getItem('lockedUntil') > Date.now()) {
+            this.lockSystem();
+        }
+    },
+
+    async hashPassword(password) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+    },
+
+    async login(username, password) {
+        if(this.locked) {
+            this.showError(`System gesperrt bis ${new Date(localStorage.getItem('lockedUntil')).toLocaleTimeString()}`);
+            return false;
+        }
+
+        const storedHash = 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3'; // owner123
+        const inputHash = await this.hashPassword(password);
+        
+        if(username === 'owner' && inputHash === storedHash) {
             this.attempts = 0;
             return true;
         }
+
         this.attempts++;
-        if(this.attempts >= 3) this.lockSystem();
+        if(this.attempts >= this.maxAttempts) {
+            this.lockSystem();
+        }
         return false;
     },
 
     lockSystem() {
-        this.lockout = true;
-        showNotification('System gesperrt! Kontaktieren Sie den Owner', 'error');
+        this.locked = true;
+        const lockTime = Date.now() + this.lockTimeout;
+        localStorage.setItem('lockedUntil', lockTime);
         setTimeout(() => {
-            window.location.href = 'about:blank';
-        }, 3000);
+            this.locked = false;
+            localStorage.removeItem('lockedUntil');
+        }, this.lockTimeout);
     }
 };
 
-// User Management System (200 Zeilen)
-class UserSystem {
-    constructor() {
-        this.users = JSON.parse(localStorage.getItem('ultimateUsers')) || [];
-        this.currentUser = null;
-    }
+// User Management System
+const userManager = {
+    users: JSON.parse(localStorage.getItem('users')) || [],
 
     createUser(username) {
         const newUser = {
@@ -267,42 +201,78 @@ class UserSystem {
             username,
             points: 500,
             rank: 'Co-Owner',
-            history: [],
             joinDate: new Date().toISOString(),
             avatar: `https://mc-heads.net/avatar/${username}`
         };
         this.users.push(newUser);
         this.save();
         return newUser;
-    }
+    },
 
     deleteUser(userId) {
         this.users = this.users.filter(u => u.id !== userId);
         this.save();
-    }
-
-    // ... Weitere Methoden ...
-}
-
-// Animation Controller (50 Zeilen)
-const animate = {
-    shake(element) {
-        element.style.transform = 'translateX(10px)';
-        setTimeout(() => element.style.transform = 'translateX(-10px)', 100);
-        setTimeout(() => element.style.transform = 'translateX(0)', 200);
     },
 
-    pulse(element) {
-        element.style.transform = 'scale(1.1)';
-        setTimeout(() => element.style.transform = 'scale(1)', 300);
+    save() {
+        localStorage.setItem('users', JSON.stringify(this.users));
     }
 };
 
-// ... Weitere 150+ Zeilen JavaScript ...
+// UI Controller
+const ui = {
+    showNotification(message, type = 'info') {
+        const notification = document.getElementById('notification');
+        notification.className = `notification ${type} show`;
+        notification.textContent = message;
+        setTimeout(() => notification.classList.remove('show'), 3000);
+    },
 
-/* Initialisierung */
-const userSystem = new UserSystem();
-initLoginSystem();
+    showError(message) {
+        this.showNotification(`❌ ${message}`, 'error');
+    },
+
+    showSuccess(message) {
+        this.showNotification(`✅ ${message}`, 'success');
+    },
+
+    async handleLogin(e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        if(!username || !password) {
+            this.showError('Bitte alle Felder ausfüllen!');
+            return;
+        }
+
+        try {
+            const success = await authSystem.login(username, password);
+            if(success) {
+                window.location.href = '#dashboard';
+                this.showDashboard();
+            } else {
+                this.showError('Falsche Anmeldedaten!');
+            }
+        } catch (error) {
+            this.showError('Login fehlgeschlagen!');
+        }
+    },
+
+    showDashboard() {
+        document.getElementById('loginContainer').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        this.loadUsers();
+    },
+
+    loadUsers() {
+        // Erweiterte Benutzerliste
+    }
+};
+
+// Event Listener
+document.getElementById('loginForm').addEventListener('submit', e => ui.handleLogin(e));
+authSystem.init();
 </script>
 </body>
 </html>
