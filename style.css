@@ -19,7 +19,7 @@ body {
 /* Container */
 .container {
   width: 90%;
-  max-width: 400px;
+  max-width: 500px;
   padding: 20px;
   border: 2px solid #000;
   border-radius: 10px;
@@ -27,13 +27,12 @@ body {
   background-color: #fff;
 }
 
-/* Sections (Login und Dashboard) */
+/* Sektionen (Login und Dashboard) */
 .section {
+  display: none;
   opacity: 0;
   transition: opacity 0.5s ease;
-  display: none;
 }
-
 .section.active {
   display: block;
   opacity: 1;
@@ -63,12 +62,9 @@ button {
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
-
 button:hover {
   background-color: #333;
 }
-
-/* Spezifische Buttons */
 .logout-btn {
   background-color: #fff;
   color: #000;
@@ -99,4 +95,39 @@ button:hover {
   margin-top: 10px;
   font-size: 14px;
   color: red;
+}
+
+/* Benutzerliste */
+#user-list {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.user-item {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border: 1px solid #000;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.user-item:hover {
+  background-color: #eee;
+}
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  border: 1px solid #000;
+  border-radius: 5px;
+}
+.user-details {
+  text-align: left;
+}
+.info {
+  font-size: 12px;
+  color: #333;
+  margin-top: 5px;
 }
