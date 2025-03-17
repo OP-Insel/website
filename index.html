@@ -3,19 +3,62 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Punkte System Login</title>
+  <title>Minecraft Punkte System</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="https://crafatar.com/avatars/MHF_Steve?size=16&overlay" type="image/png">
 </head>
 <body>
   <div class="container">
     <!-- Login-Bereich -->
     <div id="login-section" class="section active">
-      <h1>Punkte System</h1>
+      <h1>Minecraft Punkte System</h1>
       <p>Bitte melde dich an</p>
       <input type="text" id="username" placeholder="Benutzername" autocomplete="off">
       <input type="password" id="password" placeholder="Passwort">
       <button onclick="login()">Einloggen</button>
       <p id="login-message" class="message"></p>
+      <p class="info">
+        Owner Login: owner / admin123<br>
+        Nur-Ansicht: admin / admin
+      </p>
+      <button class="visitor-btn" onclick="showVisitorForm()">Als Besucher fortfahren</button>
+    </div>
+    
+    <!-- Besucher-Bereich -->
+    <div id="visitor-section" class="section">
+      <h2>Besucher-Bereich</h2>
+      <p>Hier kannst du anonym Wünsche oder Punktabzüge vorschlagen</p>
+      
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('wish-tab')">Wunsch einreichen</button>
+        <button class="tab-btn" onclick="switchTab('points-tab')">Punktabzug vorschlagen</button>
+      </div>
+      
+      <div id="wish-tab" class="tab-content active">
+        <div class="form-group">
+          <label for="wish-text">Dein Wunsch oder Vorschlag:</label>
+          <textarea id="wish-text" placeholder="Beschreibe deinen Wunsch oder Vorschlag..."></textarea>
+          <button onclick="submitWish()">Wunsch einreichen</button>
+        </div>
+      </div>
+      
+      <div id="points-tab" class="tab-content">
+        <div class="form-group">
+          <label for="points-username">Minecraft-Name:</label>
+          <input type="text" id="points-username" placeholder="Minecraft-Name des Spielers">
+          
+          <label for="points-amount">Punktabzug vorschlagen:</label>
+          <input type="number" id="points-amount" placeholder="Anzahl der Punkte" min="1">
+          
+          <label for="points-reason">Grund für den Punktabzug:</label>
+          <textarea id="points-reason" placeholder="Warum sollten Punkte abgezogen werden?"></textarea>
+          
+          <button onclick="submitPointsRequest()">Punktabzug vorschlagen</button>
+        </div>
+      </div>
+      
+      <p id="visitor-message" class="message"></p>
+      <button class="back-btn" onclick="backToLogin()">Zurück zum Login</button>
     </div>
     
     <!-- Dashboard-Bereich (nur nach Login sichtbar) -->
@@ -23,32 +66,46 @@
       <!-- Owner/Admin Panel -->
       <div id="admin-panel" class="panel">
         <h2>Admin Panel</h2>
-        <div class="form-group">
-          <input type="text" id="new-username" placeholder="Neuer Minecraft Name">
-          <input type="number" id="new-points" placeholder="Anfangspunkte">
-          <select id="new-rank">
-            <option value="Supporter">Supporter</option>
-            <option value="Moderator">Moderator</option>
-            <option value="Admin">Admin</option>
-          </select>
-          <button onclick="createUser()">Benutzer erstellen</button>
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchAdminTab('users-tab')">Benutzer</button>
+          <button class="tab-btn" onclick="switchAdminTab('requests-tab')">Anfragen <span id="request-badge" class="badge">0</span></button>
         </div>
-        <div class="form-group">
-          <input type="text" id="target-username" placeholder="Ziel Benutzer">
-          <input type="number" id="modify-points" placeholder="Punkte">
-          <div class="btn-group">
-            <button onclick="addPoints()">Punkte hinzufügen</button>
-            <button onclick="deductPoints()">Punkte abziehen</button>
+        
+        <div id="users-tab" class="tab-content active">
+          <div class="form-group">
+            <input type="text" id="new-username" placeholder="Neuer Minecraft Name">
+            <input type="number" id="new-points" placeholder="Anfangspunkte">
+            <select id="new-rank">
+              <option value="Supporter">Supporter</option>
+              <option value="Moderator">Moderator</option>
+              <option value="Admin">Admin</option>
+            </select>
+            <button onclick="createUser()">Benutzer erstellen</button>
+          </div>
+          <div class="form-group">
+            <input type="text" id="target-username" placeholder="Ziel Benutzer">
+            <input type="number" id="modify-points" placeholder="Punkte">
+            <div class="btn-group">
+              <button onclick="addPoints()">Punkte hinzufügen</button>
+              <button onclick="deductPoints()">Punkte abziehen</button>
+            </div>
+          </div>
+          <button onclick="viewPoints()">Punkte anzeigen</button>
+          <button onclick="exportData()">Daten exportieren</button>
+          <button onclick="importData()">Daten importieren</button>
+          <p id="admin-message" class="message"></p>
+          <hr>
+          <h3>Benutzerliste</h3>
+          <div id="user-list"></div>
+          <p class="info">Klicke auf einen Benutzer, um ihn auszuwählen.</p>
+        </div>
+        
+        <div id="requests-tab" class="tab-content">
+          <h3>Wünsche und Punktabzug-Vorschläge</h3>
+          <div id="requests-list" class="requests-list">
+            <p class="empty-message">Keine offenen Anfragen vorhanden.</p>
           </div>
         </div>
-        <button onclick="viewPoints()">Punkte anzeigen</button>
-        <button onclick="exportData()">Daten exportieren</button>
-        <button onclick="importData()">Daten importieren</button>
-        <p id="admin-message" class="message"></p>
-        <hr>
-        <h3>Benutzerliste</h3>
-        <div id="user-list"></div>
-        <p class="info">Klicke auf einen Benutzer, um Punkte abzuziehen.</p>
       </div>
       
       <!-- Benutzer Panel (normale Benutzer) -->
