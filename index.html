@@ -26,6 +26,11 @@
         <div class="form-group">
           <input type="text" id="new-username" placeholder="Neuer Minecraft Name">
           <input type="number" id="new-points" placeholder="Anfangspunkte">
+          <select id="new-rank">
+            <option value="Supporter">Supporter</option>
+            <option value="Moderator">Moderator</option>
+            <option value="Admin">Admin</option>
+          </select>
           <button onclick="createUser()">Benutzer erstellen</button>
         </div>
         <div class="form-group">
@@ -37,6 +42,8 @@
           </div>
         </div>
         <button onclick="viewPoints()">Punkte anzeigen</button>
+        <button onclick="exportData()">Daten exportieren</button>
+        <button onclick="importData()">Daten importieren</button>
         <p id="admin-message" class="message"></p>
         <hr>
         <h3>Benutzerliste</h3>
@@ -48,6 +55,7 @@
       <div id="user-panel" class="panel">
         <h2>Benutzerbereich</h2>
         <button onclick="viewUserPoints()">Meine Punkte anzeigen</button>
+        <div id="user-stats" class="user-stats"></div>
         <p id="user-message" class="message"></p>
       </div>
       <button class="logout-btn" onclick="logout()">Ausloggen</button>
@@ -56,3 +64,4 @@
   <script src="app.js"></script>
 </body>
 </html>
+
