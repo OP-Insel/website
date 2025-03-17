@@ -23,7 +23,7 @@ function login() {
     return;
   }
   
-  // Normale Benutzer – hier wird das Passwort nicht geprüft
+  // Normale Benutzer (Passwortprüfung entfällt hier)
   const user = users.find(u => u.username.toLowerCase() === username.toLowerCase());
   if (user) {
     loggedInUser = { username: user.username, role: "user" };
@@ -41,6 +41,7 @@ function showDashboard() {
   if (loggedInUser.role === "owner") {
     document.getElementById('admin-panel').style.display = 'block';
     document.getElementById('user-panel').style.display = 'none';
+    updateUserList();
   } else {
     document.getElementById('admin-panel').style.display = 'none';
     document.getElementById('user-panel').style.display = 'block';
@@ -70,6 +71,7 @@ function createUser() {
     }
     users.push({ username: newUsername, points: newPoints, rank: "Supporter" });
     alert(`${newUsername} wurde erfolgreich erstellt.`);
+    updateUserList();
   } else {
     alert("Bitte alle Felder korrekt ausfüllen.");
   }
@@ -86,6 +88,7 @@ function addPoints() {
     if (user) {
       user.points += modPoints;
       alert(`${modPoints} Punkte wurden zu ${targetUsername} hinzugefügt.`);
+      updateUserList();
     } else {
       alert("Benutzer nicht gefunden.");
     }
@@ -106,6 +109,7 @@ function deductPoints() {
       user.points -= modPoints;
       if (user.points < 0) user.points = 0;
       alert(`${modPoints} Punkte wurden von ${targetUsername} abgezogen.`);
+      updateUserList();
     } else {
       alert("Benutzer nicht gefunden.");
     }
@@ -136,4 +140,44 @@ function viewUserPoints() {
   } else {
     userMessage.textContent = "Benutzer nicht gefunden.";
   }
+}
+
+// Benutzerliste aktualisieren (Owner-Bereich)
+// Zeigt jeden Benutzer mit Minecraft-Avatar und Details an
+function updateUserList() {
+  const userList = document.getElementById('user-list');
+  userList.innerHTML = ""; // Liste leeren
+
+  users.forEach(user => {
+    // Erzeuge Container für den Benutzer
+    const item = document.createElement('div');
+    item.classList.add('user-item');
+
+    // Minecraft Avatar (verwende crafatar.com, Overlay optional)
+    const avatar = document.createElement('img');
+    avatar.classList.add('user-avatar');
+    // Hier wird der Benutzername als Minecraft-Name genutzt – passe ggf. an
+    avatar.src = `https://crafatar.com/avatars/${user.username}?size=50&overlay`;
+    avatar.alt = user.username;
+
+    // Benutzer-Details (Name, Punkte, Rang)
+    const details = document.createElement('div');
+    details.classList.add('user-details');
+    details.innerHTML = `<strong>${user.username}</strong><br>Punkte: ${user.points}<br>Rang: ${user.rank}`;
+
+    // Bei Klick auf den Benutzer: Prompt für Punktabzug
+    item.addEventListener('click', () => {
+      const pointsToDeduct = parseInt(prompt(`Wie viele Punkte sollen von ${user.username} abgezogen werden?`));
+      if (!isNaN(pointsToDeduct)) {
+        user.points -= pointsToDeduct;
+        if (user.points < 0) user.points = 0;
+        alert(`${pointsToDeduct} Punkte wurden von ${user.username} abgezogen.`);
+        updateUserList();
+      }
+    });
+
+    item.appendChild(avatar);
+    item.appendChild(details);
+    userList.appendChild(item);
+  });
 }
