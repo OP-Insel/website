@@ -5,23 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Minecraft Punkte System</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="https://crafatar.com/avatars/MHF_Steve?size=16&overlay" type="image/png">
+  <link rel="icon" href="https://mc-heads.net/avatar/MHF_Steve/16" type="image/png">
 </head>
 <body>
   <div class="container">
     <!-- Login-Bereich -->
     <div id="login-section" class="section active">
       <h1>Minecraft Punkte System</h1>
-      <p>Bitte melde dich an</p>
-      <input type="text" id="username" placeholder="Benutzername" autocomplete="off">
-      <input type="password" id="password" placeholder="Passwort">
-      <button onclick="login()">Einloggen</button>
-      <p id="login-message" class="message"></p>
-      <p class="info">
-        Owner Login: owner / admin123<br>
-        Nur-Ansicht: admin / admin
-      </p>
-      <button class="visitor-btn" onclick="showVisitorForm()">Als Besucher fortfahren</button>
+      <div class="minecraft-logo">
+        <img src="https://www.minecraft.net/content/dam/games/minecraft/key-art/MC_One-Vanilla_Key-Art_Minecon2019_800x450.jpg" alt="Minecraft">
+      </div>
+      <div class="login-form">
+        <input type="text" id="username" placeholder="Benutzername" autocomplete="off">
+        <input type="password" id="password" placeholder="Passwort">
+        <button onclick="login()">Einloggen</button>
+        <p id="login-message" class="message"></p>
+        <button class="help-btn" onclick="showLoginHelp()">Hilfe beim Login</button>
+        <button class="visitor-btn" onclick="showVisitorForm()">Als Besucher fortfahren</button>
+      </div>
     </div>
     
     <!-- Besucher-Bereich -->
@@ -116,6 +117,28 @@
         <p id="user-message" class="message"></p>
       </div>
       <button class="logout-btn" onclick="logout()">Ausloggen</button>
+    </div>
+    
+    <!-- Login-Hilfe Modal -->
+    <div id="login-help-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Login-Hilfe</h3>
+          <span class="modal-close" onclick="closeLoginHelp()">&times;</span>
+        </div>
+        <div class="modal-body">
+          <p>Hier sind die verfügbaren Login-Optionen:</p>
+          <ul>
+            <li><strong>Owner Login:</strong> owner / admin123</li>
+            <li><strong>Nur-Ansicht:</strong> admin / admin</li>
+            <li><strong>Normale Benutzer:</strong> Verwende deinen Minecraft-Namen</li>
+          </ul>
+          <p>Als Besucher kannst du auch ohne Login Wünsche einreichen oder Punktabzüge vorschlagen.</p>
+        </div>
+        <div class="modal-footer">
+          <button onclick="closeLoginHelp()">Schließen</button>
+        </div>
+      </div>
     </div>
   </div>
   <script src="app.js"></script>
