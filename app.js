@@ -2,7 +2,7 @@
 const adminUsername = "owner";
 const adminPassword = "admin123";
 
-// Beispiel-Daten für Benutzer
+// Simulierte Benutzerdaten
 let users = [
   { username: "Spieler1", points: 100, rank: "Moderator" },
   { username: "Spieler2", points: 150, rank: "Admin" }
@@ -12,32 +12,31 @@ let loggedInUser = null;
 
 // Login-Funktion
 function login() {
-  const usernameInput = document.getElementById('username').value.trim();
-  const passwordInput = document.getElementById('password').value.trim();
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
   const loginMessage = document.getElementById('login-message');
 
-  // Überprüfe Admin-Zugang
-  if (usernameInput === adminUsername && passwordInput === adminPassword) {
+  // Überprüfung für Owner
+  if (username === adminUsername && password === adminPassword) {
     loggedInUser = { username: adminUsername, role: "owner" };
     showDashboard();
     return;
   }
   
-  // Überprüfe, ob der Benutzer existiert (für normale Benutzer)
-  const user = users.find(u => u.username === usernameInput);
+  // Normale Benutzer – hier wird das Passwort nicht geprüft
+  const user = users.find(u => u.username.toLowerCase() === username.toLowerCase());
   if (user) {
-    // Für dieses Beispiel entfällt die Passwortprüfung für normale Benutzer
     loggedInUser = { username: user.username, role: "user" };
     showDashboard();
   } else {
-    loginMessage.textContent = "Benutzername oder Passwort falsch!";
+    loginMessage.textContent = "Ungültiger Benutzername oder Passwort!";
   }
 }
 
-// Zeigt das Dashboard an und blendet den Login-Bereich aus
+// Dashboard anzeigen und Login-Bereich ausblenden
 function showDashboard() {
-  document.querySelector('.login-container').style.display = 'none';
-  document.querySelector('.dashboard-container').style.display = 'block';
+  document.getElementById('login-section').classList.remove('active');
+  document.getElementById('dashboard-section').classList.add('active');
   
   if (loggedInUser.role === "owner") {
     document.getElementById('admin-panel').style.display = 'block';
@@ -48,18 +47,29 @@ function showDashboard() {
   }
 }
 
-// Erstellen eines neuen Benutzers (nur für Owner)
+// Logout-Funktion
+function logout() {
+  loggedInUser = null;
+  document.getElementById('username').value = "";
+  document.getElementById('password').value = "";
+  document.getElementById('login-message').textContent = "";
+  document.getElementById('dashboard-section').classList.remove('active');
+  document.getElementById('login-section').classList.add('active');
+}
+
+// Neuer Benutzer erstellen (nur für Owner)
 function createUser() {
-  const username = document.getElementById('new-username').value.trim();
-  const points = parseInt(document.getElementById('new-points').value.trim());
+  if (loggedInUser.role !== "owner") return;
+  const newUsername = document.getElementById('new-username').value.trim();
+  const newPoints = parseInt(document.getElementById('new-points').value.trim());
   
-  if (username && !isNaN(points)) {
-    if (users.find(u => u.username === username)) {
+  if (newUsername && !isNaN(newPoints)) {
+    if (users.find(u => u.username.toLowerCase() === newUsername.toLowerCase())) {
       alert("Benutzer existiert bereits.");
       return;
     }
-    users.push({ username: username, points: points, rank: "Supporter" });
-    alert(`${username} wurde erfolgreich erstellt.`);
+    users.push({ username: newUsername, points: newPoints, rank: "Supporter" });
+    alert(`${newUsername} wurde erfolgreich erstellt.`);
   } else {
     alert("Bitte alle Felder korrekt ausfüllen.");
   }
@@ -67,14 +77,15 @@ function createUser() {
 
 // Punkte hinzufügen (nur für Owner)
 function addPoints() {
+  if (loggedInUser.role !== "owner") return;
   const targetUsername = document.getElementById('target-username').value.trim();
-  const points = parseInt(document.getElementById('modify-points').value.trim());
+  const modPoints = parseInt(document.getElementById('modify-points').value.trim());
   
-  if (targetUsername && !isNaN(points)) {
-    const user = users.find(u => u.username === targetUsername);
+  if (targetUsername && !isNaN(modPoints)) {
+    const user = users.find(u => u.username.toLowerCase() === targetUsername.toLowerCase());
     if (user) {
-      user.points += points;
-      alert(`${points} Punkte wurden zu ${targetUsername} hinzugefügt.`);
+      user.points += modPoints;
+      alert(`${modPoints} Punkte wurden zu ${targetUsername} hinzugefügt.`);
     } else {
       alert("Benutzer nicht gefunden.");
     }
@@ -85,17 +96,16 @@ function addPoints() {
 
 // Punkte abziehen (nur für Owner)
 function deductPoints() {
+  if (loggedInUser.role !== "owner") return;
   const targetUsername = document.getElementById('target-username').value.trim();
-  const points = parseInt(document.getElementById('modify-points').value.trim());
+  const modPoints = parseInt(document.getElementById('modify-points').value.trim());
   
-  if (targetUsername && !isNaN(points)) {
-    const user = users.find(u => u.username === targetUsername);
+  if (targetUsername && !isNaN(modPoints)) {
+    const user = users.find(u => u.username.toLowerCase() === targetUsername.toLowerCase());
     if (user) {
-      user.points -= points;
-      if (user.points < 0) {
-        user.points = 0;
-      }
-      alert(`${points} Punkte wurden von ${targetUsername} abgezogen.`);
+      user.points -= modPoints;
+      if (user.points < 0) user.points = 0;
+      alert(`${modPoints} Punkte wurden von ${targetUsername} abgezogen.`);
     } else {
       alert("Benutzer nicht gefunden.");
     }
@@ -104,11 +114,12 @@ function deductPoints() {
   }
 }
 
-// Punkte eines Benutzers anzeigen (für Owner)
+// Für Owner: Punkte eines Zielbenutzers anzeigen
 function viewPoints() {
+  if (loggedInUser.role !== "owner") return;
   const targetUsername = document.getElementById('target-username').value.trim();
   const adminMessage = document.getElementById('admin-message');
-  const user = users.find(u => u.username === targetUsername);
+  const user = users.find(u => u.username.toLowerCase() === targetUsername.toLowerCase());
   if (user) {
     adminMessage.textContent = `${user.username} hat ${user.points} Punkte und ist ${user.rank}.`;
   } else {
@@ -116,9 +127,9 @@ function viewPoints() {
   }
 }
 
-// Punkte für den eingeloggten normalen Benutzer anzeigen
+// Für normale Benutzer: Eigene Punkte anzeigen
 function viewUserPoints() {
-  const user = users.find(u => u.username === loggedInUser.username);
+  const user = users.find(u => u.username.toLowerCase() === loggedInUser.username.toLowerCase());
   const userMessage = document.getElementById('user-message');
   if (user) {
     userMessage.textContent = `Du hast ${user.points} Punkte und bist ${user.rank}.`;
