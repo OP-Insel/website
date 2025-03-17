@@ -70,28 +70,45 @@
         <div class="tabs">
           <button class="tab-btn active" onclick="switchAdminTab('users-tab')">Benutzer</button>
           <button class="tab-btn" onclick="switchAdminTab('requests-tab')">Anfragen <span id="request-badge" class="badge">0</span></button>
+          <button class="tab-btn" onclick="switchAdminTab('rules-tab')">Regeln</button>
         </div>
         
         <div id="users-tab" class="tab-content active">
           <div class="form-group">
             <input type="text" id="new-username" placeholder="Neuer Minecraft Name">
-            <input type="number" id="new-points" placeholder="Anfangspunkte">
+            <input type="number" id="new-points" placeholder="Anfangspunkte" value="500">
             <select id="new-rank">
-              <option value="Supporter">Supporter</option>
-              <option value="Moderator">Moderator</option>
-              <option value="Admin">Admin</option>
+              <option value="JR_SUPPORTER">Jr. Supporter</option>
+              <option value="SUPPORTER">Supporter</option>
+              <option value="JR_MODERATOR">Jr. Moderator</option>
+              <option value="MODERATOR">Moderator</option>
+              <option value="JR_ADMIN">Jr. Admin</option>
+              <option value="ADMIN">Admin</option>
+              <option value="CO_OWNER">Co-Owner</option>
             </select>
             <button onclick="createUser()">Benutzer erstellen</button>
           </div>
           <div class="form-group">
             <input type="text" id="target-username" placeholder="Ziel Benutzer">
             <input type="number" id="modify-points" placeholder="Punkte">
+            <select id="violation-type">
+              <option value="">-- Regelverstoß auswählen --</option>
+              <option value="BAN_WITHOUT_REASON">Ban ohne Begründung (-5)</option>
+              <option value="UNFAIR_PUNISHMENT">Unfaire Strafe (-10)</option>
+              <option value="ADMIN_ABUSE">Missbrauch der Admin-Rechte (-20)</option>
+              <option value="INSULT_BEHAVIOR">Beleidigung/schlechtes Verhalten (-15)</option>
+              <option value="INACTIVE">Inaktiv ohne Abmeldung (-10)</option>
+              <option value="REPEATED_MISCONDUCT">Wiederholtes Fehlverhalten (-30)</option>
+              <option value="SPAMMING">Spamming (-5)</option>
+              <option value="SERIOUS_VIOLATION">Schwere Regelverstöße (-20)</option>
+              <option value="custom">Benutzerdefiniert</option>
+            </select>
             <div class="btn-group">
               <button onclick="addPoints()">Punkte hinzufügen</button>
               <button onclick="deductPoints()">Punkte abziehen</button>
             </div>
           </div>
-          <button onclick="viewPoints()">Punkte anzeigen</button>
+          <button onclick="resetMonthlyPoints()">Monatliche Punkte zurücksetzen</button>
           <button onclick="exportData()">Daten exportieren</button>
           <button onclick="importData()">Daten importieren</button>
           <p id="admin-message" class="message"></p>
@@ -106,6 +123,11 @@
           <div id="requests-list" class="requests-list">
             <p class="empty-message">Keine offenen Anfragen vorhanden.</p>
           </div>
+        </div>
+        
+        <div id="rules-tab" class="tab-content">
+          <h3>Punktesystem Regeln</h3>
+          <div id="rules-container"></div>
         </div>
       </div>
       
