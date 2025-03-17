@@ -313,20 +313,40 @@ button:active {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
+.rank-owner {
+  background-color: #9c27b0;
+}
+
+.rank-co_owner {
+  background-color: #9c27b0;
+}
+
 .rank-admin {
   background-color: #ff5252;
+}
+
+.rank-jr_admin {
+  background-color: #ff7070;
 }
 
 .rank-moderator {
   background-color: #4caf50;
 }
 
+.rank-jr_moderator {
+  background-color: #81c784;
+}
+
 .rank-supporter {
   background-color: #2196f3;
 }
 
-.rank-owner {
-  background-color: #9c27b0;
+.rank-jr_supporter {
+  background-color: #64b5f6;
+}
+
+.rank-user {
+  background-color: #9e9e9e;
 }
 
 /* Tabs */
@@ -506,6 +526,43 @@ button:active {
 .modal-footer {
   display: flex;
   justify-content: flex-end;
+}
+
+/* Rules display */
+.rules-section {
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.rules-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+}
+
+.rules-table th,
+.rules-table td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.rules-table th {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+.warning-box {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 5px;
+  color: #c62828;
+  font-weight: bold;
 }
 
 /* Scrollbar */
