@@ -46,6 +46,25 @@ function loadDataFromLocalStorage() {
   }
 }
 
+// Füge diese Funktionen für das Login-Hilfe-Modal hinzu
+function showLoginHelp() {
+  const modal = document.getElementById("login-help-modal")
+  modal.style.display = "flex"
+}
+
+function closeLoginHelp() {
+  const modal = document.getElementById("login-help-modal")
+  modal.style.display = "none"
+}
+
+// Schließe das Modal, wenn außerhalb geklickt wird
+window.onclick = (event) => {
+  const modal = document.getElementById("login-help-modal")
+  if (event.target === modal) {
+    modal.style.display = "none"
+  }
+}
+
 // Login-Funktion
 function login() {
   const username = document.getElementById("username").value.trim()
@@ -480,7 +499,7 @@ function updateUserStats() {
 
     userStats.innerHTML = `
       <div style="display: flex; align-items: center; margin-bottom: 15px;">
-        <img src="https://crafatar.com/avatars/${user.username}?size=64&overlay" 
+        <img src="https://mc-heads.net/avatar/${user.username}/64" 
              onerror="this.src='https://ui-avatars.com/api/?name=${user.username}&size=64&background=random'"
              style="width: 64px; height: 64px; border-radius: 5px; margin-right: 15px; border: 2px solid #555;">
         <div>
@@ -508,11 +527,10 @@ function updateUserList(viewOnly = false) {
     const item = document.createElement("div")
     item.classList.add("user-item")
 
-    // Minecraft Avatar (verwende crafatar.com, Overlay optional)
+    // Minecraft Avatar (verwende mc-heads.net statt crafatar.com)
     const avatar = document.createElement("img")
     avatar.classList.add("user-avatar")
-    // Hier wird der Benutzername als Minecraft-Name genutzt
-    avatar.src = `https://crafatar.com/avatars/${user.username}?size=50&overlay`
+    avatar.src = `https://mc-heads.net/avatar/${user.username}/50`
     avatar.alt = user.username
     avatar.onerror = function () {
       this.src = `https://ui-avatars.com/api/?name=${user.username}&size=50&background=random`
