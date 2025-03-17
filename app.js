@@ -3,14 +3,24 @@
 
 // Configuration and constants
 const ROLES = {
-  OWNER: { label: "Owner", level: 7, canDemoteTo: "CO_OWNER", pointThreshold: null },
-  CO_OWNER: { label: "Co-Owner", level: 6, canDemoteTo: "ADMIN", pointThreshold: 500 },
-  ADMIN: { label: "Admin", level: 5, canDemoteTo: "JR_ADMIN", pointThreshold: 400 },
-  JR_ADMIN: { label: "Jr. Admin", level: 4, canDemoteTo: "MODERATOR", pointThreshold: 300 },
-  MODERATOR: { label: "Moderator", level: 3, canDemoteTo: "JR_MODERATOR", pointThreshold: 250 },
-  JR_MODERATOR: { label: "Jr. Moderator", level: 2, canDemoteTo: "SUPPORTER", pointThreshold: 200 },
-  SUPPORTER: { label: "Supporter", level: 1, canDemoteTo: "JR_SUPPORTER", pointThreshold: 150 },
-  JR_SUPPORTER: { label: "Jr. Supporter", level: 0, canDemoteTo: null, pointThreshold: 0 },
+  OWNER: {
+    label: "Owner",
+    level: 10,
+    canDemoteTo: null,
+    pointThreshold: null,
+    defaultPoints: Number.POSITIVE_INFINITY,
+  },
+  CO_OWNER: { label: "Co-Owner", level: 9, canDemoteTo: "ADMIN", pointThreshold: 500, defaultPoints: 750 },
+  DEVELOPER: { label: "Developer", level: 8, canDemoteTo: null, pointThreshold: 250, defaultPoints: 500 },
+  ADMIN: { label: "Admin", level: 7, canDemoteTo: "JR_ADMIN", pointThreshold: 400, defaultPoints: 500 },
+  JR_ADMIN: { label: "Jr. Admin", level: 6, canDemoteTo: "MODERATOR", pointThreshold: 300, defaultPoints: 400 },
+  MODERATOR: { label: "Moderator", level: 5, canDemoteTo: "JR_MODERATOR", pointThreshold: 250, defaultPoints: 300 },
+  JR_MODERATOR: { label: "Jr. Moderator", level: 4, canDemoteTo: "SUPPORTER", pointThreshold: 200, defaultPoints: 250 },
+  SR_BUILDER: { label: "Sr. Builder", level: 3.5, canDemoteTo: "BUILDER", pointThreshold: 250, defaultPoints: 300 },
+  BUILDER: { label: "Builder", level: 3, canDemoteTo: null, pointThreshold: 150, defaultPoints: 200 },
+  SUPPORTER: { label: "Supporter", level: 2, canDemoteTo: "JR_SUPPORTER", pointThreshold: 150, defaultPoints: 200 },
+  JR_SUPPORTER: { label: "Jr. Supporter", level: 1, canDemoteTo: null, pointThreshold: 0, defaultPoints: 150 },
+  USER: { label: "User", level: 0, canDemoteTo: null, pointThreshold: null, defaultPoints: 0 },
 }
 
 const VIOLATIONS = {
@@ -483,20 +493,22 @@ function createUser() {
   if ((loggedInUser.role !== "OWNER" && loggedInUser.role !== "CO_OWNER") || viewMode) return
 
   const newUsername = elements.newUsername.value.trim()
-  const newPoints = Number.parseInt(elements.newPoints.value.trim())
   const newRank = elements.newRank.value
 
-  if (newUsername && !isNaN(newPoints)) {
+  // Get default points for the selected role
+  const defaultPoints = ROLES[newRank]?.defaultPoints || 0
+
+  if (newUsername) {
     if (users.find((u) => u.username.toLowerCase() === newUsername.toLowerCase())) {
       showNotification("Benutzer existiert bereits.", "error")
       return
     }
-    users.push({ username: newUsername, points: newPoints, rank: newRank || "JR_SUPPORTER" })
-    showNotification(`${newUsername} wurde erfolgreich erstellt.`, "success")
+    users.push({ username: newUsername, points: defaultPoints, rank: newRank || "JR_SUPPORTER" })
+    showNotification(`${newUsername} wurde erfolgreich erstellt mit ${defaultPoints} Punkten.`, "success")
     updateUserList()
     saveDataToLocalStorage()
   } else {
-    showNotification("Bitte alle Felder korrekt ausfüllen.", "error")
+    showNotification("Bitte gib einen Benutzernamen ein.", "error")
   }
 }
 
@@ -572,6 +584,7 @@ function recordViolation(username, type, description, points) {
   saveDataToLocalStorage()
 }
 
+// Enhance the checkForDemotion function to handle all roles
 function checkForDemotion(user) {
   // Skip if user is OWNER or already at lowest rank
   if (user.rank === "OWNER" || user.rank === "USER") {
@@ -587,18 +600,21 @@ function checkForDemotion(user) {
   if (user.points < roleInfo.pointThreshold) {
     // Demote user
     const oldRank = user.rank
-    user.rank = roleInfo.canDemoteTo
 
-    // Record demotion
-    showNotification(
-      `${user.username} wurde von ${getRoleLabel(oldRank)} zu ${getRoleLabel(user.rank)} degradiert.`,
-      "warning",
-    )
-
-    // Check if user should be removed from team (0 points or less)
+    // If points are 0 or less, remove from team
     if (user.points <= 0) {
       user.rank = "USER"
       showNotification(`${user.username} wurde aus dem Team entfernt (0 oder weniger Punkte).`, "error")
+      return
+    }
+
+    // Otherwise demote to the next lower rank
+    if (roleInfo.canDemoteTo) {
+      user.rank = roleInfo.canDemoteTo
+      showNotification(
+        `${user.username} wurde von ${getRoleLabel(oldRank)} zu ${getRoleLabel(user.rank)} degradiert.`,
+        "warning",
+      )
     }
   }
 }
@@ -771,35 +787,58 @@ function displayRules() {
       <table class="rules-table">
         <tr>
           <th>Rang</th>
-          <th>Punkte für automatische Degradierung</th>
+          <th>Standard-Punkte</th>
+          <th>Punkte für Degradierung</th>
         </tr>
         <tr>
-          <td>Co-Owner → Admin</td>
+          <td>Co-Owner</td>
+          <td>750 Punkte</td>
+          <td>500 Punkte → Admin</td>
+        </tr>
+        <tr>
+          <td>Developer</td>
           <td>500 Punkte</td>
+          <td>250 Punkte → Entfernt</td>
         </tr>
         <tr>
-          <td>Admin → Jr. Admin</td>
+          <td>Admin</td>
+          <td>500 Punkte</td>
+          <td>400 Punkte → Jr. Admin</td>
+        </tr>
+        <tr>
+          <td>Jr. Admin</td>
           <td>400 Punkte</td>
+          <td>300 Punkte → Moderator</td>
         </tr>
         <tr>
-          <td>Jr. Admin → Moderator</td>
+          <td>Moderator</td>
           <td>300 Punkte</td>
+          <td>250 Punkte → Jr. Moderator</td>
         </tr>
         <tr>
-          <td>Moderator → Jr. Moderator</td>
+          <td>Jr. Moderator</td>
           <td>250 Punkte</td>
+          <td>200 Punkte → Supporter</td>
         </tr>
         <tr>
-          <td>Jr. Moderator → Supporter</td>
+          <td>Sr. Builder</td>
+          <td>300 Punkte</td>
+          <td>250 Punkte → Builder</td>
+        </tr>
+        <tr>
+          <td>Builder</td>
           <td>200 Punkte</td>
+          <td>150 Punkte → Entfernt</td>
         </tr>
         <tr>
-          <td>Supporter → Jr. Supporter</td>
+          <td>Supporter</td>
+          <td>200 Punkte</td>
+          <td>150 Punkte → Jr. Supporter</td>
+        </tr>
+        <tr>
+          <td>Jr. Supporter</td>
           <td>150 Punkte</td>
-        </tr>
-        <tr>
-          <td>Jr. Supporter → Entfernt aus dem Team</td>
-          <td>0 Punkte</td>
+          <td>0 Punkte → Entfernt aus dem Team</td>
         </tr>
       </table>
       <div class="warning-box">
@@ -810,7 +849,7 @@ function displayRules() {
     <div class="rules-section">
       <h3>📌 Wichtige Regeln</h3>
       <ol>
-        <li>Punkte werden am 1. jedes Monats zurückgesetzt, aber runter Stufungen bleiben bestehend.</li>
+        <li>Punkte werden am 1. jedes Monats zurückgesetzt, aber Degradierungen bleiben bestehen.</li>
         <li>Admins und Co-Owner müssen Regelverstöße im Discord protokollieren (z. B. wenn sie einen Spieler bannen).</li>
         <li>Bei 0 Punkten oder weniger wird ein Teammitglied entfernt.</li>
         <li>Owner & Co-Owner können Punkte zurücksetzen oder vergeben, falls jemand unfair behandelt wurde.</li>
@@ -917,7 +956,9 @@ function resetMonthlyPoints() {
   if (loggedInUser.role !== "OWNER" && loggedInUser.role !== "CO_OWNER") return
 
   if (
-    !confirm("Möchtest du die Punkte aller Teammitglieder zurücksetzen? Dies geschieht normalerweise am 1. des Monats.")
+    !confirm(
+      "Möchtest du die Punkte aller Teammitglieder zurücksetzen? Dies geschieht normalerweise am 1. des Monats.\n\nHinweis: Degradierungen bleiben bestehen!",
+    )
   ) {
     return
   }
@@ -925,7 +966,8 @@ function resetMonthlyPoints() {
   // Reset points for all team members (except regular users)
   users.forEach((user) => {
     if (user.rank !== "USER") {
-      user.points = 500 // Reset to maximum points
+      // Reset to default points for their current rank
+      user.points = ROLES[user.rank]?.defaultPoints || 0
     }
   })
 
