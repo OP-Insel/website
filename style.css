@@ -1,72 +1,102 @@
-/* Basis-Styling */
-body {
+/* Basis-Reset */
+* {
+  box-sizing: border-box;
   margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #fff;
-  color: #000;
+  padding: 0;
 }
 
-/* Login-Bereich */
-.login-container {
+/* Gesamtlayout */
+body {
+  background-color: #fff;
+  color: #000;
+  font-family: Arial, sans-serif;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   height: 100vh;
 }
 
-.login-form {
-  border: 1px solid #000;
+/* Container */
+.container {
+  width: 90%;
+  max-width: 400px;
   padding: 20px;
-  border-radius: 8px;
+  border: 2px solid #000;
+  border-radius: 10px;
   text-align: center;
   background-color: #fff;
 }
 
-input {
+/* Sections (Login und Dashboard) */
+.section {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  display: none;
+}
+
+.section.active {
   display: block;
-  width: 250px;
+  opacity: 1;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="password"],
+input[type="number"] {
+  width: 100%;
   padding: 10px;
-  margin: 10px auto;
-  border: 1px solid #000;
-  border-radius: 4px;
+  margin: 10px 0;
+  border: 2px solid #000;
+  border-radius: 5px;
   font-size: 16px;
 }
 
+/* Buttons */
 button {
-  display: inline-block;
-  padding: 10px 20px;
-  margin: 10px;
-  border: none;
   background-color: #000;
   color: #fff;
-  border-radius: 4px;
-  cursor: pointer;
+  border: none;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 5px;
   font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
   background-color: #333;
 }
 
-.error-message {
-  color: red;
+/* Spezifische Buttons */
+.logout-btn {
+  background-color: #fff;
+  color: #000;
+  border: 2px solid #000;
 }
 
-/* Dashboard-Bereich */
-.dashboard-container {
-  padding: 20px;
-  text-align: center;
-}
-
+/* Panels */
 .panel {
-  border: 1px solid #000;
-  padding: 20px;
+  border: 2px solid #000;
+  padding: 15px;
   border-radius: 8px;
-  margin: 20px auto;
-  max-width: 500px;
+  margin-bottom: 20px;
 }
 
+/* Form Group */
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
+}
+
+/* Button Group */
+.btn-group {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Nachrichten */
+.message {
+  margin-top: 10px;
+  font-size: 14px;
+  color: red;
 }
