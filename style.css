@@ -7,13 +7,18 @@
 
 /* Gesamtlayout */
 body {
-  background-color: #fff;
+  background-color: #f5f5f5;
   color: #000;
-  font-family: Arial, sans-serif;
+  font-family: "Minecraft", Arial, sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
+  padding: 20px;
+  background-image: url("https://i.imgur.com/JwpQzrX.png");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
 }
 
 /* Container */
@@ -21,11 +26,11 @@ body {
   width: 90%;
   max-width: 500px;
   padding: 20px;
-  border: 2px solid #000;
+  border: 3px solid #555;
   border-radius: 10px;
   text-align: center;
-  background-color: #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 /* Sektionen (Login und Dashboard) */
@@ -39,64 +44,141 @@ body {
   opacity: 1;
 }
 
+/* Überschriften */
+h1,
+h2,
+h3 {
+  color: #333;
+  margin-bottom: 15px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  font-size: 28px;
+  border-bottom: 2px solid #555;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
 /* Inputs */
 input[type="text"],
 input[type="password"],
 input[type="number"],
-select {
+select,
+textarea {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin: 10px 0;
-  border: 2px solid #000;
+  border: 2px solid #555;
   border-radius: 5px;
   font-size: 16px;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  font-family: "Minecraft", Arial, sans-serif;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #4caf50;
+  outline: none;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+/* Labels */
+label {
+  display: block;
+  text-align: left;
+  margin-top: 10px;
+  font-weight: bold;
+  color: #333;
 }
 
 /* Buttons */
 button {
-  background-color: #000;
-  color: #fff;
+  background-color: #4caf50;
+  color: white;
   border: none;
-  padding: 10px;
-  margin: 10px;
+  padding: 12px 15px;
+  margin: 10px 5px;
   border-radius: 5px;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s, transform 0.1s;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
+
 button:hover {
-  background-color: #333;
+  background-color: #45a049;
+  transform: translateY(-2px);
 }
+
+button:active {
+  transform: translateY(0);
+}
+
 .logout-btn {
-  background-color: #fff;
-  color: #000;
-  border: 2px solid #000;
+  background-color: #f44336;
+  color: white;
+}
+
+.logout-btn:hover {
+  background-color: #d32f2f;
+}
+
+.visitor-btn {
+  background-color: #2196f3;
+  color: white;
+  margin-top: 20px;
+}
+
+.visitor-btn:hover {
+  background-color: #0b7dda;
+}
+
+.back-btn {
+  background-color: #607d8b;
+  color: white;
 }
 
 /* Panels */
 .panel {
-  border: 2px solid #000;
-  padding: 15px;
+  border: 2px solid #555;
+  padding: 20px;
   border-radius: 8px;
   margin-bottom: 20px;
+  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Form Group */
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  border: 1px solid #ddd;
 }
 
 /* Button Group */
 .btn-group {
   display: flex;
   justify-content: space-between;
+  gap: 10px;
 }
 
 /* Nachrichten */
 .message {
   margin-top: 10px;
   font-size: 14px;
-  color: red;
+  color: #f44336;
+  font-weight: bold;
 }
 
 /* Benutzerliste */
@@ -105,49 +187,86 @@ button:hover {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: 300px;
+  max-height: 350px;
   overflow-y: auto;
+  padding: 5px;
+  border-radius: 5px;
+  background-color: #f5f5f5;
 }
+
 .user-item {
   display: flex;
   align-items: center;
-  padding: 5px;
-  border: 1px solid #000;
-  border-radius: 5px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  background-color: white;
 }
+
 .user-item:hover {
-  background-color: #eee;
+  background-color: #f0f8ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 .user-avatar {
   width: 50px;
   height: 50px;
-  margin-right: 10px;
-  border: 1px solid #000;
+  margin-right: 15px;
+  border: 2px solid #555;
   border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  image-rendering: pixelated;
 }
+
 .user-details {
   text-align: left;
   flex-grow: 1;
 }
+
 .user-actions {
   display: flex;
   gap: 5px;
 }
+
+.user-actions button {
+  padding: 5px;
+  margin: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .info {
   font-size: 12px;
-  color: #333;
-  margin-top: 5px;
+  color: #666;
+  margin-top: 10px;
+  font-style: italic;
 }
 
 /* User Stats */
 .user-stats {
   margin: 15px 0;
-  padding: 10px;
-  border: 1px solid #000;
-  border-radius: 5px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
   text-align: left;
+  background-color: #f9f9f9;
+}
+
+.user-stats h3 {
+  color: #333;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+.user-stats p {
+  margin: 8px 0;
 }
 
 /* Rank Badges */
@@ -158,52 +277,231 @@ button:hover {
   font-size: 12px;
   color: white;
   margin-left: 5px;
+  font-weight: bold;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
+
 .rank-admin {
   background-color: #ff5252;
 }
+
 .rank-moderator {
   background-color: #4caf50;
 }
+
 .rank-supporter {
   background-color: #2196f3;
 }
 
-/* Modal für Import/Export */
-.modal {
+.rank-owner {
+  background-color: #9c27b0;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #ddd;
+}
+
+.tab-btn {
+  background-color: transparent;
+  color: #555;
+  border: none;
+  padding: 10px 15px;
+  margin: 0;
+  border-radius: 5px 5px 0 0;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-weight: bold;
+  box-shadow: none;
+  position: relative;
+}
+
+.tab-btn:hover {
+  background-color: #f0f0f0;
+  transform: none;
+}
+
+.tab-btn.active {
+  color: #4caf50;
+  border-bottom: 3px solid #4caf50;
+  background-color: transparent;
+}
+
+.tab-content {
   display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 100;
-  justify-content: center;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Badge für Benachrichtigungen */
+.badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #f44336;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
 }
-.modal-content {
+
+/* Anfragen-Liste */
+.requests-list {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 5px;
+}
+
+.request-item {
   background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  width: 90%;
-  max-width: 500px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  text-align: left;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-.modal-header {
+
+.request-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+
+.request-type {
+  font-weight: bold;
+  color: #333;
+}
+
+.request-date {
+  font-size: 12px;
+  color: #777;
+}
+
+.request-content {
   margin-bottom: 15px;
 }
-.modal-close {
-  cursor: pointer;
-  font-size: 20px;
-}
-.modal-body {
-  margin-bottom: 15px;
-}
-.modal-footer {
+
+.request-actions {
   display: flex;
   justify-content: flex-end;
+  gap: 10px;
+}
+
+.accept-btn {
+  background-color: #4caf50;
+}
+
+.reject-btn {
+  background-color: #f44336;
+}
+
+.empty-message {
+  text-align: center;
+  color: #777;
+  font-style: italic;
+  padding: 20px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Minecraft Font */
+@font-face {
+  font-family: "Minecraft";
+  src: url("https://cdn.jsdelivr.net/gh/South-Paw/typeface-minecraft@master/font/minecraft.woff2") format("woff2"),
+    url("https://cdn.jsdelivr.net/gh/South-Paw/typeface-minecraft@master/font/minecraft.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Animationen */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pulse {
+  animation: pulse 1s infinite;
 }
 
