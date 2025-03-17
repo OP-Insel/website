@@ -1,234 +1,51 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minecraft Admin Pro</title>
-    <style>
-        :root {
-            --primary: #0d1117;
-            --secondary: #161b22;
-            --accent: #2ea043;
-            --text: #c9d1d9;
-            --error: #f85149;
-        }
-
-        /* Partikel-Hintergrund */
-        body::before {
-            content: '';
-            position: fixed;
-            width: 300%;
-            height: 300%;
-            background: radial-gradient(circle, var(--accent) 0.5px, transparent 0.5px);
-            background-size: 20px 20px;
-            animation: particles 20s linear infinite;
-            opacity: 0.1;
-            z-index: -1;
-        }
-
-        @keyframes particles {
-            from { transform: translate(0, 0); }
-            to { transform: translate(-100px, -100px); }
-        }
-
-        /* Login-Animation */
-        .login-container {
-            background: var(--secondary);
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 0 40px rgba(46, 160, 67, 0.2);
-            transform: scale(0.95);
-            opacity: 0;
-            animation: loginEntrance 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-
-        @keyframes loginEntrance {
-            to {
-                opacity: 1;
-                transform: scale(1) rotateZ(0deg);
-            }
-        }
-
-        /* User-Card Animation */
-        .user-card {
-            transition: all 0.3s ease;
-            transform-origin: top;
-        }
-
-        .user-card:hover {
-            transform: perspective(1000px) rotateX(5deg);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        /* Lösch-Animation */
-        @keyframes deleteAnim {
-            to {
-                opacity: 0;
-                transform: translateX(100%) rotateZ(20deg);
-            }
-        }
-
-        /* Notification-System */
-        .notification {
-            animation: notificationIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        @keyframes notificationIn {
-            from { transform: translateY(-100px); }
-            to { transform: translateY(0); }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Punkte System Login</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Login -->
-    <div class="login-container">
-        <h2 style="text-align: center; margin-bottom: 1.5rem;">🔐 Minecraft Admin System</h2>
-        <form id="loginForm">
-            <input type="text" id="username" placeholder="Benutzername" required>
-            <input type="password" id="password" placeholder="Passwort" required>
-            <button type="submit">Login →</button>
-        </form>
-        <div id="loginError" style="color: var(--error); display: none;"></div>
+  <!-- Login-Bereich -->
+  <div class="login-container">
+    <h1>Punkte System Login</h1>
+    <div class="login-form">
+      <input type="text" id="username" placeholder="Benutzername" autocomplete="off">
+      <input type="password" id="password" placeholder="Passwort">
+      <button onclick="login()">Einloggen</button>
+      <p id="login-message" class="error-message"></p>
+    </div>
+  </div>
+
+  <!-- Dashboard-Bereich (wird erst nach Login angezeigt) -->
+  <div class="dashboard-container" style="display:none;">
+    <!-- Admin Panel (Owner) -->
+    <div id="admin-panel" class="panel">
+      <h2>Admin Panel</h2>
+      <div class="form-group">
+        <input type="text" id="new-username" placeholder="Neuer Minecraft Name">
+        <input type="number" id="new-points" placeholder="Anfangspunkte">
+        <button onclick="createUser()">Benutzer erstellen</button>
+      </div>
+      <div class="form-group">
+        <input type="text" id="target-username" placeholder="Ziel Benutzer">
+        <input type="number" id="modify-points" placeholder="Punkte">
+        <button onclick="addPoints()">Punkte hinzufügen</button>
+        <button onclick="deductPoints()">Punkte abziehen</button>
+      </div>
+      <button onclick="viewPoints()">Punkte anzeigen</button>
+      <p id="admin-message"></p>
     </div>
 
-    <!-- Dashboard -->
-    <div id="dashboard" style="display: none;">
-        <header>
-            <h1>👑 Admin Dashboard</h1>
-            <button id="logoutBtn">🚪 Logout</button>
-        </header>
-        
-        <div class="user-grid">
-            <!-- User Cards werden hier eingefügt -->
-        </div>
+    <!-- User Panel -->
+    <div id="user-panel" class="panel" style="display:none;">
+      <h2>Benutzerbereich</h2>
+      <button onclick="viewUserPoints()">Meine Punkte anzeigen</button>
+      <p id="user-message"></p>
     </div>
+  </div>
 
-<script>
-// Konfiguration
-const RANKS = [
-    { name: 'Co-Owner', min: 500 },
-    { name: 'Admin', min: 400 },
-    { name: 'Moderator', min: 300 },
-    { name: 'Supporter', min: 200 },
-    { name: 'Entfernt', min: 0 }
-];
-
-const VIOLATIONS = [
-    { text: 'Ban ohne Grund', value: -5 },
-    { text: 'Unfaire Strafe', value: -10 },
-    { text: 'Admin-Missbrauch', value: -20 }
-];
-
-// System Initialisierung
-let users = JSON.parse(localStorage.getItem('mcUsers')) || [];
-
-// Login System
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    
-    if(username === 'owner' && password === 'ZOCKi') {
-        document.querySelector('.login-container').style.display = 'none';
-        document.getElementById('dashboard').style.display = 'block';
-        loadUsers();
-    } else {
-        showError('Falsche Anmeldedaten!');
-        document.getElementById('loginForm').style.animation = 'shake 0.5s';
-    }
-});
-
-// User erstellen
-function createUser(username) {
-    const newUser = {
-        id: Date.now(),
-        name: username,
-        points: 500,
-        rank: 'Co-Owner',
-        avatar: `https://mc-heads.net/avatar/${username}`
-    };
-    users.push(newUser);
-    saveData();
-    loadUsers();
-}
-
-// User löschen
-function deleteUser(userId) {
-    users = users.filter(u => u.id !== userId);
-    saveData();
-    loadUsers();
-}
-
-// Punkte aktualisieren
-function updatePoints(userId, amount) {
-    const user = users.find(u => u.id === userId);
-    user.points += amount;
-    
-    // Rangüberprüfung
-    const newRank = RANKS.find(r => user.points >= r.min).name;
-    if(newRank !== user.rank) {
-        user.rank = newRank;
-        showNotification(`${user.name} wurde zu ${newRank} degradiert!`);
-    }
-    
-    saveData();
-    loadUsers();
-}
-
-// Daten speichern
-function saveData() {
-    localStorage.setItem('mcUsers', JSON.stringify(users));
-}
-
-// Notification anzeigen
-function showNotification(msg, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.textContent = msg;
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.style.animation = 'notificationOut 0.5s forwards';
-        setTimeout(() => notification.remove(), 500);
-    }, 3000);
-}
-
-// Initialisierung
-function loadUsers() {
-    const grid = document.querySelector('.user-grid');
-    grid.innerHTML = '';
-    
-    users.forEach(user => {
-        const card = document.createElement('div');
-        card.className = 'user-card';
-        card.innerHTML = `
-            <img src="${user.avatar}" class="mc-avatar">
-            <h3>${user.name}</h3>
-            <div class="points">${user.points} Punkte</div>
-            <div class="rank">${user.rank}</div>
-            <div class="controls">
-                <button onclick="updatePoints(${user.id}, -10)">-10</button>
-                <button onclick="updatePoints(${user.id}, 10)">+10</button>
-                <button onclick="deleteUser(${user.id})" class="delete">Löschen</button>
-            </div>
-        `;
-        grid.appendChild(card);
-    });
-}
-
-// Animationen
-document.head.innerHTML += `
-<style>
-    @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-10px); }
-        75% { transform: translateX(10px); }
-    }
-    
-    @keyframes notificationOut {
-        to { transform: translateY(100px); opacity: 0; }
-    }
-</style>`;
-</script>
+  <script src="app.js"></script>
 </body>
 </html>
