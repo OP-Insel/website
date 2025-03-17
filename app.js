@@ -1,36 +1,121 @@
+// Main application script for Minecraft Points System
+// Handles UI, events, and core functionality
+
+// Configuration and constants
+const ROLES = {
+  OWNER: { label: "Owner", level: 7, canDemoteTo: "CO_OWNER", pointThreshold: null },
+  CO_OWNER: { label: "Co-Owner", level: 6, canDemoteTo: "ADMIN", pointThreshold: 500 },
+  ADMIN: { label: "Admin", level: 5, canDemoteTo: "JR_ADMIN", pointThreshold: 400 },
+  JR_ADMIN: { label: "Jr. Admin", level: 4, canDemoteTo: "MODERATOR", pointThreshold: 300 },
+  MODERATOR: { label: "Moderator", level: 3, canDemoteTo: "JR_MODERATOR", pointThreshold: 250 },
+  JR_MODERATOR: { label: "Jr. Moderator", level: 2, canDemoteTo: "SUPPORTER", pointThreshold: 200 },
+  SUPPORTER: { label: "Supporter", level: 1, canDemoteTo: "JR_SUPPORTER", pointThreshold: 150 },
+  JR_SUPPORTER: { label: "Jr. Supporter", level: 0, canDemoteTo: null, pointThreshold: 0 },
+}
+
+const VIOLATIONS = {
+  BAN_WITHOUT_REASON: { label: "Ban ohne Begründung", points: -5 },
+  UNFAIR_PUNISHMENT: { label: "Unfaire oder ungerechtfertigte Strafe gegen Spieler", points: -10 },
+  ADMIN_ABUSE: { label: "Missbrauch der Admin-Rechte", points: -20 },
+  INSULT_BEHAVIOR: { label: "Beleidigung oder schlechtes Verhalten gegenüber Spielern", points: -15 },
+  INACTIVE: { label: "Inaktiv ohne Abmeldung (z. B. 2 Wochen)", points: -10 },
+  REPEATED_MISCONDUCT: { label: "Wiederholtes Fehlverhalten trotz Ermahnung", points: -30 },
+  SPAMMING: { label: "Spamming von Befehlen oder Nachrichten", points: -5 },
+  SERIOUS_VIOLATION: { label: "Schwere Regelverstöße", points: -20 },
+}
+
 // Admin Login-Daten
 const adminUsername = "owner"
 const adminPassword = "admin123"
 
-// Simulierte Benutzerdaten
-let users = [
-  { username: "Spieler1", points: 100, rank: "Moderator" },
-  { username: "Spieler2", points: 150, rank: "Admin" },
-]
-
-// Anfragen-Array für Wünsche und Punktabzug-Vorschläge
+// State management
+let users = []
 let requests = []
-
+let violations = []
 let loggedInUser = null
-let viewMode = false // Für Besucher-Modus
+let viewMode = false
 
-// Beim Laden der Seite: Daten aus dem localStorage laden
+// DOM Elements
+const elements = {}
+
+// Initialize the application
 document.addEventListener("DOMContentLoaded", () => {
+  // Cache DOM elements
+  cacheElements()
+
+  // Load data from localStorage
   loadDataFromLocalStorage()
 
-  // Prüfen, ob URL-Parameter "view=true" vorhanden ist
+  // Check for view mode URL parameter
   const urlParams = new URLSearchParams(window.location.search)
   if (urlParams.get("view") === "true") {
     viewMode = true
     loggedInUser = { username: "Besucher", role: "viewer" }
     showDashboard()
   }
+
+  // Add event listeners
+  addEventListeners()
+
+  // Display rules in the dashboard
+  displayRules()
 })
+
+// Cache DOM elements for better performance
+function cacheElements() {
+  // Login section
+  elements.loginSection = document.getElementById("login-section")
+  elements.username = document.getElementById("username")
+  elements.password = document.getElementById("password")
+  elements.loginMessage = document.getElementById("login-message")
+
+  // Dashboard section
+  elements.dashboardSection = document.getElementById("dashboard-section")
+  elements.adminPanel = document.getElementById("admin-panel")
+  elements.userPanel = document.getElementById("user-panel")
+  elements.userList = document.getElementById("user-list")
+  elements.requestsList = document.getElementById("requests-list")
+  elements.requestBadge = document.getElementById("request-badge")
+  elements.rulesContainer = document.getElementById("rules-container")
+
+  // Visitor section
+  elements.visitorSection = document.getElementById("visitor-section")
+  elements.wishText = document.getElementById("wish-text")
+  elements.pointsUsername = document.getElementById("points-username")
+  elements.pointsAmount = document.getElementById("points-amount")
+  elements.pointsReason = document.getElementById("points-reason")
+  elements.visitorMessage = document.getElementById("visitor-message")
+
+  // Forms
+  elements.newUsername = document.getElementById("new-username")
+  elements.newPoints = document.getElementById("new-points")
+  elements.newRank = document.getElementById("new-rank")
+  elements.targetUsername = document.getElementById("target-username")
+  elements.modifyPoints = document.getElementById("modify-points")
+  elements.violationType = document.getElementById("violation-type")
+
+  // Modals
+  elements.loginHelpModal = document.getElementById("login-help-modal")
+}
+
+// Add event listeners
+function addEventListeners() {
+  // Window events
+  window.addEventListener("beforeunload", saveDataToLocalStorage)
+
+  // Modal events
+  window.onclick = (event) => {
+    if (event.target === elements.loginHelpModal) {
+      closeLoginHelp()
+    }
+  }
+}
 
 // Daten im localStorage speichern
 function saveDataToLocalStorage() {
   localStorage.setItem("punkteSystemUsers", JSON.stringify(users))
   localStorage.setItem("punkteSystemRequests", JSON.stringify(requests))
+  localStorage.setItem("punkteSystemViolations", JSON.stringify(violations))
 }
 
 // Daten aus dem localStorage laden
@@ -38,49 +123,40 @@ function loadDataFromLocalStorage() {
   const savedUsers = localStorage.getItem("punkteSystemUsers")
   if (savedUsers) {
     users = JSON.parse(savedUsers)
+  } else {
+    // Initialize with default users if none exist
+    users = [
+      { username: "Spieler1", points: 500, rank: "MODERATOR" },
+      { username: "Spieler2", points: 400, rank: "ADMIN" },
+    ]
   }
 
   const savedRequests = localStorage.getItem("punkteSystemRequests")
   if (savedRequests) {
     requests = JSON.parse(savedRequests)
   }
-}
 
-// Füge diese Funktionen für das Login-Hilfe-Modal hinzu
-function showLoginHelp() {
-  const modal = document.getElementById("login-help-modal")
-  modal.style.display = "flex"
-}
-
-function closeLoginHelp() {
-  const modal = document.getElementById("login-help-modal")
-  modal.style.display = "none"
-}
-
-// Schließe das Modal, wenn außerhalb geklickt wird
-window.onclick = (event) => {
-  const modal = document.getElementById("login-help-modal")
-  if (event.target === modal) {
-    modal.style.display = "none"
+  const savedViolations = localStorage.getItem("punkteSystemViolations")
+  if (savedViolations) {
+    violations = JSON.parse(savedViolations)
   }
 }
 
 // Login-Funktion
 function login() {
-  const username = document.getElementById("username").value.trim()
-  const password = document.getElementById("password").value.trim()
-  const loginMessage = document.getElementById("login-message")
+  const username = elements.username.value.trim()
+  const password = elements.password.value.trim()
 
-  // Überprüfung für Owner
+  // Owner login
   if (username === adminUsername && password === adminPassword) {
-    loggedInUser = { username: adminUsername, role: "owner" }
+    loggedInUser = { username: adminUsername, role: "OWNER" }
     showDashboard()
     return
   }
 
-  // Überprüfung für Admin (kann nur anschauen, nicht ändern)
+  // Admin view-only login
   if (username === "admin" && password === "admin") {
-    loggedInUser = { username: "Admin", role: "admin" }
+    loggedInUser = { username: "Admin", role: "ADMIN" }
     viewMode = true
     showDashboard()
     return
@@ -89,49 +165,49 @@ function login() {
   // Normale Benutzer (Passwortprüfung entfällt hier)
   const user = users.find((u) => u.username.toLowerCase() === username.toLowerCase())
   if (user) {
-    loggedInUser = { username: user.username, role: "user" }
+    loggedInUser = { username: user.username, role: user.rank }
     showDashboard()
   } else {
-    loginMessage.textContent = "Ungültiger Benutzername oder Passwort!"
-    loginMessage.style.animation = "shake 0.5s"
+    elements.loginMessage.textContent = "Ungültiger Benutzername oder Passwort!"
+    elements.loginMessage.style.animation = "shake 0.5s"
     setTimeout(() => {
-      loginMessage.style.animation = ""
+      elements.loginMessage.style.animation = ""
     }, 500)
   }
 }
 
 // Dashboard anzeigen und Login-Bereich ausblenden
 function showDashboard() {
-  document.getElementById("login-section").classList.remove("active")
-  document.getElementById("visitor-section").classList.remove("active")
-  document.getElementById("dashboard-section").classList.add("active")
+  elements.loginSection.classList.remove("active")
+  elements.visitorSection.classList.remove("active")
+  elements.dashboardSection.classList.add("active")
 
-  if (loggedInUser.role === "owner") {
-    document.getElementById("admin-panel").style.display = "block"
-    document.getElementById("user-panel").style.display = "none"
+  if (loggedInUser.role === "OWNER" || loggedInUser.role === "CO_OWNER") {
+    elements.adminPanel.style.display = "block"
+    elements.userPanel.style.display = "none"
     updateUserList()
     updateRequestsList()
     updateRequestBadge()
-  } else if (loggedInUser.role === "admin" || loggedInUser.role === "viewer") {
+  } else if (loggedInUser.role === "ADMIN" || loggedInUser.role === "JR_ADMIN" || loggedInUser.role === "viewer") {
     // Admin kann nur anschauen
-    document.getElementById("admin-panel").style.display = "block"
-    document.getElementById("user-panel").style.display = "none"
+    elements.adminPanel.style.display = "block"
+    elements.userPanel.style.display = "none"
     updateUserList(true) // true = nur Ansicht
 
     // Anfragen-Tab ausblenden für Admin/Viewer
     document.querySelector("[onclick=\"switchAdminTab('requests-tab')\"]").style.display = "none"
   } else {
-    document.getElementById("admin-panel").style.display = "none"
-    document.getElementById("user-panel").style.display = "block"
+    elements.adminPanel.style.display = "none"
+    elements.userPanel.style.display = "block"
     updateUserStats()
   }
 }
 
 // Besucher-Formular anzeigen
 function showVisitorForm() {
-  document.getElementById("login-section").classList.remove("active")
-  document.getElementById("dashboard-section").classList.remove("active")
-  document.getElementById("visitor-section").classList.add("active")
+  elements.loginSection.classList.remove("active")
+  elements.dashboardSection.classList.remove("active")
+  elements.visitorSection.classList.add("active")
 
   // Standardmäßig den ersten Tab anzeigen
   switchTab("wish-tab")
@@ -139,26 +215,26 @@ function showVisitorForm() {
 
 // Zurück zum Login
 function backToLogin() {
-  document.getElementById("visitor-section").classList.remove("active")
-  document.getElementById("login-section").classList.add("active")
+  elements.visitorSection.classList.remove("active")
+  elements.loginSection.classList.add("active")
 
   // Formularfelder zurücksetzen
-  document.getElementById("wish-text").value = ""
-  document.getElementById("points-username").value = ""
-  document.getElementById("points-amount").value = ""
-  document.getElementById("points-reason").value = ""
-  document.getElementById("visitor-message").textContent = ""
+  elements.wishText.value = ""
+  elements.pointsUsername.value = ""
+  elements.pointsAmount.value = ""
+  elements.pointsReason.value = ""
+  elements.visitorMessage.textContent = ""
 }
 
 // Logout-Funktion
 function logout() {
   loggedInUser = null
   viewMode = false
-  document.getElementById("username").value = ""
-  document.getElementById("password").value = ""
-  document.getElementById("login-message").textContent = ""
-  document.getElementById("dashboard-section").classList.remove("active")
-  document.getElementById("login-section").classList.add("active")
+  elements.username.value = ""
+  elements.password.value = ""
+  elements.loginMessage.textContent = ""
+  elements.dashboardSection.classList.remove("active")
+  elements.loginSection.classList.add("active")
 
   // URL-Parameter entfernen
   const url = new URL(window.location.href)
@@ -198,7 +274,7 @@ function switchAdminTab(tabId) {
 
 // Wunsch einreichen
 function submitWish() {
-  const wishText = document.getElementById("wish-text").value.trim()
+  const wishText = elements.wishText.value.trim()
 
   if (!wishText) {
     showVisitorMessage("Bitte gib einen Wunsch oder Vorschlag ein.", "error")
@@ -220,14 +296,14 @@ function submitWish() {
 
   // Bestätigung anzeigen
   showVisitorMessage("Dein Wunsch wurde erfolgreich eingereicht!", "success")
-  document.getElementById("wish-text").value = ""
+  elements.wishText.value = ""
 }
 
 // Punktabzug vorschlagen
 function submitPointsRequest() {
-  const username = document.getElementById("points-username").value.trim()
-  const pointsAmount = Number.parseInt(document.getElementById("points-amount").value.trim())
-  const reason = document.getElementById("points-reason").value.trim()
+  const username = elements.pointsUsername.value.trim()
+  const pointsAmount = Number.parseInt(elements.pointsAmount.value.trim())
+  const reason = elements.pointsReason.value.trim()
 
   if (!username || isNaN(pointsAmount) || !reason) {
     showVisitorMessage("Bitte fülle alle Felder aus.", "error")
@@ -258,32 +334,31 @@ function submitPointsRequest() {
 
   // Bestätigung anzeigen
   showVisitorMessage("Dein Punktabzug-Vorschlag wurde erfolgreich eingereicht!", "success")
-  document.getElementById("points-username").value = ""
-  document.getElementById("points-amount").value = ""
-  document.getElementById("points-reason").value = ""
+  elements.pointsUsername.value = ""
+  elements.pointsAmount.value = ""
+  elements.pointsReason.value = ""
 }
 
 // Nachricht im Besucher-Bereich anzeigen
 function showVisitorMessage(message, type) {
-  const visitorMessage = document.getElementById("visitor-message")
-  visitorMessage.textContent = message
+  elements.visitorMessage.textContent = message
 
   if (type === "success") {
-    visitorMessage.style.color = "#4CAF50"
+    elements.visitorMessage.style.color = "#4CAF50"
   } else {
-    visitorMessage.style.color = "#f44336"
+    elements.visitorMessage.style.color = "#f44336"
   }
 
   // Nach 5 Sekunden ausblenden
   setTimeout(() => {
-    visitorMessage.textContent = ""
+    elements.visitorMessage.textContent = ""
   }, 5000)
 }
 
 // Anfragen-Badge aktualisieren
 function updateRequestBadge() {
   const pendingRequests = requests.filter((r) => r.status === "pending").length
-  const badge = document.getElementById("request-badge")
+  const badge = elements.requestBadge
 
   badge.textContent = pendingRequests
 
@@ -298,7 +373,7 @@ function updateRequestBadge() {
 
 // Anfragen-Liste aktualisieren
 function updateRequestsList() {
-  const requestsList = document.getElementById("requests-list")
+  const requestsList = elements.requestsList
   requestsList.innerHTML = ""
 
   // Nur ausstehende Anfragen anzeigen
@@ -365,12 +440,19 @@ function handleRequest(requestId, action) {
   if (!request) return
 
   if (action === "accept") {
-    // Anfrage akzeptieren
+    // Accept request
     if (request.type === "points") {
-      // Punktabzug durchführen
+      // Apply point deduction
       const user = users.find((u) => u.username.toLowerCase() === request.username.toLowerCase())
       if (user) {
         user.points = Math.max(0, user.points - request.points)
+
+        // Record violation
+        recordViolation(user.username, "CUSTOM", request.reason, request.points)
+
+        // Check for demotion
+        checkForDemotion(user)
+
         showNotification(`${request.points} Punkte wurden von ${request.username} abgezogen.`, "success")
         updateUserList()
       }
@@ -378,15 +460,15 @@ function handleRequest(requestId, action) {
       showNotification("Wunsch wurde akzeptiert.", "success")
     }
   } else {
-    // Anfrage ablehnen
+    // Reject request
     showNotification("Anfrage wurde abgelehnt.", "info")
   }
 
-  // Status der Anfrage aktualisieren
+  // Update request status
   request.status = action === "accept" ? "accepted" : "rejected"
   saveDataToLocalStorage()
 
-  // Listen aktualisieren
+  // Update UI
   updateRequestsList()
   updateRequestBadge()
 }
@@ -398,17 +480,18 @@ function generateId() {
 
 // Neuer Benutzer erstellen (nur für Owner)
 function createUser() {
-  if (loggedInUser.role !== "owner" || viewMode) return
-  const newUsername = document.getElementById("new-username").value.trim()
-  const newPoints = Number.parseInt(document.getElementById("new-points").value.trim())
-  const newRank = document.getElementById("new-rank").value
+  if ((loggedInUser.role !== "OWNER" && loggedInUser.role !== "CO_OWNER") || viewMode) return
+
+  const newUsername = elements.newUsername.value.trim()
+  const newPoints = Number.parseInt(elements.newPoints.value.trim())
+  const newRank = elements.newRank.value
 
   if (newUsername && !isNaN(newPoints)) {
     if (users.find((u) => u.username.toLowerCase() === newUsername.toLowerCase())) {
       showNotification("Benutzer existiert bereits.", "error")
       return
     }
-    users.push({ username: newUsername, points: newPoints, rank: newRank || "Supporter" })
+    users.push({ username: newUsername, points: newPoints, rank: newRank || "JR_SUPPORTER" })
     showNotification(`${newUsername} wurde erfolgreich erstellt.`, "success")
     updateUserList()
     saveDataToLocalStorage()
@@ -419,9 +502,10 @@ function createUser() {
 
 // Punkte hinzufügen (nur für Owner)
 function addPoints() {
-  if (loggedInUser.role !== "owner" || viewMode) return
-  const targetUsername = document.getElementById("target-username").value.trim()
-  const modPoints = Number.parseInt(document.getElementById("modify-points").value.trim())
+  if ((loggedInUser.role !== "OWNER" && loggedInUser.role !== "CO_OWNER") || viewMode) return
+
+  const targetUsername = elements.targetUsername.value.trim()
+  const modPoints = Number.parseInt(elements.modifyPoints.value.trim())
 
   if (targetUsername && !isNaN(modPoints)) {
     const user = users.find((u) => u.username.toLowerCase() === targetUsername.toLowerCase())
@@ -440,15 +524,29 @@ function addPoints() {
 
 // Punkte abziehen (nur für Owner)
 function deductPoints() {
-  if (loggedInUser.role !== "owner" || viewMode) return
-  const targetUsername = document.getElementById("target-username").value.trim()
-  const modPoints = Number.parseInt(document.getElementById("modify-points").value.trim())
+  if ((loggedInUser.role !== "OWNER" && loggedInUser.role !== "CO_OWNER") || viewMode) return
+
+  const targetUsername = elements.targetUsername.value.trim()
+  const modPoints = Number.parseInt(elements.modifyPoints.value.trim())
+  const violationType = elements.violationType ? elements.violationType.value : null
 
   if (targetUsername && !isNaN(modPoints)) {
     const user = users.find((u) => u.username.toLowerCase() === targetUsername.toLowerCase())
     if (user) {
-      user.points -= modPoints
-      if (user.points < 0) user.points = 0
+      // Deduct points
+      user.points = Math.max(0, user.points - modPoints)
+
+      // Record violation if a type is selected
+      if (violationType && violationType !== "custom") {
+        const violation = VIOLATIONS[violationType]
+        if (violation) {
+          recordViolation(user.username, violationType, violation.label, modPoints)
+        }
+      }
+
+      // Check for demotion
+      checkForDemotion(user)
+
       showNotification(`${modPoints} Punkte wurden von ${targetUsername} abgezogen.`, "success")
       updateUserList()
       saveDataToLocalStorage()
@@ -460,27 +558,53 @@ function deductPoints() {
   }
 }
 
-// Für Owner: Punkte eines Zielbenutzers anzeigen
-function viewPoints() {
-  const targetUsername = document.getElementById("target-username").value.trim()
-  const adminMessage = document.getElementById("admin-message")
-  const user = users.find((u) => u.username.toLowerCase() === targetUsername.toLowerCase())
-  if (user) {
-    adminMessage.textContent = `${user.username} hat ${user.points} Punkte und ist ${user.rank}.`
-  } else {
-    adminMessage.textContent = "Benutzer nicht gefunden."
+function recordViolation(username, type, description, points) {
+  violations.push({
+    id: generateId(),
+    username,
+    type,
+    description,
+    points,
+    date: new Date().toISOString(),
+    reportedBy: loggedInUser.username,
+  })
+
+  saveDataToLocalStorage()
+}
+
+function checkForDemotion(user) {
+  // Skip if user is OWNER or already at lowest rank
+  if (user.rank === "OWNER" || user.rank === "USER") {
+    return
+  }
+
+  const roleInfo = ROLES[user.rank]
+  if (!roleInfo || roleInfo.pointThreshold === null) {
+    return
+  }
+
+  // Check if points are below threshold
+  if (user.points < roleInfo.pointThreshold) {
+    // Demote user
+    const oldRank = user.rank
+    user.rank = roleInfo.canDemoteTo
+
+    // Record demotion
+    showNotification(
+      `${user.username} wurde von ${getRoleLabel(oldRank)} zu ${getRoleLabel(user.rank)} degradiert.`,
+      "warning",
+    )
+
+    // Check if user should be removed from team (0 points or less)
+    if (user.points <= 0) {
+      user.rank = "USER"
+      showNotification(`${user.username} wurde aus dem Team entfernt (0 oder weniger Punkte).`, "error")
+    }
   }
 }
 
-// Für normale Benutzer: Eigene Punkte anzeigen
-function viewUserPoints() {
-  const user = users.find((u) => u.username.toLowerCase() === loggedInUser.username.toLowerCase())
-  const userMessage = document.getElementById("user-message")
-  if (user) {
-    userMessage.textContent = `Du hast ${user.points} Punkte und bist ${user.rank}.`
-  } else {
-    userMessage.textContent = "Benutzer nicht gefunden."
-  }
+function getRoleLabel(role) {
+  return ROLES[role]?.label || role
 }
 
 // Benutzerstatistik aktualisieren
@@ -489,11 +613,11 @@ function updateUserStats() {
   const userStats = document.getElementById("user-stats")
 
   if (user) {
-    // Rang-Badge erstellen
+    // Create rank badge
     const rankClass = `rank-${user.rank.toLowerCase()}`
-    const rankBadge = `<span class="rank-badge ${rankClass}">${user.rank}</span>`
+    const rankBadge = `<span class="rank-badge ${rankClass}">${getRoleLabel(user.rank)}</span>`
 
-    // Position in der Rangliste ermitteln
+    // Get position in ranking
     const sortedUsers = [...users].sort((a, b) => b.points - a.points)
     const position = sortedUsers.findIndex((u) => u.username.toLowerCase() === loggedInUser.username.toLowerCase()) + 1
 
@@ -516,18 +640,18 @@ function updateUserStats() {
 
 // Benutzerliste aktualisieren (Owner-Bereich)
 function updateUserList(viewOnly = false) {
-  const userList = document.getElementById("user-list")
+  const userList = elements.userList
   userList.innerHTML = "" // Liste leeren
 
-  // Sortiere Benutzer nach Punkten (absteigend)
+  // Sort users by points (descending)
   const sortedUsers = [...users].sort((a, b) => b.points - a.points)
 
   sortedUsers.forEach((user, index) => {
-    // Erzeuge Container für den Benutzer
+    // Create container for the user
     const item = document.createElement("div")
     item.classList.add("user-item")
 
-    // Minecraft Avatar (verwende mc-heads.net statt crafatar.com)
+    // Minecraft Avatar
     const avatar = document.createElement("img")
     avatar.classList.add("user-avatar")
     avatar.src = `https://mc-heads.net/avatar/${user.username}/50`
@@ -536,25 +660,25 @@ function updateUserList(viewOnly = false) {
       this.src = `https://ui-avatars.com/api/?name=${user.username}&size=50&background=random`
     }
 
-    // Benutzer-Details (Name, Punkte, Rang)
+    // User details
     const details = document.createElement("div")
     details.classList.add("user-details")
 
-    // Rang-Badge erstellen
+    // Role badge
     const rankClass = `rank-${user.rank.toLowerCase()}`
-    const rankBadge = `<span class="rank-badge ${rankClass}">${user.rank}</span>`
+    const rankBadge = `<span class="rank-badge ${rankClass}">${getRoleLabel(user.rank)}</span>`
 
     details.innerHTML = `
       <strong>#${index + 1} ${user.username}</strong> ${rankBadge}<br>
       Punkte: ${user.points}
     `
 
-    // Aktionsbuttons (nur wenn nicht im View-Modus)
-    if (!viewOnly && loggedInUser.role === "owner") {
+    // Action buttons (only for OWNER and not in view mode)
+    if (!viewOnly && (loggedInUser.role === "OWNER" || loggedInUser.role === "CO_OWNER")) {
       const actions = document.createElement("div")
       actions.classList.add("user-actions")
 
-      // Bearbeiten-Button
+      // Edit button
       const editBtn = document.createElement("button")
       editBtn.innerHTML = "✏️"
       editBtn.title = "Benutzer bearbeiten"
@@ -565,7 +689,7 @@ function updateUserList(viewOnly = false) {
         editUser(user.username)
       })
 
-      // Löschen-Button
+      // Delete button
       const deleteBtn = document.createElement("button")
       deleteBtn.innerHTML = "🗑️"
       deleteBtn.title = "Benutzer löschen"
@@ -581,11 +705,11 @@ function updateUserList(viewOnly = false) {
       item.appendChild(actions)
     }
 
-    // Bei Klick auf den Benutzer: Benutzername in Zielfeld eintragen
+    // Click on user to select
     item.addEventListener("click", () => {
-      document.getElementById("target-username").value = user.username
-      if (!viewOnly && loggedInUser.role === "owner") {
-        document.getElementById("modify-points").focus()
+      elements.targetUsername.value = user.username
+      if (!viewOnly && (loggedInUser.role === "OWNER" || loggedInUser.role === "CO_OWNER")) {
+        elements.modifyPoints.focus()
       }
     })
 
@@ -595,13 +719,113 @@ function updateUserList(viewOnly = false) {
   })
 }
 
+// Display rules in the dashboard
+function displayRules() {
+  if (!elements.rulesContainer) return
+
+  elements.rulesContainer.innerHTML = `
+    <div class="rules-section">
+      <h3>⚠ Punktabzüge für Regelverstöße</h3>
+      <table class="rules-table">
+        <tr>
+          <th>Verstoß</th>
+          <th>Punktabzug</th>
+        </tr>
+        <tr>
+          <td>Ban ohne Begründung</td>
+          <td>-5 Punkte</td>
+        </tr>
+        <tr>
+          <td>Unfaire oder ungerechtfertigte Strafe gegen Spieler</td>
+          <td>-10 Punkte</td>
+        </tr>
+        <tr>
+          <td>Missbrauch der Admin-Rechte (z. B. sich OP geben, ohne Erlaubnis)</td>
+          <td>-20 Punkte</td>
+        </tr>
+        <tr>
+          <td>Beleidigung oder schlechtes Verhalten gegenüber Spielern</td>
+          <td>-15 Punkte</td>
+        </tr>
+        <tr>
+          <td>Inaktiv ohne Abmeldung (z. B. 2 Wochen)</td>
+          <td>-10 Punkte</td>
+        </tr>
+        <tr>
+          <td>Wiederholtes Fehlverhalten trotz Ermahnung</td>
+          <td>-30 Punkte</td>
+        </tr>
+        <tr>
+          <td>Spamming von Befehlen oder Nachrichten</td>
+          <td>-5 Punkte</td>
+        </tr>
+        <tr>
+          <td>Schwere Regelverstöße (z. B. Server- oder Spieler-Daten manipulieren)</td>
+          <td>-20 Punkte</td>
+        </tr>
+      </table>
+    </div>
+    
+    <div class="rules-section">
+      <h3>📉 Degradierungssystem</h3>
+      <table class="rules-table">
+        <tr>
+          <th>Rang</th>
+          <th>Punkte für automatische Degradierung</th>
+        </tr>
+        <tr>
+          <td>Co-Owner → Admin</td>
+          <td>500 Punkte</td>
+        </tr>
+        <tr>
+          <td>Admin → Jr. Admin</td>
+          <td>400 Punkte</td>
+        </tr>
+        <tr>
+          <td>Jr. Admin → Moderator</td>
+          <td>300 Punkte</td>
+        </tr>
+        <tr>
+          <td>Moderator → Jr. Moderator</td>
+          <td>250 Punkte</td>
+        </tr>
+        <tr>
+          <td>Jr. Moderator → Supporter</td>
+          <td>200 Punkte</td>
+        </tr>
+        <tr>
+          <td>Supporter → Jr. Supporter</td>
+          <td>150 Punkte</td>
+        </tr>
+        <tr>
+          <td>Jr. Supporter → Entfernt aus dem Team</td>
+          <td>0 Punkte</td>
+        </tr>
+      </table>
+      <div class="warning-box">
+        ⚠️ Wenn ein Teammitglied unter 0 Punkte fällt, wird es direkt aus dem Team entfernt!
+      </div>
+    </div>
+    
+    <div class="rules-section">
+      <h3>📌 Wichtige Regeln</h3>
+      <ol>
+        <li>Punkte werden am 1. jedes Monats zurückgesetzt, aber runter Stufungen bleiben bestehend.</li>
+        <li>Admins und Co-Owner müssen Regelverstöße im Discord protokollieren (z. B. wenn sie einen Spieler bannen).</li>
+        <li>Bei 0 Punkten oder weniger wird ein Teammitglied entfernt.</li>
+        <li>Owner & Co-Owner können Punkte zurücksetzen oder vergeben, falls jemand unfair behandelt wurde.</li>
+      </ol>
+    </div>
+  `
+}
+
 // Benutzer bearbeiten
 function editUser(username) {
   if (viewMode) return
   const user = users.find((u) => u.username === username)
   if (!user) return
 
-  const newRank = prompt(`Neuer Rang für ${username} (aktuell: ${user.rank}):`, user.rank)
+  const newRank = prompt(`Neuer Rang für ${username} (aktuell: ${getRoleLabel(user.rank)}):`, user.rank)
   if (newRank === null) return
 
   const newPoints = prompt(`Neue Punktzahl für ${username} (aktuell: ${user.points}):`, user.points)
@@ -629,11 +853,93 @@ function deleteUser(username) {
   }
 }
 
-// Daten exportieren
+// Füge diese Funktionen für das Login-Hilfe-Modal hinzu
+function showLoginHelp() {
+  elements.loginHelpModal.style.display = "flex"
+}
+
+function closeLoginHelp() {
+  elements.loginHelpModal.style.display = "none"
+}
+
+// Benachrichtigung anzeigen
+function showNotification(message, type = "info") {
+  // Remove existing notification
+  const existingNotification = document.querySelector(".notification")
+  if (existingNotification) {
+    existingNotification.remove()
+  }
+
+  // Create new notification
+  const notification = document.createElement("div")
+  notification.className = `notification ${type}`
+  notification.textContent = message
+
+  // Styling
+  notification.style.position = "fixed"
+  notification.style.bottom = "20px"
+  notification.style.right = "20px"
+  notification.style.padding = "10px 20px"
+  notification.style.borderRadius = "5px"
+  notification.style.boxShadow = "0 3px 10px rgba(0,0,0,0.2)"
+  notification.style.zIndex = "1000"
+  notification.style.maxWidth = "300px"
+  notification.style.animation = "fadeIn 0.3s"
+
+  // Color based on type
+  if (type === "success") {
+    notification.style.backgroundColor = "#4CAF50"
+    notification.style.color = "white"
+  } else if (type === "error") {
+    notification.style.backgroundColor = "#f44336"
+    notification.style.color = "white"
+  } else if (type === "warning") {
+    notification.style.backgroundColor = "#ff9800"
+    notification.style.color = "white"
+  } else {
+    notification.style.backgroundColor = "#2196F3"
+    notification.style.color = "white"
+  }
+
+  document.body.appendChild(notification)
+
+  // Hide after 3 seconds
+  setTimeout(() => {
+    notification.style.animation = "fadeOut 0.3s"
+    setTimeout(() => {
+      notification.remove()
+    }, 300)
+  }, 3000)
+}
+
+// Monthly points reset function (to be called by a cron job or manually)
+function resetMonthlyPoints() {
+  if (loggedInUser.role !== "OWNER" && loggedInUser.role !== "CO_OWNER") return
+
+  if (
+    !confirm("Möchtest du die Punkte aller Teammitglieder zurücksetzen? Dies geschieht normalerweise am 1. des Monats.")
+  ) {
+    return
+  }
+
+  // Reset points for all team members (except regular users)
+  users.forEach((user) => {
+    if (user.rank !== "USER") {
+      user.points = 500 // Reset to maximum points
+    }
+  })
+
+  saveDataToLocalStorage()
+  updateUserList()
+  showNotification("Punkte wurden für alle Teammitglieder zurückgesetzt.", "success")
+}
+
+// Export and import data
 function exportData() {
   const data = {
     users: users,
     requests: requests,
+    violations: violations,
   }
 
   const dataStr = JSON.stringify(data, null, 2)
@@ -647,7 +953,6 @@ function exportData() {
   linkElement.click()
 }
 
-// Daten importieren
 function importData() {
   if (viewMode) {
     showNotification("Im Ansichtsmodus können keine Daten importiert werden.", "error")
@@ -670,9 +975,14 @@ function importData() {
           if (confirm(`${importedData.users.length} Benutzer gefunden. Möchtest du die aktuellen Daten ersetzen?`)) {
             users = importedData.users
 
-            // Wenn Anfragen vorhanden sind, auch diese importieren
+            // Import requests if available
             if (importedData.requests && Array.isArray(importedData.requests)) {
               requests = importedData.requests
+            }
+
+            // Import violations if available
+            if (importedData.violations && Array.isArray(importedData.violations)) {
+              violations = importedData.violations
             }
 
             saveDataToLocalStorage()
@@ -694,56 +1004,4 @@ function importData() {
 
   input.click()
 }
-
-// Benachrichtigung anzeigen
-function showNotification(message, type = "info") {
-  // Bestehende Benachrichtigung entfernen
-  const existingNotification = document.querySelector(".notification")
-  if (existingNotification) {
-    existingNotification.remove()
-  }
-
-  // Neue Benachrichtigung erstellen
-  const notification = document.createElement("div")
-  notification.className = `notification ${type}`
-  notification.textContent = message
-
-  // Styling
-  notification.style.position = "fixed"
-  notification.style.bottom = "20px"
-  notification.style.right = "20px"
-  notification.style.padding = "10px 20px"
-  notification.style.borderRadius = "5px"
-  notification.style.boxShadow = "0 3px 10px rgba(0,0,0,0.2)"
-  notification.style.zIndex = "1000"
-  notification.style.maxWidth = "300px"
-  notification.style.animation = "fadeIn 0.3s"
-
-  // Farbe je nach Typ
-  if (type === "success") {
-    notification.style.backgroundColor = "#4CAF50"
-    notification.style.color = "white"
-  } else if (type === "error") {
-    notification.style.backgroundColor = "#f44336"
-    notification.style.color = "white"
-  } else {
-    notification.style.backgroundColor = "#2196F3"
-    notification.style.color = "white"
-  }
-
-  document.body.appendChild(notification)
-
-  // Nach 3 Sekunden ausblenden
-  setTimeout(() => {
-    notification.style.animation = "fadeOut 0.3s"
-    setTimeout(() => {
-      notification.remove()
-    }, 300)
-  }, 3000)
-}
-
-// Automatisches Speichern beim Verlassen der Seite
-window.addEventListener("beforeunload", () => {
-  saveDataToLocalStorage()
-})
 
